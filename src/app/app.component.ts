@@ -7,7 +7,7 @@ import { FooterContactComponent } from './componentes/footer-contact/footer-cont
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterContactComponent], // Solo RouterOutlet
+  imports: [RouterOutlet, HeaderComponent], // Solo RouterOutlet
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
