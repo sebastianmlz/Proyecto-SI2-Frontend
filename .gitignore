@@ -40,3 +40,18 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Node modules
+node_modules/
+
+# Archivos generados por Angular
+/dist/
+    /out-tsc/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs y editores de código
+.vscode/
+.idea/
