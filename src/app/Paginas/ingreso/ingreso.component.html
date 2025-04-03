@@ -1,14 +1,36 @@
 <div class="flex items-center justify-center min-h-screen bg-gray-100">
-    <form class="w-full max-w-sm bg-white p-6 border rounded-lg shadow-md">
+    <form (ngSubmit)="iniciarSesion()" class="w-full max-w-sm bg-white p-6 border rounded-lg shadow-md">
         <h2 class="text-2xl font-semibold text-center mb-6">Iniciar Sesión</h2>
+
         <div class="mb-4">
             <label for="email" class="block text-sm font-medium">Correo Electrónico</label>
-            <input type="email" id="email" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-200">
+            <input
+                [(ngModel)]="email"
+                name="email"
+                type="email"
+                id="email"
+                class="w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
+                required
+            />
         </div>
+
         <div class="mb-4">
             <label for="password" class="block text-sm font-medium">Contraseña</label>
-            <input type="password" id="password" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-200">
+            <input
+                [(ngModel)]="password"
+                name="password"
+                type="password"
+                id="password"
+                class="w-full p-2 border rounded-md focus:ring focus:ring-blue-200"
+                required
+            />
         </div>
-        <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600">Ingresar</button>
+
+        <button
+            type="submit"
+            class="w-full bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
+            >
+            Ingresar
+        </button>
     </form>
-</div>
+</div>  
