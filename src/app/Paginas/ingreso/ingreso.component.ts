@@ -32,8 +32,14 @@ export class IngresoComponent {
         localStorage.setItem('refresh_token', res.refresh_token);
         localStorage.setItem('user_role', res.role); // <-- esto es clave
 
-        // Redirige al home o dashboard
-        this.router.navigate(['/admin']); // Asegúrate de que esa ruta exista
+        //Redireccion dinamica segun el rol
+        if(res.role==='admin'){
+          this.router.navigate(['/admin']);
+        }else if(res.role==='customer'){
+          this.router.navigate(['/customer']);
+        }else{
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         console.error('Error de login:', err);

@@ -7,25 +7,26 @@
                     routerLink="/carrito"
                     class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
                     title="Ir al carrito"
-                    >
+                >
                     <i class="pi pi-home" style="font-size: 2rem"></i>
                 </a>
                 <p-button routerLink="Home" label="Home" text plain class="hidden md:inline-flex" />
                 <p-button routerLink="Productos" label="productos" text plain class="hidden md:inline-flex" />
-                <p-button href="javascript:void(0)"(onClick)="redireecionar()" label="contactanos" text plain class="hidden md:inline-flex" />
+                <p-button href="javascript:void(0)" (onClick)="redireecionar()" label="contactanos" text plain class="hidden md:inline-flex" />
             </div>
         </ng-template>
 
         <ng-template #end>
             <div class="flex items-center gap-2">
                 <p-button *ngIf="!authService.isLoggedIn()" label="Ingresar" severity="success" size="large" [routerLink]="'/ingreso'" />
-                <p-button *ngIf="!authService.isLoggedIn()" label="Registrarse" severity="info" size="large" />
+                <p-button *ngIf="authService.isLoggedIn() && !authService.isCustomer" label="Registrar Usuario" severity="info" size="large" [routerLink]="'/registro'"/>
+                <p-button *ngIf="!authService.isLoggedIn()" label="Registrarse" severity="info" size="large" [routerLink]="'/registro'"/>
                 <a
                     *ngIf="authService.isAdmin() && authService.isLoggedIn()"
                     routerLink="/carrito"
                     class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
                     title="Ir al carrito"
-                    >
+                >
                     <i class="pi pi-shopping-cart" style="font-size: 2rem"></i>
                 </a>
                 <a
@@ -33,10 +34,10 @@
                     routerLink="/settings"
                     class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
                     title="Ir a ajustes de perfil"
-                    >
+                >
                     <i class="pi pi-user" style="font-size: 2rem"></i>
                 </a>
-                <p-button *ngIf="authService.isLoggedIn()" (click)="cerrarSesion()" label="Cerrar sesión"/>
+                <p-button *ngIf="authService.isLoggedIn()" (click)="cerrarSesion()" label="Cerrar sesión" />
             </div>
         </ng-template>
     </p-toolbar>

@@ -1,16 +1,21 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';  // Solo importar RouterOutlet
-import { IngresoComponent } from './Paginas/ingreso/ingreso.component';
 import { HeaderComponent } from './componentes/header/header.component';
-import { FooterContactComponent } from './componentes/footer-contact/footer-contact.component';
+import { SidebarComponent } from './componentes/sidebar/sidebar.component'; // Importar SidebarComponent
+import { AuthService } from './services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent], // Solo RouterOutlet
+  imports: [RouterOutlet, HeaderComponent, CommonModule, SidebarComponent], // Solo RouterOutlet
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent {
-  title = 'Proyecto-Frontend';
+  title = 'Proyecto-Frontend';// Añadido para usar el servicio de autenticación
+  visible=false;
+  constructor(public authService: AuthService) {}
+  
 }

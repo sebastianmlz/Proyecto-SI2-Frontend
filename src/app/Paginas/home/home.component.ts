@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FooterContactComponent } from '../../componentes/footer-contact/footer-contact.component';
 
+
 @Component({
   selector: 'app-home',
   standalone: true,

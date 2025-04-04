@@ -1,6 +1,8 @@
+<!-- Header siempre visible, pero internamente decide qué mostrar -->
+<app-header *ngIf="authService.isLoggedIn()" />
 
-<app-header/>
+<div class="flex justify-start mt-2 ml-4">
+    <app-sidebar *ngIf="authService.isLoggedIn() && authService.isAdmin()"/>
+</div>
 
 <router-outlet />
-
-
