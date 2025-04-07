@@ -4,13 +4,12 @@ import { OnInit } from '@angular/core';
 import { NotificacionService } from '../../services/notificacion.service';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'app-customer',
   imports: [],
-  templateUrl: './admin.component.html',
-  styleUrl: './admin.component.css'
+  templateUrl: './customer.component.html',
+  styleUrl: './customer.component.css'
 })
-export class AdminComponent {
-
+export class CustomerComponent {
   usuario: any;
 
   constructor(public authService:AuthService, 

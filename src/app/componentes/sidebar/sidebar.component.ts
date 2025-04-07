@@ -1,25 +1,47 @@
+import { Component, EventEmitter, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 
-import { Component, EventEmitter, Input, Output, viewChild, ViewChild } from '@angular/core';
-import { DrawerModule } from 'primeng/drawer';
 import { ButtonModule } from 'primeng/button';
+import { DrawerModule } from 'primeng/drawer';
 import { AvatarModule } from 'primeng/avatar';
-import { Drawer } from 'primeng/drawer';
+import { RippleModule } from 'primeng/ripple';
+import { AuthService } from '../../services/auth.service';
+import { OnInit } from '@angular/core'; // 👈 importá esto si no lo tenés aún
+
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [DrawerModule, ButtonModule, AvatarModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ButtonModule,
+    DrawerModule,
+    AvatarModule,
+    RippleModule
+  ],
   templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.css'
+  styleUrls: ['./sidebar.component.css']
 })
-
 export class SidebarComponent {
-  @ViewChild('drawerRef') drawerRef!: Drawer;
-  @Input() visible: boolean = false;
-  @Output() onclose = new EventEmitter<void>();
-  
-  closeCallback(e: any): void {
-    this.drawerRef.close(e);
+  visible = false;
+  @Output() onclose = new EventEmitter();
+  user: any;
+
+  constructor(public authService: AuthService) {}
+
+  ngOnInit(): void {
+    this.user = this.authService.getUser();
+    // console.log('Usuario actual:', this.user);
   }
 
+  closeCallback(event: any) {
+    this.visible = false;
+    this.onclose.emit();
+  }
+
+  cerrarSesion() {
+    this.authService.logout();
+  }
 }

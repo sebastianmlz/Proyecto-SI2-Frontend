@@ -55,3 +55,9 @@ Thumbs.db
 # IDEs y editores de código
 .vscode/
 .idea/
+
+# Archivos de entorno de Angular
+src/environments/environment.ts
+src/environments/environment.prod.ts
+
+

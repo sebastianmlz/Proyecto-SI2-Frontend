@@ -1,0 +1,135 @@
+<div class="flex justify-center items-start min-h-[80vh] pt-8 bg-gray-100 px-4">
+  <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <!-- Cuadro izquierdo: Datos del perfil -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-xl font-bold mb-4 text-center">Datos del perfil</h2>
+      <div class="space-y-4">
+        <!-- Nombre -->
+        <div>
+          <label class="font-semibold">Nombre</label>
+          <input
+            *ngIf="modoEdicion"
+            [(ngModel)]="usuario.first_name"
+            type="text"
+            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+          />
+          <p *ngIf="!modoEdicion">{{ usuario?.first_name }}</p>
+        </div>
+
+        <!-- Apellido -->
+        <div>
+          <label class="font-semibold">Apellido</label>
+          <input
+            *ngIf="modoEdicion"
+            [(ngModel)]="usuario.last_name"
+            type="text"
+            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+          />
+          <p *ngIf="!modoEdicion">{{ usuario?.last_name }}</p>
+        </div>
+
+        <!-- Correo -->
+        <div>
+          <label class="font-semibold">Correo</label>
+          <input
+            *ngIf="modoEdicion"
+            [(ngModel)]="usuario.email"
+            type="email"
+            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+          />
+          <p *ngIf="!modoEdicion">{{ usuario?.email }}</p>
+        </div>
+
+        <!-- Rol -->
+        <div>
+          <label class="font-semibold">Rol</label>
+          <p class="font-medium">{{ usuario?.role }}</p>
+        </div>
+
+        <!-- Botones edición -->
+        <div class="flex gap-2">
+          <button
+            *ngIf="!modoEdicion"
+            pButton
+            label="Editar"
+            icon="pi pi-pencil"
+            class="p-button-sm"
+            (click)="modoEdicion = true"
+          ></button>
+
+          <ng-container *ngIf="modoEdicion">
+            <button
+              pButton
+              label="Aplicar cambios"
+              icon="pi pi-check"
+              class="p-button-sm p-button-success"
+              (click)="guardarCambios()"
+            ></button>
+            <button
+              pButton
+              label="Cancelar"
+              icon="pi pi-times"
+              class="p-button-sm p-button-secondary"
+              (click)="cancelarEdicion()"
+            ></button>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuadro derecho: Cambiar contraseña -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-xl font-bold mb-4 text-center">Seguridad</h2>
+      <div class="space-y-4">
+
+        <button
+          *ngIf="!mostrarCambioPassword"
+          pButton
+          label="Cambiar contraseña"
+          icon="pi pi-key"
+          class="p-button-warning p-button-sm w-full"
+          (click)="mostrarCambioPassword = true"
+        ></button>
+
+        <div *ngIf="mostrarCambioPassword" class="space-y-4">
+          <div>
+            <label class="font-semibold">Contraseña actual</label>
+            <input
+              [(ngModel)]="cambioPassword.actual"
+              type="password"
+              class="p-inputtext p-component w-full border-2 border-yellow-500 focus:ring-2 focus:ring-yellow-300 transition"
+            />
+          </div>
+
+          <div>
+            <label class="font-semibold">Nueva contraseña</label>
+            <input
+              [(ngModel)]="cambioPassword.nueva"
+              type="password"
+              class="p-inputtext p-component w-full border-2 border-yellow-500 focus:ring-2 focus:ring-yellow-300 transition"
+            />
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              pButton
+              label="Guardar"
+              icon="pi pi-save"
+              class="p-button-sm p-button-success w-full"
+              (click)="guardarNuevaPassword()"
+            ></button>
+            <button
+              pButton
+              label="Cancelar"
+              icon="pi pi-times"
+              class="p-button-sm p-button-secondary w-full"
+              (click)="cancelarCambioPassword()"
+            ></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

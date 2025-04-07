@@ -19,10 +19,10 @@
         <ng-template #end>
             <div class="flex items-center gap-2">
                 <p-button *ngIf="!authService.isLoggedIn()" label="Ingresar" severity="success" size="large" [routerLink]="'/ingreso'" />
-                <p-button *ngIf="authService.isLoggedIn() && !authService.isCustomer" label="Registrar Usuario" severity="info" size="large" [routerLink]="'/registro'"/>
-                <p-button *ngIf="!authService.isLoggedIn()" label="Registrarse" severity="info" size="large" [routerLink]="'/registro'"/>
+                <!-- <p-button *ngIf="authService.isLoggedIn() && !authService.isCustomer" label="Registrar Usuario" severity="info" size="large" [routerLink]="'/registro'"/> -->
+                <!-- <p-button *ngIf="!authService.isLoggedIn()" label="Registrarse" severity="info" size="large" [routerLink]="'/registro'"/> -->
                 <a
-                    *ngIf="authService.isAdmin() && authService.isLoggedIn()"
+                    *ngIf="authService.isCustomer() && authService.isLoggedIn()"
                     routerLink="/carrito"
                     class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
                     title="Ir al carrito"

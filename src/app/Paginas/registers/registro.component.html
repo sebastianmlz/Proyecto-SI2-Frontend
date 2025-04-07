@@ -6,8 +6,9 @@
   [dismissableMask]="true"
   [closable]="false"
 >
-  <form (ngSubmit)="registrarse()" #formRef="ngForm" class="flex flex-col gap-4">
-    <input type="text" name="first_name" [(ngModel)]="usuario.first_name" placeholder="Nombre" required class="p-inputtext p-component" />
+
+<form (ngSubmit)="registrarse(formRef)" #formRef="ngForm" class="flex flex-col gap-4" >
+  <input type="text" name="first_name" [(ngModel)]="usuario.first_name" placeholder="Nombre" required class="p-inputtext p-component" />
     <input type="text" name="last_name" [(ngModel)]="usuario.last_name" placeholder="Apellido" required class="p-inputtext p-component" />
     <input type="email" name="email" [(ngModel)]="usuario.email" placeholder="Correo electrónico" required class="p-inputtext p-component" />
     <input type="password" name="password" [(ngModel)]="usuario.password" placeholder="Contraseña" required class="p-inputtext p-component" />
@@ -17,6 +18,6 @@
       <option value="customer">Customer</option>
     </select>
 
-    <button type="submit" pButton label="Registrarse" [disabled]="formRef.invalid"></button>
+    <button pButton label="Registrarse" [disabled]="formRef.invalid"></button>
   </form>
 </p-dialog>

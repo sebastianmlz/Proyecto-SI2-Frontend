@@ -2,7 +2,8 @@
 <app-header *ngIf="authService.isLoggedIn()" />
 
 <div class="flex justify-start mt-2 ml-4">
-    <app-sidebar *ngIf="authService.isLoggedIn() && authService.isAdmin()"/>
+    <app-sidebar *ngIf="authService.isLoggedIn()"/>
 </div>
 
+<p-toast></p-toast>
 <router-outlet />

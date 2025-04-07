@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service';
+
 
 @Component({
   selector: 'app-registro',
@@ -31,7 +32,12 @@ export class RegistroComponent {
     private router: Router,
     public authService: AuthService,
   ) { }
-  registrarse() {
+  
+  registrarse(form: NgForm) {
+    if (form.invalid) {
+      return; // 👈 Salir si el formulario no es válido
+    }
+  
     this.authService.registrarse(this.usuario).subscribe({
       next: () => {
         alert('✅ Registro exitoso');
@@ -39,9 +45,10 @@ export class RegistroComponent {
       },
       error: (err) => {
         console.error('❌ Error al registrar:', err);
-        alert('Error al registrar usuario');
+        alert('No se pudo registrar');
       }
     });
-
   }
+  
+
 }
