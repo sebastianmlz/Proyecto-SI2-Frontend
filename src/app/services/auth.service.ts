@@ -4,13 +4,18 @@ import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from '../../environments/environments';
 
+
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private baseUrl = environment.apiUrl;
-  constructor(private http: HttpClient,private router:Router) {}
+  private baseUrl = environment.apiUrl + '/auth';
+
+
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(credentials: { username: string; password: string }): Observable<any> {
     const body = new URLSearchParams();
@@ -27,18 +32,18 @@ export class AuthService {
     if (!token) {
       throw new Error('Token no disponible');
     }
-  
+
     const headers = {
       Authorization: `Bearer ${token}`
     };
-  
+
     const url = `${this.baseUrl}/users/${userId}?path_params={}`;
     return this.http.get(url, { headers });
   }
-  
-  
-  
-  
+
+
+
+
   isLoggedIn(): boolean {
     return !!localStorage.getItem('access_token');
   }
@@ -46,7 +51,7 @@ export class AuthService {
   isAdmin(): boolean {
     return localStorage.getItem('user_role') === 'admin';
   }
-  
+
   isCustomer(): boolean {
     return localStorage.getItem('user_role') === 'customer';
   }
@@ -65,7 +70,7 @@ export class AuthService {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
   }
-  
+
 
   logout(): void {
     localStorage.removeItem('access_token');
@@ -80,7 +85,4 @@ export class AuthService {
 
 
 
-
-  
-  
 }

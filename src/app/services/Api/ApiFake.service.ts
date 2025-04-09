@@ -7,9 +7,10 @@ import { Product } from '../ProductService/productos.service';
   providedIn: 'root'
 })
 export class ApiFakeService {
-  constructor(private fakehttp: HttpClient) {}
+  constructor(private fakehttp: HttpClient) { }
 
-  getProductos():Observable<any>{
+  getProductos(): Observable<any> {
     return this.fakehttp.get<Product[]>('https://fakestoreapi.com/products');
   }
+
 }

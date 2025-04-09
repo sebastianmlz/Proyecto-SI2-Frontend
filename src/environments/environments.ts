@@ -1,5 +1,5 @@
 // src/environments/environment.ts
 export const environment = {
     production: false,
-    apiUrl: 'https://dismac-backend.up.railway.app/auth'
+    apiUrl: 'https://dismac-backend.up.railway.app'
 };

@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
+import { TableUsersComponent } from "../../../componentes/table/table-users/table-users.component";
 
 @Component({
   selector: 'app-gestion-usuarios',
-  imports: [],
+  standalone: true,
+  imports: [TableUsersComponent],
   templateUrl: './gestion-usuarios.component.html',
   styleUrl: './gestion-usuarios.component.css'
 })
