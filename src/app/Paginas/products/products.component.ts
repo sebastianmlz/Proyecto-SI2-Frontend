@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import { CardsComponent } from "../../componentes/cards/cards.component";
 import { CommonModule } from '@angular/common';
-import { Product } from '../../Services/ProductService/productos.service';
-import { ApiFakeService } from '../../Services/Api/ApiFake.service';
-
+import { Product } from '../../models/product.model';
+import { ApiFakeService } from '../../services/Api/ApiFake.service';
 
 @Component({
   selector: 'app-products',

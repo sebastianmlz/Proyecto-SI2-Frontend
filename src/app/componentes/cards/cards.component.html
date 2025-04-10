@@ -1,9 +1,9 @@
-<p-card [header]="producto.nombre"
+<p-card [header]="producto.name"
   styleClass="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 h-full flex flex-col" 
   [style]="{ 'width': '20rem', 'margin': '1rem auto'}" class="overflow-hidden">
   <ng-template pTemplate="header">
     <div class="h-48 flex items-center bg-white p-2">
-      <img [src]="producto.image" alt="Imagen del producto" class="h-full w-full object-contain mx-auto" />
+      <img [src]="producto.image_url" alt="Imagen del producto" class="h-full w-full object-contain mx-auto" />
     </div>
   </ng-template>
 
@@ -11,7 +11,7 @@
     <p class="text-sm text-gray-700 mb-4 line-clamp-3">
       {{ producto.description }}
     </p>
-    <p class="text-lg font-semibold text-green-600 mt-2">${{ producto.price }}</p>
+    <p class="text-lg font-semibold text-green-600 mt-2">${{ producto.price_usd }}</p>
   </div>
   
   <ng-template *ngIf="authservice.isCustomer()" pTemplate="footer">
