@@ -3,7 +3,7 @@ import { CardsComponent } from "../../componentes/cards/cards.component";
 import { CommonModule } from '@angular/common';
 import { Product } from '../../models/product.model';
 import { ApiFakeService } from '../../services/Api/ApiFake.service';
-
+import { ProductWithInventory } from '../../models/producto-inventario.model';
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -12,7 +12,7 @@ import { ApiFakeService } from '../../services/Api/ApiFake.service';
   styleUrl: './products.component.css'
 })
 export class ProductsComponent {
-  productos: Product[] = [];
+  productos: ProductWithInventory[] = [];
 
   constructor(
     private apifake: ApiFakeService,
@@ -25,7 +25,7 @@ export class ProductsComponent {
 
   loadProducts(): void {
     this.apifake.getProductos().subscribe({
-      next: (data: Product[]) => {
+      next: (data: ProductWithInventory[]) => {
         this.productos = data;
       },
       error: (error) => {

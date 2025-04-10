@@ -9,4 +9,6 @@ export interface CreateProduct {
     model_3d_url?: string; // OPCIONAL
     ar_url?: string;       // OPCIONAL
     technical_specifications: string;
+
+
 }

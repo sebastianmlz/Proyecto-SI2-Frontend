@@ -15,7 +15,7 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
 import { NotificacionService } from '../../../services/notificacion.service';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -35,7 +35,7 @@ import { AuthService } from '../../../services/auth.service';
     FormsModule,
     DialogModule,
     DropdownModule,
-    RouterLink
+    // RouterLink
   ],
   templateUrl: './table-users.component.html',
   styleUrl: './table-users.component.css'
