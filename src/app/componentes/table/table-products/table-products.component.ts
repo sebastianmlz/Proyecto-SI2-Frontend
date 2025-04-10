@@ -9,8 +9,12 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ToastModule } from 'primeng/toast';
-import { Product, ProductosService } from '../../../Services/ProductService/productos.service';
-
+import { ProductosService } from '../../../Services/ProductService/productos.service';
+import { AuthService } from '../../../services/auth.service';
+import { NotificacionService } from '../../../services/notificacion.service';
+import { Product } from '../../../models/product.model';
+import { Inventory } from '../../../models/inventario.model';
+import { ProductWithInventory } from '../../../models/producto-inventario.model';
 
 @Component({
   selector: 'app-table-products',
@@ -31,12 +35,19 @@ import { Product, ProductosService } from '../../../Services/ProductService/prod
   styleUrl: './table-products.component.css'
 })
 export class TableProductsComponent {
-  products: Product[] = [];
 
-  constructor(public productos: ProductosService) { }
+  products: Product[] = [];
+  inventarios:Inventory[] = [];
+  productosCompletos: ProductWithInventory[] = [];
+
+
+  constructor(public productos: ProductosService,
+    private authService: AuthService,
+    private noti: NotificacionService,
+  ) { }
 
   ngOnInit() {
-    this.cargarProductos();
+    this.cargarDatosCompletos();
   }
 
   cargarProductos() {
@@ -47,6 +58,60 @@ export class TableProductsComponent {
       error: (err) => console.error('Error al cargar los productos', err),
     });
   }
+
+  cargarInventario(): void {
+    this.productos.obtenerInventarioCompleto().subscribe({
+      next: (res) => {
+        this.inventarios = res.items;
+      },
+      error: (err) => console.error('Error al obtener inventario', err),
+    });
+  }
+
+
+
+cargarDatosCompletos() {
+  this.productos.obtenerProductos().subscribe({
+    next: (resProd) => {
+      const productos = resProd.items;
+
+      this.productos.obtenerInventarioCompleto().subscribe({
+        next: (resInv) => {
+          const inventarios = resInv.items;
+          console.log("productos: ",productos);
+          // Unimos productos con inventario por ID
+          this.productosCompletos = productos.map(producto => {
+            const inv = inventarios.find(i => i.product_id === producto.id);
+            
+            return {
+              id: producto.id,
+              name: producto.name,
+              active: producto.active,
+              image_url: producto.image_url,
+              category: producto.category.name || '',
+              technical_specifications: producto.technical_specifications || '',
+              description: producto.description || '',
+              price_usd: inv?.price_usd ?? 0
+            };
+            
+            
+          });
+          
+          
+        },
+        error: (err) => console.error("Error al obtener inventario", err),
+      });
+    },
+    error: (err) => console.error("Error al obtener productos", err),
+  });
+}
+
+
+
+
+
+
+
 
   eliminarProducto(id: number): void {
     this.productos.eliminarProducto(id).subscribe({

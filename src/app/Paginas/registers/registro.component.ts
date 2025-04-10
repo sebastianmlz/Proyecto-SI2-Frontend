@@ -26,6 +26,12 @@ export class RegistroComponent {
     last_name: '',
     role: '',
   };
+  
+  //variable de roles
+  roles = [
+    { label: 'Admin', value: 'admin' },
+    { label: 'Customer', value: 'customer' }
+  ];
 
   constructor(
     private http: HttpClient,

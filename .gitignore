@@ -1,17 +1,22 @@
-# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+# 📦 Node modules
+/node_modules/
 
-# Compiled output
-/dist
+# 🛠️ Angular build outputs
+/dist/
+/out-tsc/
+/.angular/cache
+
+# 🔥 Temporal files
 /tmp
-/out-tsc
 /bazel-out
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+/testem.log
 
-# Node
-/node_modules
-npm-debug.log
-yarn-error.log
-
-# IDEs and editors
+# 🧠 IDEs and editors
+.vscode/
 .idea/
 .project
 .classpath
@@ -20,44 +25,19 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
-.vscode/*
+# ✅ Excepciones de VS Code (si realmente las usás)
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-.history/*
 
-# Miscellaneous
-/.angular/cache
-.sass-cache/
-/connect.lock
-/coverage
-/libpeerconnection.log
-testem.log
-/typings
-
-# System files
+# 💻 OS files
 .DS_Store
 Thumbs.db
 
-# Node modules
-node_modules/
-
-# Archivos generados por Angular
-/dist/
-    /out-tsc/
-
-# Archivos del sistema operativo
-.DS_Store
-Thumbs.db
-
-# IDEs y editores de código
-.vscode/
-.idea/
-
-# Archivos de entorno de Angular
+# 🧪 Environment files (Angular)
 src/environments/environment.ts
 src/environments/environment.prod.ts
 
-
+# 🕘 VS Code history plugin (si lo usás)
+.history/

@@ -53,7 +53,10 @@ export class IngresoComponent {
             // Guardamos el usuario en localStorage
             localStorage.setItem('user', JSON.stringify(userData));
             localStorage.setItem('user_role', userData.role); // opcional
-  
+            
+            // ✅ Actualizamos el usuario global
+            this.authService.actualizarUsuario(); // 🔥 Esta línea es nueva
+        
             console.log("Usuario obtenido:", userData);
   
             // Redirigir dependiendo del rol

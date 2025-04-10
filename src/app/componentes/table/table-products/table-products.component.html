@@ -1,48 +1,62 @@
 <div class="card">
-    <p-toolbar styleClass="mb-6">
-      <ng-template #start>
-        <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" />
-        <p-button severity="danger" label="Eliminar" icon="pi pi-trash" outlined disabled />
-      </ng-template>
-  
-      <ng-template #end>
-        <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
-          auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" />
-        <p-button label="Exportar" icon="pi pi-upload" severity="secondary" />
-      </ng-template>
-    </p-toolbar>
-  
-    <p-table [value]="products" [rows]="10" [paginator]="true" [rowHover]="true" dataKey="id">
-      <ng-template pTemplate="header">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Precio</th>
-          <th>Activo</th>
-          <th>Especificaciones</th>
-          <th>Imagen</th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
-  
-      <ng-template pTemplate="body" let-product>
-        <tr>
-          <td>{{ product.id }}</td>
-          <td>{{ product.nombre }}</td>
-          <td>{{ product.price | currency:'USD' }}</td>
-          <td>
-            <p-tag [value]="product.activo ? 'Activo' : 'Inactivo'" [severity]="product.activo ? 'success' : 'danger'" />
-          </td>
-          <td>{{ product.especificaciones }}</td>
-          <td>
-            <img [src]="product.image" alt="imagen" width="60" height="60" style="border-radius: 0.5rem" />
-          </td>
-          <td>
-            <p-button icon="pi pi-pencil" class="mr-2" rounded outlined (click)="actualizarProducto(product)" />
-            <p-button icon="pi pi-trash" severity="danger" rounded outlined (click)="eliminarProducto(product.id)" />
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-  </div>
-  
+  <p-toolbar styleClass="mb-6">
+    <ng-template #start>
+      <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" />
+      <p-button severity="danger" label="Eliminar" icon="pi pi-trash" outlined disabled />
+    </ng-template>
+  </p-toolbar>
+
+  <p-table 
+    [value]="productosCompletos" 
+    [rows]="10" 
+    [paginator]="true" 
+    [rowHover]="true" 
+    dataKey="id"
+  >
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Activo</th>
+        <th>Categoría</th>
+        <th>Imagen</th>
+        <th>Acciones</th>
+      </tr>
+    </ng-template>
+
+    <ng-template pTemplate="body" let-product>
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.price_usd | currency:'USD' }}</td>
+        <td>
+          <p-tag 
+            [value]="product.active ? 'Activo' : 'Inactivo'" 
+            [severity]="product.active ? 'success' : 'danger'" 
+          />
+        </td>
+        <td>{{ product.category }}</td>
+        <td>
+          <img [src]="product.image_url" alt="Imagen" width="60" height="60" style="border-radius: 0.5rem" />
+        </td>
+        <td>
+          <p-button 
+            icon="pi pi-pencil" 
+            class="mr-2" 
+            rounded 
+            outlined 
+            (click)="actualizarProducto(product)" 
+          />
+          <p-button 
+            icon="pi pi-trash" 
+            severity="danger" 
+            rounded 
+            outlined 
+            (click)="eliminarProducto(product.id)" 
+          />
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>

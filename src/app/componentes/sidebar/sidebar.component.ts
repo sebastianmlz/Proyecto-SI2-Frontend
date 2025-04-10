@@ -32,8 +32,9 @@ export class SidebarComponent {
   constructor(public authService: AuthService) {}
 
   ngOnInit(): void {
-    this.user = this.authService.getUser();
-    // console.log('Usuario actual:', this.user);
+    this.authService.currentUser$.subscribe(user => {
+      this.user = user;
+    });
   }
 
   closeCallback(event: any) {
