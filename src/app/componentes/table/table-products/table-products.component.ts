@@ -69,7 +69,8 @@ export class TableProductsComponent {
     image_url: {} as File,
     model_3d_url: '',
     ar_url: '',
-    technical_specifications: ''
+    technical_specifications: '',
+    stock: 0
   };
   nuevoProductoModalVisible = false;
   stock: number = 0;
@@ -126,7 +127,8 @@ export class TableProductsComponent {
                 category: producto.category.name || '',
                 technical_specifications: producto.technical_specifications || '',
                 description: producto.description || '',
-                price_usd: inv?.price_usd ?? 0
+                price_usd: inv?.price_usd ?? 0,
+                stock: inv?.stock ?? 0,
               };
               
               
@@ -169,7 +171,8 @@ export class TableProductsComponent {
       image_url: {} as File,
       model_3d_url: '',
       ar_url: '',
-      technical_specifications: ''
+      technical_specifications: '',
+      stock: 0
     };
     this.nuevoProductoModalVisible = true;
   }

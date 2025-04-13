@@ -17,10 +17,11 @@
       <tr>
         <th>ID</th>
         <th>Nombre</th>
-        <th>Precio</th>
         <th>Activo</th>
         <th>Categoría</th>
         <th>Imagen</th>
+        <th>Precio</th>
+        <th>Stock</th>
         <th>Acciones</th>
       </tr>
     </ng-template>
@@ -29,7 +30,6 @@
       <tr>
         <td>{{ product.id }}</td>
         <td>{{ product.name }}</td>
-        <td>{{ product.price_usd | currency:'USD' }}</td>
         <td>
           <p-tag 
             [value]="product.active ? 'Activo' : 'Inactivo'" 
@@ -40,6 +40,8 @@
         <td>
           <img [src]="product.image_url" alt="Imagen" width="60" height="60" style="border-radius: 0.5rem" />
         </td>
+        <td>{{ product.price_usd | currency:'USD' }}</td>
+        <td>{{ product.stock }}</td>
         <td>
           <p-button 
             icon="pi pi-pencil" 

@@ -7,4 +7,5 @@ export interface ProductWithInventory {
     technical_specifications: string;
     description: string;
     price_usd: number;
+    stock: number;
 }
