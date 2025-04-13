@@ -1,8 +1,8 @@
 // set-env.js
 const fs = require('fs');
 
-const devTarget = './src/environments/environments.ts';
-const prodTarget = './src/environments/environments.prod.ts';
+const devTarget = './src/environments/environment.ts';
+const prodTarget = './src/environments/environment.prod.ts';
 
 // Valor recibido desde Railway o desde el entorno local (.env)
 const apiUrl = process.env.API_URL || 'http://localhost:3000';
