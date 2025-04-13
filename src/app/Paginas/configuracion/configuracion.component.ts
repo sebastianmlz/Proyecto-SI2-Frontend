@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common'; // ⬅️ Esto es clave
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { NotificacionService } from '../../services/notificacion.service';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
