@@ -41,3 +41,6 @@ src/environments/environments.prod.ts
 
 # 🕘 VS Code history plugin (si lo usás)
 .history/
+
+# env local
+.env.local
