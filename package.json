@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "npx http-server dist/proyecto-frontend -p $PORT",
+    "start": "npx http-server dist/proyecto-frontend/browser -p $PORT",
     "prebuild": "node -r dotenv/config set-env.js",
     "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
