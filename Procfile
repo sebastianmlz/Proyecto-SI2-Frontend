@@ -1,1 +1,1 @@
-start: npx http-server dist/Proyecto-Frontend -p $PORT
+start: npx http-server dist/proyecto-frontend -p $PORT
