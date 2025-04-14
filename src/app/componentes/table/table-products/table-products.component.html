@@ -4,6 +4,11 @@
       <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" (click)="abrirModalNuevoProducto()" />
       <p-button severity="danger" label="Eliminar" icon="pi pi-trash" outlined disabled />
     </ng-template>
+    <ng-template #end>
+      <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
+        auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" /> -->
+      <p-button label="Exportar" icon="pi pi-upload" severity="secondary" />
+    </ng-template>
   </p-toolbar>
 
   <p-table 
@@ -63,7 +68,8 @@
   </p-table>
 
   <!-- modal de registrar producto -->
-  <p-dialog header="Registrar producto" [(visible)]="nuevoProductoModalVisible" [modal]="true" [style]="{width: '40vw'}">
+  <p-dialog header="Registrar producto" [(visible)]="nuevoProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
+  >
     <form class="grid gap-4">
       
       <div>
@@ -73,12 +79,12 @@
   
       <div>
         <label>Descripción</label>
-        <textarea pInputTextarea [(ngModel)]="nuevoProducto.description" name="description" class="w-full"></textarea>
+        <textarea pInputText [(ngModel)]="nuevoProducto.description" name="description" class="w-full"></textarea>
       </div>
   
       <div>
         <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full"></textarea>
+        <textarea pInputText [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full"></textarea>
       </div>
   
       <div>
@@ -132,7 +138,8 @@
 
 
    <!-- modal de editar producto -->
-   <p-dialog header="Editar producto" [(visible)]="editarProductoModalVisible" [modal]="true" [style]="{width: '40vw'}">
+   <p-dialog header="Editar producto" [(visible)]="editarProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
+>
     <form class="grid gap-4">
       <div>
         <label>Nombre</label>
@@ -141,12 +148,12 @@
   
       <div>
         <label>Descripción</label>
-        <textarea pInputTextarea [(ngModel)]="productoEditable.description" name="edit_description" class="w-full"></textarea>
+        <textarea pInputText [(ngModel)]="productoEditable.description" name="edit_description" class="w-full"></textarea>
       </div>
   
       <div>
         <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full"></textarea>
+        <textarea pInputText [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full"></textarea>
       </div>
   
       <div>

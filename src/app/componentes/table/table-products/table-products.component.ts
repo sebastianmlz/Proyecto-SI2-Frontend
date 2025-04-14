@@ -145,7 +145,7 @@ export class TableProductsComponent {
             console.log("Productos recibidos:", productos);
   
             // Unimos productos con inventario por product_id
-            this.productosCompletos = productos.map(producto => {
+            const combinados = productos.map(producto => {
               const inv = inventarios.find(i => i.product_id === producto.id);
               if (!inv) return null;
             
@@ -155,7 +155,7 @@ export class TableProductsComponent {
                 active: producto.active,
                 image_url: producto.image_url,
                 category: producto.category.name || '',
-                category_id: producto.category.id, 
+                category_id: producto.category.id,
                 brand_id: producto.brand.id,
                 warranty_id: producto.warranty.id,
                 technical_specifications: producto.technical_specifications || '',
@@ -166,7 +166,10 @@ export class TableProductsComponent {
                 model_3d_url: producto.model_3d_url || '',
                 ar_url: producto.ar_url || ''
               };
-            }).filter(p => p !== null);; 
+            }).filter(p => p !== null);
+            
+            // ✅ Ahora recién se clona el array resultante
+            this.productosCompletos = [...combinados];
             
           },
           error: (err) => console.error("❌ Error al obtener inventario", err),
@@ -283,34 +286,40 @@ export class TableProductsComponent {
     formData.append('warranty_id', this.productoEditable.warranty_id.toString());
     formData.append('model_3d_url', this.productoEditable.model_3d_url || '');
     formData.append('ar_url', this.productoEditable.ar_url || '');
-    if (this.productoEditable.image) formData.append('image', this.productoEditable.image);
-
-
+    if (this.productoEditable.image) {
+      formData.append('image', this.productoEditable.image);
+    }
+  
     this.productos.editarProducto(this.productoEditable.id, formData).subscribe({
       next: () => {
         const invData = {
           stock: this.productoEditable.stock,
           price_usd: this.productoEditable.price_usd
         };
+  
         this.productos.actualizarInventario(this.productoEditable.inventory_id, invData).subscribe({
           next: () => {
-            this.noti.success('Producto actualizado', 'Producto e Inventario Actualizados');
+            this.noti.success('✅ Producto actualizado', 'Producto e inventario fueron actualizados correctamente');
             this.editarProductoModalVisible = false;
-            console.log("Productos con inventario actualizados:", this.productosCompletos);
-            this.cargarDatosCompletos();
+            setTimeout(() => {
+              this.cargarDatosCompletos();
+            }, 300); // o hasta 500 ms si es necesario
+            
+
           },
           error: (err) => {
-            console.error('Error al actualizar inventario:', err);
+            console.error('❌ Error al actualizar inventario:', err);
             this.noti.error('Error', 'No se pudo actualizar el inventario');
           }
         });
       },
       error: (err) => {
-        console.error('Error al actualizar producto', err);
+        console.error('❌ Error al actualizar producto:', err);
         this.noti.error('Error', 'No se pudo actualizar el producto');
       }
     });
   }
+  
 
 
 

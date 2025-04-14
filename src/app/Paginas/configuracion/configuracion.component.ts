@@ -7,6 +7,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { NotificacionService } from '../../services/notificacion.service';
 import { environment } from '../../../environments/environment';
+import { UserService } from '../../services/user.service';
 
 
 @Component({
@@ -33,8 +34,10 @@ export class ConfiguracionComponent implements OnInit {
     confirmar: '',
   };
 
+
   constructor(
     private authService: AuthService,
+    private userService: UserService,
     private http: HttpClient,
     private noti: NotificacionService
   ) { }
@@ -43,30 +46,60 @@ export class ConfiguracionComponent implements OnInit {
     this.usuario = this.authService.getUser();
   }
 
-  guardarCambios() {
-    const userId = this.usuario?.id; // Asegúrate de tener el id del usuario
-    this.http.put(`${this.baseUrl}/update/${userId}`, this.usuario).subscribe({
+  guardarCambiosPerfil() {
+    const data = {
+      email: this.usuario.email,
+      first_name: this.usuario.first_name,
+      last_name: this.usuario.last_name,
+      role: this.usuario.role,
+      active: true
+    };
+  
+    this.userService.actualizarPerfil(this.usuario.id, data).subscribe({
       next: () => {
-        this.noti.success('Datos Actualizados', 'Actualizacion de datos correctamente');
-        localStorage.setItem('user', JSON.stringify(this.usuario)); // actualiza localmente
+        // ✅ Actualiza localStorage con los nuevos datos
+        localStorage.setItem('user', JSON.stringify(this.usuario));
+  
+        // ✅ Actualiza objeto local (por si usas `getUser()` en otras partes)
+        this.usuario = this.authService.getUser();
+  
+        // ✅ Notificación y UI
+        this.noti.success('Perfil actualizado', 'Tus datos han sido guardados exitosamente');
+  
+        // ✅ Finaliza edición
         this.modoEdicion = false;
       },
       error: (err) => {
-        console.error(err);
-        alert('Error al actualizar los datos');
+        console.error('Error al actualizar perfil', err);
+        this.noti.error('Error', 'No se pudo actualizar tu perfil');
       }
     });
   }
+  
+  
 
   guardarNuevaPassword() {
+    const { actual, nueva, confirmar } = this.cambioPassword;
+  
+    if (!actual || !nueva || !confirmar) {
+      this.noti.error('Error', 'Todos los campos son obligatorios');
+      return;
+    }
+  
+    if (nueva !== confirmar) {
+      this.noti.error('Error', 'La nueva contraseña no coincide con la confirmación');
+      return;
+    }
+  
     const datos = {
-      old_password: this.cambioPassword.actual,
-      new_password: this.cambioPassword.nueva,
-      confirm_password: this.cambioPassword.confirmar
+      old_password: actual,
+      new_password: nueva,
+      confirm_password: confirmar
     };
+  
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-
+  
     this.http.post(`${this.baseUrl}/auth/change-password`, datos, { headers }).subscribe({
       next: () => {
         this.noti.success('Actualizada', 'Contraseña correctamente actualizada');
@@ -74,11 +107,13 @@ export class ConfiguracionComponent implements OnInit {
         this.mostrarCambioPassword = false;
       },
       error: (err) => {
-        console.error(err);
-        alert('No se pudo cambiar la contraseña');
+        console.error('Error al cambiar contraseña:', err);
+        this.noti.error('Error', 'No se pudo cambiar la contraseña');
       }
     });
   }
+  
+  
 
   cancelarEdicion() {
     this.modoEdicion = false;

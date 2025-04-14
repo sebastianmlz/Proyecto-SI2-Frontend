@@ -9,36 +9,36 @@
         <div>
           <label class="font-semibold">Nombre</label>
           <input
-            *ngIf="modoEdicion"
-            [(ngModel)]="usuario.first_name"
             type="text"
-            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            pInputText
+            [(ngModel)]="usuario.first_name"
+            class="w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            [readonly]="!modoEdicion"
           />
-          <p *ngIf="!modoEdicion">{{ usuario?.first_name }}</p>
         </div>
 
         <!-- Apellido -->
         <div>
           <label class="font-semibold">Apellido</label>
           <input
-            *ngIf="modoEdicion"
-            [(ngModel)]="usuario.last_name"
             type="text"
-            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            pInputText
+            [(ngModel)]="usuario.last_name"
+            class="w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            [readonly]="!modoEdicion"
           />
-          <p *ngIf="!modoEdicion">{{ usuario?.last_name }}</p>
         </div>
 
         <!-- Correo -->
         <div>
           <label class="font-semibold">Correo</label>
           <input
-            *ngIf="modoEdicion"
+            type="text"
+            pInputText
             [(ngModel)]="usuario.email"
-            type="email"
-            class="p-inputtext p-component w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            class="w-full border-2 border-green-500 focus:ring-2 focus:ring-green-300 transition"
+            [readonly]="!modoEdicion"
           />
-          <p *ngIf="!modoEdicion">{{ usuario?.email }}</p>
         </div>
 
         <!-- Rol -->
@@ -48,33 +48,34 @@
         </div>
 
         <!-- Botones edición -->
-        <div class="flex gap-2">
+        <div class="flex gap-2 mt-4">
           <button
             *ngIf="!modoEdicion"
             pButton
-            label="Editar"
             icon="pi pi-pencil"
-            class="p-button-sm"
+            label="Editar"
             (click)="modoEdicion = true"
+            class="p-button-success"
           ></button>
-
+        
           <ng-container *ngIf="modoEdicion">
             <button
               pButton
-              label="Aplicar cambios"
               icon="pi pi-check"
-              class="p-button-sm p-button-success"
-              (click)="guardarCambios()"
+              label="Aplicar cambios"
+              class="p-button-success"
+              (click)="guardarCambiosPerfil()"
             ></button>
+        
             <button
               pButton
-              label="Cancelar"
               icon="pi pi-times"
-              class="p-button-sm p-button-secondary"
+              label="Cancelar"
+              class="p-button-secondary"
               (click)="cancelarEdicion()"
             ></button>
           </ng-container>
-        </div>
+        </div>        
       </div>
     </div>
 
@@ -106,6 +107,15 @@
             <label class="font-semibold">Nueva contraseña</label>
             <input
               [(ngModel)]="cambioPassword.nueva"
+              type="password"
+              class="p-inputtext p-component w-full border-2 border-yellow-500 focus:ring-2 focus:ring-yellow-300 transition"
+            />
+          </div>
+
+          <div>
+            <label class="font-semibold">confirmar contraseña</label>
+            <input
+              [(ngModel)]="cambioPassword.confirmar"
               type="password"
               class="p-inputtext p-component w-full border-2 border-yellow-500 focus:ring-2 focus:ring-yellow-300 transition"
             />

@@ -56,8 +56,15 @@ export class ProductosService {
   actualizarInventario(inventoryId: number, data: { stock: number, price_usd: number }): Observable<any> {
     const token = localStorage.getItem('access_token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.patch(`${this.baseUrl}inventory/${inventoryId}`, data, { headers });
+  
+    const params = {
+      stock: data.stock,
+      price_usd: data.price_usd
+    };
+  
+    return this.http.patch(`${this.baseUrl}inventory/${inventoryId}`, null, { headers, params });
   }
+  
   
   
   eliminarProducto(id: number): Observable<any> {

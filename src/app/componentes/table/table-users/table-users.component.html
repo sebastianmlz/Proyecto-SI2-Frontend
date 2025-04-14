@@ -7,8 +7,8 @@
       </ng-template>
   
       <ng-template #end>
-        <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
-          auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" />
+        <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
+          auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" /> -->
         <p-button label="Exportar" icon="pi pi-upload" severity="secondary" />
       </ng-template>
     </p-toolbar>
@@ -24,7 +24,7 @@
         </div>
       </ng-template>
   
-      <ng-template pTemplate="header">
+      <ng-template class="mx-3" pTemplate="header">
         <tr>
           <th>ID</th>
           <th>Nombre</th>
@@ -55,7 +55,8 @@
     </p-table>
     
     <!-- Modal edicion -->
-    <p-dialog [(visible)]="editarModalVisible" [modal]="true" [style]="{width: '500px'}" header="Editar Usuario" [closable]="false">
+    <p-dialog [(visible)]="editarModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Editar Usuario" [dismissableMask]="true"
+    >
       <div class="flex flex-col gap-4">
         <div>
           <label class="block font-semibold mb-1">Nombre</label>
@@ -101,7 +102,8 @@
     </p-dialog>
 
     <!-- modal registrar -->
-    <p-dialog [(visible)]="nuevoUsuarioModalVisible" [modal]="true" [style]="{ width: '500px' }" header="Nuevo Usuario" [closable]="false">
+    <p-dialog [(visible)]="nuevoUsuarioModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Nuevo Usuario" [dismissableMask]="true"
+    >
       <div class="flex flex-col gap-4">
         <div>
           <label class="block font-semibold mb-1">Nombre</label>

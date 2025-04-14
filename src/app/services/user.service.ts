@@ -41,4 +41,10 @@ export class UserService {
     return this.http.delete(`${this.baseUrl}/${id}`, { headers });
   }
 
+  actualizarPerfil(userId: number, data: any): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.patch(`${this.baseUrl}/${userId}`, data, { headers });
+  }
+
 }
