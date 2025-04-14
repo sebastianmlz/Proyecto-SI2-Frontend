@@ -1,7 +1,94 @@
-<main>
-    <div class="content">
-    </div>
-</main>
+<div class="bg-gray-50 min-h-screen">
+    <!-- Hero principal -->
+    <section class="bg-white shadow py-16 px-6 text-center">
+      <h1 class="text-4xl font-bold text-gray-800">¡Bienvenido a ElectroShop!</h1>
+      <p class="text-lg mt-2 text-gray-600">Encuentra los mejores electrodomésticos a precios irresistibles</p>
+      <a href="/products" class="mt-6 inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition">
+        Ver Catálogo
+      </a>
+    </section>
+  
+    <!-- Slider de productos destacados -->
+    <section class="py-12 bg-green-100">
+      <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Productos Destacados</h2>
+      <div class="relative max-w-6xl mx-auto overflow-hidden">
+        <div class="flex w-[400%] animate-slide">
+          <!-- Producto 1 -->
+          <div class="w-full sm:w-1/4 px-4">
+            <div class="bg-white rounded shadow p-4 text-center">
+              <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6951?auto=format&fit=crop&w=500&q=80" class="h-40 w-full object-cover rounded mb-4" alt="Refrigerador">
+              <h3 class="font-semibold text-lg">Refrigerador Samsung</h3>
+              <p class="text-green-700 font-bold mt-1">$650</p>
+            </div>
+          </div>
+          <!-- Producto 2 -->
+          <div class="w-full sm:w-1/4 px-4">
+            <div class="bg-white rounded shadow p-4 text-center">
+              <img src="https://images.unsplash.com/photo-1606813902654-6a1f082f62f4?auto=format&fit=crop&w=500&q=80" class="h-40 w-full object-cover rounded mb-4" alt="Microondas">
+              <h3 class="font-semibold text-lg">Microondas LG</h3>
+              <p class="text-green-700 font-bold mt-1">$220</p>
+            </div>
+          </div>
+          <!-- Producto 3 -->
+          <div class="w-full sm:w-1/4 px-4">
+            <div class="bg-white rounded shadow p-4 text-center">
+              <img src="https://images.unsplash.com/photo-1602509327093-d0ec72f814ef?auto=format&fit=crop&w=500&q=80" class="h-40 w-full object-cover rounded mb-4" alt="Lavadora">
+              <h3 class="font-semibold text-lg">Lavadora Whirlpool</h3>
+              <p class="text-green-700 font-bold mt-1">$430</p>
+            </div>
+          </div>
+          <!-- Producto 4 -->
+          <div class="w-full sm:w-1/4 px-4">
+            <div class="bg-white rounded shadow p-4 text-center">
+              <img src="https://images.unsplash.com/photo-1632212336129-5b0b5f345321?auto=format&fit=crop&w=500&q=80" class="h-40 w-full object-cover rounded mb-4" alt="Licuadora">
+              <h3 class="font-semibold text-lg">Licuadora Oster</h3>
+              <p class="text-green-700 font-bold mt-1">$80</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        .animate-slide {
+          animation: slide 16s linear infinite;
+        }
+  
+        @keyframes slide {
+          0% { transform: translateX(0); }
+          25% { transform: translateX(-100%); }
+          50% { transform: translateX(-200%); }
+          75% { transform: translateX(-300%); }
+          100% { transform: translateX(0); }
+        }
+      </style>
+    </section>
+  
+    <!-- Ventajas -->
+    <section class="py-12 bg-white">
+      <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="text-green-600 text-4xl mb-2">
+            <i class="pi pi-truck"></i>
+          </div>
+          <h3 class="font-bold text-lg">Envío Rápido</h3>
+          <p class="text-gray-600">Llega hasta la puerta de tu casa en menos de 72h.</p>
+        </div>
+        <div>
+          <div class="text-green-600 text-4xl mb-2">
+            <i class="pi pi-shield"></i>
+          </div>
+          <h3 class="font-bold text-lg">Pago Seguro</h3>
+          <p class="text-gray-600">Protegemos tus datos con altos estándares de seguridad.</p>
+        </div>
+        <div>
+          <div class="text-green-600 text-4xl mb-2">
+            <i class="pi pi-star"></i>
+          </div>
+          <h3 class="font-bold text-lg">Productos Garantizados</h3>
+          <p class="text-gray-600">Solo trabajamos con marcas reconocidas y garantía.</p>
+        </div>
+      </div>
+    </section>
+</div>
 
 
 <app-footer-contact id="footer"/>

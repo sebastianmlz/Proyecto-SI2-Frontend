@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environment';
 import { Product } from '../../models/product.model';
 import { Inventory } from '../../models/inventario.model';
 import { Brand } from '../../models/brand.model';
@@ -47,13 +47,23 @@ export class ProductosService {
     return this.http.get<{ items: Inventory[] }>(`${this.baseUrl}inventory`, { headers });
   }
   
-
-  actualizarProducto(product: Product): Observable<Product> {
-    return this.http.put<Product>(`${this.baseUrl}/${product.id}`, product);
+  editarProducto(product_id: number, data: FormData): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.patch(`${this.baseUrl}${product_id}`, data, { headers });
   }
 
+  actualizarInventario(inventoryId: number, data: { stock: number, price_usd: number }): Observable<any> {
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.patch(`${this.baseUrl}inventory/${inventoryId}`, data, { headers });
+  }
+  
+  
   eliminarProducto(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${id}`);
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.delete(`${this.baseUrl}${id}`, { headers });
   }
 
   getBrands(): Observable<{ items: Brand[] }> {

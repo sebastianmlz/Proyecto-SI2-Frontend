@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common'; // ⬅️ Esto es clave
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { NotificacionService } from '../../services/notificacion.service';
-import { environment } from '../../../environments/environments';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -29,14 +29,15 @@ export class ConfiguracionComponent implements OnInit {
 
   cambioPassword = {
     actual: '',
-    nueva: ''
+    nueva: '',
+    confirmar: '',
   };
 
   constructor(
     private authService: AuthService,
     private http: HttpClient,
     private noti: NotificacionService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.usuario = this.authService.getUser();
@@ -59,15 +60,17 @@ export class ConfiguracionComponent implements OnInit {
 
   guardarNuevaPassword() {
     const datos = {
-      email: this.usuario?.email,
-      current_password: this.cambioPassword.actual,
-      new_password: this.cambioPassword.nueva
+      old_password: this.cambioPassword.actual,
+      new_password: this.cambioPassword.nueva,
+      confirm_password: this.cambioPassword.confirmar
     };
+    const token = localStorage.getItem('access_token');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    this.http.post(`${this.baseUrl}/change-password`, datos).subscribe({
+    this.http.post(`${this.baseUrl}/auth/change-password`, datos, { headers }).subscribe({
       next: () => {
         this.noti.success('Actualizada', 'Contraseña correctamente actualizada');
-        this.cambioPassword = { actual: '', nueva: '' };
+        this.cambioPassword = { actual: '', nueva: '', confirmar: '' };
         this.mostrarCambioPassword = false;
       },
       error: (err) => {
@@ -82,10 +85,10 @@ export class ConfiguracionComponent implements OnInit {
     this.usuario = this.authService.getUser(); // Vuelve a cargar los datos guardados
     this.noti.warn('Cancelada', 'Edicion de informacion cancelada');
   }
-  
+
   cancelarCambioPassword() {
     this.mostrarCambioPassword = false;
-    this.cambioPassword = { actual: '', nueva: '' };
+    this.cambioPassword = { actual: '', nueva: '', confirmar: '' };
     this.noti.warn('Cancelado', 'Cambio de contraseña cancelado');
   }
 }
