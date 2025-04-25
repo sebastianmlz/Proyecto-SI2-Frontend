@@ -37,15 +37,15 @@ export class IngresoComponent {
   }
 
   iniciarSesion() {
-    this.authService.login({ username: this.email, password: this.password }).subscribe({
+    this.authService.login({ email: this.email, password: this.password }).subscribe({
       next: (res) => {
-        console.log('Login exitoso:', res);
+        console.log("Respuesta completa del login:", res);
   
         // Guardamos los tokens primero
-        localStorage.setItem('access_token', res.access_token);
-        localStorage.setItem('refresh_token', res.refresh_token);
+        localStorage.setItem('access', res.access);
+        localStorage.setItem('refresh', res.refresh);
   
-        const userId = res.user_id;
+        const userId = res.id;
   
         // Pedimos los datos completos del usuario
         this.authService.getUserById(userId).subscribe({
@@ -61,12 +61,13 @@ export class IngresoComponent {
   
             // Redirigir dependiendo del rol
             if (userData.role === 'admin') {
-              this.router.navigate(['/admin']);
+              this.router.navigate(['/productos']);
             } else if (userData.role === 'customer') {
-              this.router.navigate(['/customer']);
+              this.router.navigate(['/productos']);
             } else {
               this.router.navigate(['/']);
             }
+            
           },
           error: (err) => {
             console.error('Error al obtener usuario:', err);

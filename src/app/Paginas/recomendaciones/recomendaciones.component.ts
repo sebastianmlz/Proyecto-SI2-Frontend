@@ -1,35 +1,37 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Product } from '../../models/product.model';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProductosService } from '../../services/productos.service';
-import { AuthService } from '../../services/auth.service';
-import { NotificacionService } from '../../services/notificacion.service';
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
+import { CardModule } from 'primeng/card';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
-import { FormsModule } from '@angular/forms';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-import { Router } from '@angular/router';
+import { NotificacionService } from '../../services/notificacion.service';
 import { OrdersService } from '../../services/orders.service';
+import { AuthService } from '../../services/auth.service';
+import { Product } from '../../models/product.model';
+
 
 
 @Component({
-  selector: 'app-products',
-  standalone: true,
+  selector: 'app-recomendaciones',
   imports: [
     CommonModule,
-    DialogModule,
-    ButtonModule,
     FormsModule,
     CardModule,
-    InputTextModule
+    DialogModule,
+    ButtonModule
   ],
-  templateUrl: './products.component.html',
-  styleUrl: './products.component.css'
+  templateUrl: './recomendaciones.component.html',
+  styleUrl: './recomendaciones.component.css'
 })
-export class ProductsComponent {
+export class ProductosRecomendacionesComponent implements OnInit {
+  recomendaciones: any[] = [];
+
   products: Product[] = [];
-  isAdmin: boolean = false;
+  rol: string = '';
 
   productoSeleccionado: Product | null = null;
   productoEditable: any = {};
@@ -48,12 +50,22 @@ export class ProductsComponent {
     private authService: AuthService,
     private noti: NotificacionService,
     private ordersService: OrdersService,
-    private router: Router
+    private router: ActivatedRoute
   ) {}
 
-  ngOnInit() {
-    this.obtenerProductos();
-    this.verificarRol();
+  ngOnInit(): void {
+    const query = this.router.snapshot.queryParamMap.get('q') || '';
+    this.productosService.getRecomendaciones(query).subscribe({
+      next: (res) => {
+        this.recomendaciones = res; // Asegúrate que se asigna bien
+        this.verificarRol();
+console.log("Recomendaciones recibidas:", this.recomendaciones);
+
+      },
+      error: (err) => {
+        console.error('Error al obtener recomendaciones:', err);
+      }
+    });
   }
 
   obtenerProductos(): void {
@@ -65,9 +77,19 @@ export class ProductsComponent {
     });
   }
 
+  // obtenerRecomendaciones(): void {
+  //   this.productosService.getRecomendaciones().subscribe({
+  //     next: (res) => {
+  //       this.recomendaciones = res.items;
+  //     },
+  //     error: (err) => console.error('Error al obtener recomendaciones', err)
+  //   });
+  // }
+
   verificarRol(): void {
     const user = this.authService.getUser();
-    this.isAdmin = user?.role === 'admin';
+    // this.isAdmin = user?.role === 'admin';
+    this.rol = user?.role || '';
   }
 
   verMasInfo(producto: Product): void {
@@ -184,26 +206,24 @@ export class ProductsComponent {
   }
   
 
-  verRecomendaciones(nombre: string, categoria: string, marca: string): void {
-    const query = `${nombre} ${categoria} ${marca}`;
-    this.router.navigate(['/recomendaciones'], {
-      queryParams: { q: query }
-    });
-  }
+  // verRecomendaciones(nombre: string, categoria: string, marca: string): void {
+  //   const query = `${nombre} ${categoria} ${marca}`;
+  //   this.router.navigate(['customer/recomendaciones'], {
+  //     queryParams: { q: query }
+  //   });
+  // }
 
-  verRecomendacionPorTexto(): void {
-    if (!this.recomendacionTexto.trim()) {
-      this.noti.warn('Texto vacío', 'Ingresa una descripción para recomendar');
-      return;
-    }
+  // verRecomendacionPorTexto(): void {
+  //   if (!this.recomendacionTexto.trim()) {
+  //     this.noti.warn('Texto vacío', 'Ingresa una descripción para recomendar');
+  //     return;
+  //   }
   
-    const query = this.recomendacionTexto.trim();
-    this.router.navigate(['/recomendaciones'], {
-      queryParams: { q: query }
-    });
-  }
+  //   const query = this.recomendacionTexto.trim();
+  //   this.router.navigate(['/customer/recomendaciones'], {
+  //     queryParams: { q: query }
+  //   });
+  // }
   
   
 }
-
-

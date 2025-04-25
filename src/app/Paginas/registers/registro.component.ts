@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { DialogModule } from 'primeng/dialog';
 import { ButtonModule } from 'primeng/button';
 import { AuthService } from '../../services/auth.service';
-
+import { NotificacionService } from '../../services/notificacion.service';
 
 @Component({
   selector: 'app-registro',
@@ -21,11 +21,15 @@ export class RegistroComponent {
 
   usuario = {
     email: '',
-    password: '',
     first_name: '',
     last_name: '',
-    role: '',
+    password: '',
+    role: 'customer',       // Por defecto si siempre será cliente
+    active: true,
+    is_staff: true,
+    is_superuser: false
   };
+  
   
   //variable de roles
   roles = [
@@ -37,21 +41,21 @@ export class RegistroComponent {
     private http: HttpClient,
     private router: Router,
     public authService: AuthService,
+    private noti:NotificacionService
   ) { }
   
   registrarse(form: NgForm) {
     if (form.invalid) {
       return; // 👈 Salir si el formulario no es válido
     }
-  
+    console.log("datos a registrar: ",this.usuario);
     this.authService.registrarse(this.usuario).subscribe({
       next: () => {
-        alert('✅ Registro exitoso');
+        this.noti.success('¡Registro exitoso!', 'Ya puedes iniciar sesión');
         this.router.navigate(['/ingreso']);
       },
       error: (err) => {
-        console.error('❌ Error al registrar:', err);
-        alert('No se pudo registrar');
+        this.noti.error('Error', 'No se pudo registrar');
       }
     });
   }

@@ -1,40 +1,46 @@
 <div class="card">
     <p-toast />
-    <p-toolbar styleClass="mb-6">
-      <ng-template #start>
-        <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" (onClick)="abrirModalNuevoUsuario()" />
-        <p-button severity="danger" label="Eliminar" icon="pi pi-trash" outlined disabled />
-      </ng-template>
-  
-      <ng-template #end>
-        <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
-          auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" /> -->
-        <p-button label="Exportar" icon="pi pi-upload" severity="secondary" />
-      </ng-template>
-    </p-toolbar>
+<!-- Sección: Registrar nuevo usuario -->
+<div class="bg-gradient-to-r from-purple-700 to-purple-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
+  <div class="flex items-center justify-center">
+    <h5 class="text-white text-lg font-bold tracking-wider uppercase mr-2">
+      Registrar nuevo usuario
+    </h5>
+
+    <p-button
+      icon="pi pi-user-plus"
+      (onClick)="abrirModalNuevoUsuario()"
+      styleClass="bg-white hover:bg-purple-600 text-purple-800 font-bold border-none rounded-md p-2"
+    />
+  </div>
+</div>
+
+
+
   
     <p-table [value]="usuarios" [rows]="10" [paginator]="true" [rowHover]="true" dataKey="id">
       <ng-template pTemplate="caption">
-        <div class="flex items-center justify-between">
-          <h5 class="m-0">Gestionar Usuarios</h5>
-          <p-iconfield>
-            <p-inputicon styleClass="pi pi-search" />
-            <input pInputText type="text" placeholder="Buscar..." />
-          </p-iconfield>
+        <div class="flex justify-center items-center py-4 bg-gradient-to-r from-purple-700 to-purple-900 rounded-t-lg shadow-md">
+          <h5 class="text-white text-xl font-bold tracking-wider uppercase">
+            Gestionar Usuarios
+          </h5>
         </div>
       </ng-template>
+      
   
-      <ng-template class="mx-3" pTemplate="header">
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>Rol</th>
-          <th>E-mail</th>
-          <th>Estado</th>
-          <th>Acciones</th>
+      <ng-template pTemplate="header">
+        <tr class="bg-gradient-to-r from-purple-600 to-purple-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
+          <th class="py-3 px-2">ID</th>
+          <th class="py-3 px-2">Nombre</th>
+          <th class="py-3 px-2">Apellido</th>
+          <th class="py-3 px-2">Rol</th>
+          <th class="py-3 px-2">E-mail</th>
+          <th class="py-3 px-2">Estado</th>
+          <th class="py-3 px-2">Acciones</th>
         </tr>
       </ng-template>
+      
+      
   
       <ng-template pTemplate="body" let-usuario>
         <tr>
@@ -42,7 +48,11 @@
           <td>{{ usuario.first_name }}</td>
           <td>{{ usuario.last_name }}</td>
           <td>{{ usuario.role }}</td>
-          <td><p-tag [value]="usuario.email" /></td>
+          <td><p-tag 
+            [value]="usuario.email" 
+            class="bg-purple-100 text-purple-800 border-purple-300 font-semibold"
+          />
+          </td>
           <td>
             <p-tag [value]="usuario.active ? 'Activo' : 'Inactivo'" [severity]="usuario.active ? 'success' : 'danger'" />
           </td>
@@ -55,31 +65,40 @@
     </p-table>
     
     <!-- Modal edicion -->
-    <p-dialog [(visible)]="editarModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Editar Usuario" [dismissableMask]="true"
-    >
-      <div class="flex flex-col gap-4">
-        <div>
-          <label class="block font-semibold mb-1">Nombre</label>
-          <input type="text" pInputText [(ngModel)]="usuarioEditando.first_name" class="w-full" />
+    <p-dialog [(visible)]="editarModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Editar Usuario" [dismissableMask]="true">
+      <div class="bg-white p-4 rounded-xl shadow space-y-4">
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input type="text" pInputText [(ngModel)]="usuarioEditando.first_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Apellido</label>
-          <input type="text" pInputText [(ngModel)]="usuarioEditando.last_name" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input type="text" pInputText [(ngModel)]="usuarioEditando.last_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Correo</label>
-          <input type="email" pInputText [(ngModel)]="usuarioEditando.email" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Correo</label>
+          <input type="email" pInputText [(ngModel)]="usuarioEditando.email" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Rol</label>
-          <p-dropdown [options]="roles" [(ngModel)]="usuarioEditando.role" optionLabel="label" optionValue="value" placeholder="Seleccione un rol" class="w-full"/>
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Rol</label>
+          <p-dropdown
+            [options]="roles"
+            [(ngModel)]="usuarioEditando.role"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione un rol"
+            class="w-full border border-purple-300 rounded-lg"
+            />
         </div>
-
-        <div>
-          <label class="block font-semibold mb-1">Estado</label>
+    
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Estado</label>
           <p-dropdown
             [options]="[
               { label: 'Activo', value: true },
@@ -87,55 +106,79 @@
             ]"
             [(ngModel)]="usuarioEditando.active"
             placeholder="Seleccionar estado"
-          ></p-dropdown>
+            class="w-full border border-purple-300 rounded-lg"
+
+          />
         </div>
-        <div>
-          <label class="block font-semibold mb-1">Contraseña</label>
-          <input type="password" pInputText [(ngModel)]="usuarioEditando.password" class="w-full" />
+    
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input type="password" pInputText [(ngModel)]="usuarioEditando.password" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
       </div>
     
       <ng-template pTemplate="footer">
-        <p-button label="Cancelar" icon="pi pi-times" (click)="cerrarModal()" class="p-button-text" />
-        <p-button label="Actualizar datos" icon="pi pi-check" (click)="actualizarUsuario()" class="p-button-success" />
+        <p-button label="Cancelar" severity="danger" icon="pi pi-times" (click)="cerrarModal()" class="p-button-text" />
+        <p-button label="Actualizar datos" icon="pi pi-check" (click)="actualizarUsuario()" lass="0 text-white font-semibold border-none rounded-lg" />
       </ng-template>
     </p-dialog>
+    
 
     <!-- modal registrar -->
-    <p-dialog [(visible)]="nuevoUsuarioModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Nuevo Usuario" [dismissableMask]="true"
-    >
-      <div class="flex flex-col gap-4">
-        <div>
-          <label class="block font-semibold mb-1">Nombre</label>
-          <input type="text" pInputText [(ngModel)]="usuario.first_name" class="w-full" />
+    <p-dialog [(visible)]="nuevoUsuarioModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" header="Nuevo Usuario" [dismissableMask]="true" >
+      <div class="bg-white p-4 rounded-xl shadow space-y-4">
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Nombre</label>
+          <input type="text" pInputText [(ngModel)]="usuario.first_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Apellido</label>
-          <input type="text" pInputText [(ngModel)]="usuario.last_name" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Apellido</label>
+          <input type="text" pInputText [(ngModel)]="usuario.last_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Correo</label>
-          <input type="email" pInputText [(ngModel)]="usuario.email" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Correo</label>
+          <input type="email" pInputText [(ngModel)]="usuario.email" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Rol</label>
-          <p-dropdown [options]="roles" [(ngModel)]="usuario.role" optionLabel="label" optionValue="value" placeholder="Seleccione un rol" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Rol</label>
+          <p-dropdown
+            [options]="roles"
+            [(ngModel)]="usuario.role"
+            optionLabel="label"
+            optionValue="value"
+            placeholder="Seleccione un rol"
+            class="w-full border border-purple-300 rounded-lg"
+
+          />
         </div>
     
-        <div>
-          <label class="block font-semibold mb-1">Contraseña</label>
-          <input type="password" pInputText [(ngModel)]="usuario.password" class="w-full" />
+        <div class="space-y-1">
+          <label class="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input type="password" pInputText [(ngModel)]="usuario.password" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          />
         </div>
       </div>
     
       <ng-template pTemplate="footer">
-        <p-button label="Cancelar" icon="pi pi-times" (click)="nuevoUsuarioModalVisible = false" class="p-button-text" />
-        <p-button label="Registrar" icon="pi pi-check" (click)="registrarUsuario()" class="p-button-success" />
+        <p-button 
+            label="Cancelar" 
+            icon="pi pi-times" 
+            (click)="nuevoUsuarioModalVisible = false" 
+            severity="danger" 
+            styleClass="text-white font-semibold rounded-lg"
+          />
+        <p-button label="Registrar" icon="pi pi-check" (click)="registrarUsuario()" class="0 text-white font-semibold border-none rounded-lg" />
+
       </ng-template>
     </p-dialog>
+    
     
 
   </div>

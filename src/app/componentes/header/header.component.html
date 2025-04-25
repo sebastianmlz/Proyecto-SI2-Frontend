@@ -1,44 +1,109 @@
-<div class="card">
-    <p-toolbar [style]="{ 'border-radius': '3rem', 'padding': '1rem 1rem 1rem 1.5rem' }">
-        <ng-template #start>
-            <div class="flex items-center gap-2">
-                <a
-                    *ngIf="authService.isAdmin() && !authService.isLoggedIn()"
-                    routerLink="/carrito"
-                    class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
-                    title="Ir al carrito"
-                >
-                    <i class="pi pi-home" style="font-size: 2rem"></i>
-                </a>
-                <p-button routerLink="Home" label="Home" text plain class="hidden md:inline-flex" />
-                <p-button routerLink="Productos" label="productos" text plain class="hidden md:inline-flex" />
-                <p-button href="javascript:void(0)" (onClick)="redireecionar()" label="contactanos" text plain class="hidden md:inline-flex" />
-            </div>
-        </ng-template>
+<div class="bg-gradient-to-r from-purple-950 via-purple-900 to-blue-900 text-white shadow-md rounded-b-2xl">
+    <p-toolbar pstyle="border-radius: 1rem; padding: 1rem 1.5rem;">
+      <ng-template pTemplate="start">
+        <div class="flex items-center gap-4">
+          <!-- Botones para Admin -->
+          <ng-container *ngIf=" authService.isLoggedIn()">
+            <p-button
+              routerLink="/productos"
+              label="Smart Cart"
+              styleClass="bg-transparent text-purple-600 font-bold text-xl border-none hover:text-purple-400"
+            ></p-button>
+  
+            <p-button
+              routerLink="/productos"
+              label="Productos"
+              styleClass="bg-transparent text-purple-600 font-medium hover:text-purple-300 border-none"
+            ></p-button>
+  
+            <!-- Si activás contactanos, queda igual -->
+            <!--
+            <p-button
+              href="javascript:void(0)"
+              (click)="redireccionar()"
+              label="Contactanos"
+              styleClass="bg-transparent text-white font-medium border-none hover:text-purple-300"
+            ></p-button>
+            -->
+          </ng-container>
+        </div>
+      </ng-template>
+  
+      <ng-template pTemplate="end">
+        <div class="flex items-center gap-4">
+          <!-- Botón: Ingresar -->
+          <p-button
+            *ngIf="!authService.isLoggedIn()"
+            label="Ingresar"
+            styleClass="bg-purple-600 text-white hover:bg-purple-700 font-semibold rounded-md px-4 py-2 transition-all"
+            size="small"
+            routerLink="/ingreso"
+          ></p-button>
+  
+          <!-- Registrar usuario -->
+          <p-button
+            *ngIf="!authService.isLoggedIn() && !authService.isCustomer()"
+            label="Registrar Usuario"
+            styleClass="bg-indigo-600 text-white hover:bg-indigo-700 font-semibold rounded-md px-4 py-2 transition-all"
+            size="small"
+            [routerLink]="['/registro']"
+          ></p-button>
+  
+          <!-- Registrar cliente -->
+          <p-button
+            *ngIf="!authService.isLoggedIn() && authService.isCustomer()"
+            label="Registrarse"
+            styleClass="bg-indigo-500 text-white hover:bg-indigo-600 font-semibold rounded-md px-4 py-2 transition-all"
+            size="small"
+            [routerLink]="['/registro']"
+          ></p-button>
+  
+          <!-- Icono carrito -->
+          <ng-container *ngIf="authService.isCustomer() && authService.isLoggedIn()">
+            <p-button
+              routerLink="customer/carrito"
+              styleClass="bg-transparent text-white hover:text-purple-400 border-none"
+            >
+            <i
+            class="pi pi-shopping-cart text-purple-400 hover:text-purple-600 border border-purple-600 hover:border-purple-500 rounded-full p-2 transition-all duration-200"
+            style="font-size: 1.8rem;"
+          ></i>
+            </p-button>
+          </ng-container>
+  
+          <!-- Icono perfil -->
+          <ng-container *ngIf="authService.isAdmin() && authService.isLoggedIn()">
+            <p-button
+              routerLink="/configuracion"
+              styleClass="bg-transparent text-white hover:text-purple-400 border-none"
+              title="Ir a ajustes de perfil"
+            >
+            <i
+            class="pi pi-user text-purple-400 hover:text-purple-600 border border-purple-600 hover:border-purple-500 rounded-full p-2 transition-all duration-200"
+            style="font-size: 1.8rem;"
+          ></i>
+          
 
-        <ng-template #end>
-            <div class="flex items-center gap-2">
-                <p-button *ngIf="!authService.isLoggedIn()" label="Ingresar" severity="success" size="large" [routerLink]="'/ingreso'" />
-                <!-- <p-button *ngIf="authService.isLoggedIn() && !authService.isCustomer" label="Registrar Usuario" severity="info" size="large" [routerLink]="'/registro'"/> -->
-                <!-- <p-button *ngIf="!authService.isLoggedIn()" label="Registrarse" severity="info" size="large" [routerLink]="'/registro'"/> -->
-                <a
-                    *ngIf="authService.isCustomer() && authService.isLoggedIn()"
-                    routerLink="/carrito"
-                    class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
-                    title="Ir al carrito"
-                >
-                    <i class="pi pi-shopping-cart" style="font-size: 2rem"></i>
-                </a>
-                <a
-                    *ngIf="authService.isAdmin() && authService.isLoggedIn()"
-                    routerLink="/settings"
-                    class="mx-3 cursor-pointer text-green-500 hover:text-green-700 transition-colors duration-200"
-                    title="Ir a ajustes de perfil"
-                >
-                    <i class="pi pi-user" style="font-size: 2rem"></i>
-                </a>
-                <p-button *ngIf="authService.isLoggedIn()" (click)="cerrarSesion()" label="Cerrar sesión" />
-            </div>
-        </ng-template>
+            </p-button>
+          </ng-container>
+  
+          <!-- Cerrar sesión -->
+          <p-button
+          *ngIf="authService.isLoggedIn()"
+          (click)="cerrarSesion()"
+          styleClass="bg-transparent border border-purple-600 hover:border-purple-500 rounded-full p-2 transition-all duration-200"
+          title="Cerrar sesión"
+        >
+          <i
+            class="pi pi-sign-out text-purple-400 hover:text-purple-600 transition-all duration-200"
+            style="font-size: 1.8rem;"
+          ></i>
+        </p-button>
+        
+
+
+        </div>
+      </ng-template>
     </p-toolbar>
-</div>
+  </div>
+  

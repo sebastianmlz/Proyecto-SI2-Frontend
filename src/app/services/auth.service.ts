@@ -10,46 +10,45 @@ import { environment } from '../../environments/environment';
 })
 export class AuthService {
 
-  private baseUrl = environment.apiUrl + '/auth';
+  private baseUrlP = environment.apiUrl + '/auth';
   private currentUserSubject = new BehaviorSubject<any>(this.getUser());
   public currentUser$ = this.currentUserSubject.asObservable();
 
   constructor(private http: HttpClient, private router: Router) { }
 
-  login(credentials: { username: string; password: string }): Observable<any> {
-    const body = new URLSearchParams();
-    body.set('grant_type', 'password');
-    body.set('username', credentials.username);
-    body.set('password', credentials.password);
-    return this.http.post<any>(`${this.baseUrl}/login`, body.toString(), {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+  login(credentials: { email: string, password: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrlP}/login/`, {
+      email: credentials.email,
+      password: credentials.password
+    }, {
+      headers: { 'Content-Type': 'application/json' }
     });
   }
+  
+  
 
-  registrarse(datos: {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    role: string;
-  }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/register`, datos);
+  registrarse(datos: any): Observable<any> {
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    return this.http.post(`${this.baseUrlP}/users/`, datos, { headers });
   }
+  
+  
 
   agregarUsers(user: {
     email: string;
-    password: string;
     first_name: string;
     last_name: string;
     role: string;
+    active: boolean;
+    password: string;
   }): Observable<any> {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('access');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.post(`${this.baseUrl}/users`, user, { headers });
+    return this.http.post(`${this.baseUrlP}/users/`, user, { headers });
   }
 
   isLoggedIn(): boolean {
-    return !!localStorage.getItem('access_token');
+    return !!localStorage.getItem('access');
   }
 
   isAdmin(): boolean {
@@ -61,7 +60,7 @@ export class AuthService {
   }
 
   getUserById(userId: number): Observable<any> {
-    const token = localStorage.getItem('access_token');
+    const token = localStorage.getItem('access');
     if (!token) {
       throw new Error('Token no disponible');
     }
@@ -70,7 +69,7 @@ export class AuthService {
       Authorization: `Bearer ${token}`
     };
 
-    const url = `${this.baseUrl}/users/${userId}?path_params={}`;
+    const url = `${this.baseUrlP}/users/${userId}?path_params={}`;
     return this.http.get(url, { headers });
   }
 
@@ -85,8 +84,8 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('access');
+    localStorage.removeItem('refresh');
     localStorage.removeItem('user');
     localStorage.removeItem('user_role');
     this.currentUserSubject.next(null); // Limpieza total del observable

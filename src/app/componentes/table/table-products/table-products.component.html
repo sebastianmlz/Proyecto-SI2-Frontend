@@ -1,33 +1,50 @@
 <div class="card">
-  <p-toolbar styleClass="mb-6">
-    <ng-template #start>
-      <p-button label="Nuevo" icon="pi pi-plus" class="mr-2" (click)="abrirModalNuevoProducto()" />
-      <p-button severity="danger" label="Eliminar" icon="pi pi-trash" outlined disabled />
-    </ng-template>
-    <ng-template #end>
-      <!-- <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Importar" chooseLabel="Importar"
-        auto customUpload class="mr-2 inline-block" [chooseButtonProps]="{ severity: 'secondary' }" /> -->
-      <p-button label="Exportar" icon="pi pi-upload" severity="secondary" />
-    </ng-template>
-  </p-toolbar>
+  <p-toast />
+
+  <!-- Sección: Registrar nuevo producto -->
+  <div class="bg-gradient-to-r from-purple-700 to-purple-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
+    <div class="flex items-center justify-center">
+      <h5 class="text-white text-lg font-bold tracking-wider uppercase mr-2">
+        Registrar nuevo producto
+      </h5>
+
+      <p-button
+        icon="pi pi-plus"
+        (onClick)="abrirModalNuevoProducto()"
+        styleClass="bg-white hover:bg-purple-600 text-purple-800 font-bold border-none rounded-md p-2"
+      />
+    </div>
+  </div>
 
   <p-table 
-    [value]="productosCompletos" 
-    [rows]="10" 
+  [value]="products" 
     [paginator]="true" 
-    [rowHover]="true" 
+    [rows]="pageSize"
+    [totalRecords]="totalItems"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    (onPage)="onPageChange($event)"
+    [rowHover]="true"
     dataKey="id"
   >
+
+    <ng-template pTemplate="caption">
+      <div class="flex justify-center items-center py-4 bg-gradient-to-r from-purple-700 to-purple-900 rounded-t-lg shadow-md">
+        <h5 class="text-white text-xl font-bold tracking-wider uppercase">
+          Gestionar Productos
+        </h5>
+      </div>
+    </ng-template>
+
     <ng-template pTemplate="header">
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Activo</th>
-        <th>Categoría</th>
-        <th>Imagen</th>
-        <th>Precio</th>
-        <th>Stock</th>
-        <th>Acciones</th>
+      <tr class="bg-gradient-to-r from-purple-600 to-purple-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
+        <th class="py-3 px-2">ID</th>
+        <th class="py-3 px-2">Nombre</th>
+        <th class="py-3 px-2">Precio</th>
+        <th class="py-3 px-2">Activo</th>
+        <th class="py-3 px-2">Categoría</th>
+        <th class="py-3 px-2">Stock</th>
+        <th class="py-3 px-2">Imagen</th>
+        <th class="py-3 px-2">Acciones</th>
       </tr>
     </ng-template>
 
@@ -35,100 +52,77 @@
       <tr>
         <td>{{ product.id }}</td>
         <td>{{ product.name }}</td>
+        <td>{{ product.price_usd | currency:'USD' }}</td>
         <td>
           <p-tag 
             [value]="product.active ? 'Activo' : 'Inactivo'" 
             [severity]="product.active ? 'success' : 'danger'" 
           />
         </td>
-        <td>{{ product.category }}</td>
+        <td>{{ product.category.name }}</td>
         <td>
+          <span>{{ product.inventory.stock }}</span>
+          <span
+            *ngIf="product.inventory.stock <= 5"
+            class="ml-2 text-red-600 font-semibold text-xs"
+          >
+            (stock bajo)
+          </span>
+        </td>
+                <td>
           <img [src]="product.image_url" alt="Imagen" width="60" height="60" style="border-radius: 0.5rem" />
         </td>
-        <td>{{ product.price_usd | currency:'USD' }}</td>
-        <td>{{ product.stock }}</td>
         <td>
-          <p-button 
-            icon="pi pi-pencil" 
-            class="mr-2" 
-            rounded 
-            outlined 
-            (click)="abrirModalEditarProducto(product.id)" 
-          />
-          <p-button 
-            icon="pi pi-trash" 
-            severity="danger" 
-            rounded 
-            outlined 
-            (click)="eliminarProducto(product.id)" 
-          />
+          <p-button icon="pi pi-pencil" class="mr-2" rounded outlined (click)="abrirModalEditarProducto(product.id)" />
+          <p-button icon="pi pi-trash" severity="danger" rounded outlined (click)="eliminarProducto(product.id)" />
         </td>
       </tr>
     </ng-template>
   </p-table>
 
   <!-- modal de registrar producto -->
-  <p-dialog header="Registrar producto" [(visible)]="nuevoProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
-  >
-    <form class="grid gap-4">
-      
-      <div>
+  <p-dialog header="Registrar producto" [(visible)]="nuevoProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true">
+    <form class="grid gap-4 bg-white p-4 rounded-xl shadow">
+      <div class="space-y-1">
         <label>Nombre</label>
-        <input pInputText [(ngModel)]="nuevoProducto.name" name="name" class="w-full"/>
+        <input pInputText [(ngModel)]="nuevoProducto.name" name="name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Descripción</label>
-        <textarea pInputText [(ngModel)]="nuevoProducto.description" name="description" class="w-full"></textarea>
+        <textarea pInputTextarea [(ngModel)]="nuevoProducto.description" name="description" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Especificaciones</label>
-        <textarea pInputText [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full"></textarea>
+        <textarea pInputTextarea [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full"/>
+        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full border border-purple-300 rounded-lg" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Categoría</label>
-        <p-dropdown [options]="categories" [(ngModel)]="nuevoProducto.category_id" name="category_id" optionLabel="name" optionValue="id" placeholder="Seleccione una categoría" class="w-full"/>
+        <p-dropdown [options]="categories" [(ngModel)]="nuevoProducto.category_id" name="category_id" optionLabel="name" optionValue="id" placeholder="Seleccione una categoría" class="w-full border border-purple-300 rounded-lg" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
+        <label>Garantias</label>
+        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranties_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantia" class="w-full border border-purple-300 rounded-lg" />
+      </div>
+      <!-- <div class="space-y-1">
         <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranty_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantía" class="w-full"/>
-      </div>
-  
-      <div>
+        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranty_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantía" class="w-full border border-purple-300 rounded-lg" />
+      </div> -->
+      <div class="space-y-1">
         <label>Imagen</label>
         <input type="file" accept="image/*" (change)="onFileSelected($event)" class="w-full" />
       </div>
-      
-  
-      <div>
-        <label>Modelo 3D</label>
-        <input pInputText [(ngModel)]="nuevoProducto.model_3d_url" name="model_3d_url" class="w-full"/>
-      </div>
-  
-      <div>
-        <label>AR URL</label>
-        <input pInputText [(ngModel)]="nuevoProducto.ar_url" name="ar_url" class="w-full"/>
-      </div>
-
-      <div>
+      <div class="space-y-1">
         <label>Stock</label>
-        <input type="number" pInputText [(ngModel)]="stock" name="stock" class="w-full"/>
+        <input pInputText [(ngModel)]="nuevoProducto.stock" name="stock" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-      
-      <div>
-        <label>Precio (USD)</label>
-        <input type="number" pInputText [(ngModel)]="price_usd" name="price_usd" class="w-full"/>
+      <div class="space-y-1">
+        <label>Precio $</label>
+        <input pInputText [(ngModel)]="nuevoProducto.price_usd" name="price_usd" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-      
-  
       <div class="text-right">
         <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-text mr-2" (click)="nuevoProductoModalVisible = false"></button>
         <button pButton type="button" label="Registrar" icon="pi pi-check" class="p-button-success" (click)="registrarProducto()"></button>
@@ -136,73 +130,49 @@
     </form>
   </p-dialog>
 
-
-   <!-- modal de editar producto -->
-   <p-dialog header="Editar producto" [(visible)]="editarProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
->
-    <form class="grid gap-4">
-      <div>
+  <!-- modal de editar producto -->
+  <p-dialog header="Editar producto" [(visible)]="editarProductoModalVisible" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true">
+    <form class="grid gap-4 bg-white p-4 rounded-xl shadow">
+      <div class="space-y-1">
         <label>Nombre</label>
-        <input pInputText [(ngModel)]="productoEditable.name" name="edit_name" class="w-full" />
+        <input pInputText [(ngModel)]="productoEditable.name" name="edit_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Descripción</label>
-        <textarea pInputText [(ngModel)]="productoEditable.description" name="edit_description" class="w-full"></textarea>
+        <textarea pInputTextarea [(ngModel)]="productoEditable.description" name="edit_description" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Especificaciones</label>
-        <textarea pInputText [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full"></textarea>
+        <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full"/>
+        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Categoría</label>
-        <p-dropdown [options]="categories" [(ngModel)]="productoEditable.category_id" name="edit_category_id" optionLabel="name" optionValue="id" class="w-full"/>
+        <p-dropdown [options]="categories" [(ngModel)]="productoEditable.category_id" name="edit_category_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="productoEditable.warranty_id" name="edit_warranty_id" optionLabel="name" optionValue="id" class="w-full"/>
+        <p-dropdown [options]="warranties" [(ngModel)]="productoEditable.warranty_id" name="edit_warranty_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
       </div>
-  
-      <div>
+      <div class="space-y-1">
         <label>Imagen</label>
-        <input type="file" (change)="onEditFileSelected($event)" />
+        <input type="file" (change)="onEditFileSelected($event)" class="w-full" />
       </div>
-
-      <div>
-        <label>Precio (USD)</label>
-        <input type="number" pInputText [(ngModel)]="productoEditable.price_usd" name="edit_price_usd" class="w-full" />
-      </div>
-      
-      <div>
+      <div class="space-y-1">
         <label>Stock</label>
-        <input type="number" pInputText [(ngModel)]="productoEditable.stock" name="edit_stock" class="w-full" />
+        <input pInputText [(ngModel)]="productoEditable.stock" name="edit_stock" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-  
-      <div>
-        <label>Modelo 3D</label>
-        <input pInputText [(ngModel)]="productoEditable.model_3d_url" name="edit_model_3d" class="w-full" />
+      <div class="space-y-1">
+        <label>Precio $</label>
+        <input pInputText [(ngModel)]="productoEditable.price_usd" name="price_usd" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
       </div>
-  
-      <div>
-        <label>AR URL</label>
-        <input pInputText [(ngModel)]="productoEditable.ar_url" name="edit_ar_url" class="w-full" />
-      </div>
-  
       <div class="text-right">
         <button pButton type="button" label="Cancelar" class="p-button-text mr-2" (click)="editarProductoModalVisible = false"></button>
         <button pButton type="button" label="Guardar cambios" class="p-button-success" (click)="editarProducto()"></button>
       </div>
     </form>
   </p-dialog>
-  
-
-
 </div>

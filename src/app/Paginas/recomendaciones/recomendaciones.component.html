@@ -1,0 +1,74 @@
+<!-- Título centrado -->
+<h2 class="text-center text-2xl font-bold text-purple-700 mb-6">Recomendaciones personalizadas</h2>
+
+<!-- Grid de tarjetas -->
+<div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+
+    <!-- Tarjeta para cada producto recomendado -->
+    <p-card *ngFor="let producto of recomendaciones" class="shadow-xl rounded-xl">
+        <ng-template pTemplate="header">
+            <img 
+                [src]="producto.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'" 
+                alt="Imagen producto"
+                class="w-full h-40 object-contain rounded-t-xl"
+            />
+        </ng-template>
+
+    <div class="p-2 text-center space-y-2">
+        <h2 class="font-bold text-lg text-purple-700">{{ producto.name }}</h2>
+        <p class="text-green-600 font-semibold text-md">${{ producto.price_usd }}</p>
+    </div>
+
+    <ng-template pTemplate="footer" >
+        <div class="flex justify-center gap-2 mt-2">
+            <button 
+                *ngIf="rol !== 'admin'"
+                pButton 
+                type="button" 
+                label="Agregar al carrito" 
+                icon="pi pi-shopping-cart"
+                class="p-button-sm p-button-success"
+                (click)="agregarAlCarrito(producto)"
+            ></button>
+
+            <button 
+                *ngIf="rol !== 'admin'"
+                pButton 
+                type="button" 
+                label="Ver más info" 
+                icon="pi pi-eye"
+                class="p-button-sm p-button-info"
+                (click)="verMasInfo(producto)"
+            ></button>
+        </div>
+    </ng-template>
+    </p-card>
+</div>
+
+<!-- Modal para ver detalles -->
+<p-dialog 
+    [(visible)]="modalVerMasVisible" 
+    [modal]="true" 
+    [closable]="true" 
+    [dismissableMask]="true" 
+    header="Detalles del producto"
+    [style]="{ width: '400px' }"
+    (onHide)="cerrarModales()"
+>
+    <ng-container *ngIf="productoSeleccionado">
+        <img 
+        [src]="productoSeleccionado.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'" 
+        alt="Imagen producto" 
+        class="w-full h-40 object-contain rounded"
+        />
+
+        <div class="mt-4 space-y-1 text-sm">
+            <p><strong>Nombre:</strong> {{ productoSeleccionado.name }}</p>
+            <p><strong>Precio:</strong> ${{ productoSeleccionado.price_usd }}</p>
+            <p><strong>Marca:</strong> {{ productoSeleccionado.brand.name }}</p>
+            <p><strong>Categoría:</strong> {{ productoSeleccionado.category.name }}</p>
+            <p><strong>Garantía:</strong> {{ productoSeleccionado.warranty.name }}</p>
+            <p><strong>Descripción:</strong> {{ productoSeleccionado.description }}</p>
+        </div>
+    </ng-container>
+</p-dialog>

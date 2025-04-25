@@ -6,9 +6,8 @@ export interface CreateProduct {
     description: string;
     active: boolean;
     image_url: File; // CAMBIADO: antes era string
-    model_3d_url?: string; // OPCIONAL
-    ar_url?: string;       // OPCIONAL
     technical_specifications: string;
-    stock:number;
-
+    price_usd: number;
+    created_at: string
+    stock: number
 }

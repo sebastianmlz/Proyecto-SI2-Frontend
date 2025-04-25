@@ -48,10 +48,11 @@ export class TableUsersComponent {
   nuevoUsuarioModalVisible:boolean = false;
   usuario = {
     email: '',
-    password: '',
     first_name: '',
     last_name: '',
+    active: true,
     role: '',
+    password: '',
   };
 
   //variables de editar
@@ -78,23 +79,39 @@ export class TableUsersComponent {
   cargarUsers(): void {
     this.usuarioService.obtenerUsers().subscribe({
       next: (res) => {
-        this.usuarios = res.items;
+        this.usuarios = res.items;  // << aquí está el array correcto
+        console.log("usuarios: ", this.usuarios);
       },
       error: (err) => console.error('Error al cargar los usuarios', err),
     });
   }
+  
+  
+  
 
-  agregarUsuario(newUsuario: User): void {
-    this.usuarioService.agregarUsers(newUsuario).subscribe({
-      next: () => this.cargarUsers(),
-      error: (err) => console.error('Error al agregar el usuario', err),
-    });
-  }
+  // agregarUsuario(newUsuario: User): void {
+  //   this.usuarioService.agregarUsers(newUsuario).subscribe({
+  //     next: () => this.cargarUsers(),
+  //     error: (err) => console.error('Error al agregar el usuario', err),
+  //   });
+  // }
 
   eliminarUsuario(id: number): void {
     this.usuarioService.eliminarUsuario(id).subscribe({
-      next: () => this.cargarUsers(),
-      error: (err) => console.error('Error al eliminar el usuario', err),
+      next: () =>{
+        this.noti.success('Eliminación exitosa', 'El usuario fue eliminado correctamente.');
+        this.cargarUsers();
+      },
+      error: (err) =>{
+        if (err.status === 403) {
+          this.noti.error('Error', 'No tienes permiso para eliminar este usuario.');
+        } else if (err.status === 404) {
+          this.noti.error('Error', 'Usuario no encontrado.');
+        } else {
+          this.noti.error('Error', 'No se pudo eliminar el usuario.');
+        }
+        console.error('Error al eliminar el usuario', err);
+      } 
     });
   }
 
@@ -149,10 +166,11 @@ export class TableUsersComponent {
   abrirModalNuevoUsuario() {
     this.usuario = {
       email: '',
-      password: '',
       first_name: '',
       last_name: '',
-      role: ''
+      role: '',
+      active: true,
+      password: '',
     };
     this.nuevoUsuarioModalVisible = true;
   }
@@ -172,7 +190,6 @@ export class TableUsersComponent {
       }
     });
   }
-  
   
   
   cerrarModal(): void {

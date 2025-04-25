@@ -3,6 +3,11 @@ export interface Warranty {
     name: string;
     description: string;
     duration_months: number;
-    created_at: string;   // formato ISO string (puede ser Date si luego lo parseas)
+    brand: {
+        id: number;
+        name: string;
+        active: boolean;
+    };
+    created_at: string;
     updated_at: string;
 }
