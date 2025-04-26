@@ -1,0 +1,51 @@
+<div class="max-w-5xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+
+        <!-- Imagen rotatoria con efecto espejo -->
+        <div class="flex flex-col items-center">
+            <div class="relative w-72 h-72 perspective">
+                <div class="w-full h-full transition-transform duration-700 ease-in-out"
+                    [style.transform]="'rotateY(' + rotationAngle + 'deg)'" style="transform-style: preserve-3d;">
+                    <!-- Imagen frontal -->
+                    <img [src]="producto.image_url" class="absolute w-full h-full object-contain backface-hidden"
+                        alt="Frontal" />
+
+                    <!-- Imagen trasera (la misma, efecto espejo) -->
+                    <img [src]="producto.image_url" class="absolute w-full h-full object-contain backface-hidden"
+                        style="transform: rotateY(180deg);" alt="Trasera" />
+                </div>
+            </div>
+
+            <!-- Botones de giro debajo -->
+            <div class="flex gap-4 justify-center mt-6">
+                <!-- Botón girar izquierda -->
+                <button (click)="girarIzquierda()"
+                    class="bg-gray-200 hover:bg-gray-300 transition px-5 py-2 rounded-full shadow-md flex items-center gap-2">
+                    <AngleLeftIcon style="width: 1.25rem; height: 1.25rem;" />
+                </button>
+
+                <!-- Botón girar derecha -->
+                <button (click)="girarDerecha()"
+                    class="bg-gray-200 hover:bg-gray-300 transition px-5 py-2 rounded-full shadow-md flex items-center gap-2">
+                    <AngleRightIcon style="width: 1.25rem; height: 1.25rem;" />
+                </button>
+            </div>
+
+
+            <!-- Detalles del producto -->
+            <div class="space-y-4">
+                <h2 class="text-3xl font-bold text-gray-800">{{ producto.name }}</h2>
+                <p class="text-sm text-gray-600">Categoría: {{ producto.category }}</p>
+                <p class="text-sm text-gray-600">Marca ID: {{ producto.brand_id }}</p>
+                <p class="text-sm text-gray-600">Garantía ID: {{ producto.warranty_id }}</p>
+                <p class="text-base text-gray-700 mt-2">{{ producto.description }}</p>
+
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-2xl font-bold text-green-600">${{ producto.price_usd }}</p>
+                </div>
+
+                <p-button pButton type="button" label="Agregar al carrito" icon="pi pi-shopping-cart"
+                    class="p-button-success w-full mt-4" />
+            </div>
+        </div>
+    </div>

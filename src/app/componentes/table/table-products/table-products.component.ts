@@ -9,7 +9,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ToastModule } from 'primeng/toast';
-import { ProductosService } from '../../../services/ProductService/productos.service';
+import { ProductosService } from '../../../services/productos.service';
 import { AuthService } from '../../../services/auth.service';
 import { NotificacionService } from '../../../services/notificacion.service';
 import { Product } from '../../../models/product.model';

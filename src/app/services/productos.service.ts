@@ -1,13 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { Product } from '../../models/product.model';
-import { Inventory } from '../../models/inventario.model';
-import { Brand } from '../../models/brand.model';
-import { Category } from '../../models/category.model';
-import { Warranty } from '../../models/warranty.model';
-import { CreateProduct } from '../../models/create-product.model';
+import { environment } from '../../environments/environment';
+import { Product } from '../models/product.model';
+import { Inventory } from '../models/inventario.model';
+import { Brand } from '../models/brand.model';
+import { Category } from '../models/category.model';
+import { Warranty } from '../models/warranty.model';
+import { CreateProduct } from '../models/create-product.model';
 
 @Injectable({
   providedIn: 'root'
@@ -64,8 +64,6 @@ export class ProductosService {
   
     return this.http.patch(`${this.baseUrl}inventory/${inventoryId}`, null, { headers, params });
   }
-  
-  
   
   eliminarProducto(id: number): Observable<any> {
     const token = localStorage.getItem('access_token');

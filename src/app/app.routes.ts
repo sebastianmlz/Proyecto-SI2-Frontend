@@ -83,6 +83,7 @@ export const routes: Routes = [
 
   // 🌐 Otros
   { path: 'Productos', component: ProductsComponent, canActivate: [authGuard] },
+  { path: 'productos/:id', loadComponent: () => import('./Paginas/products/products-details/products-details.component').then(m => m.ProductsDetailsComponent), canActivate: [authGuard] },
   { path: 'configuracion', loadComponent: () => import('./Paginas/configuracion/configuracion.component').then(m => m.ConfiguracionComponent), canActivate: [authGuard] },
   { path: 'Home', component: HomeComponent },
   { path: '**', component: IngresoComponent }

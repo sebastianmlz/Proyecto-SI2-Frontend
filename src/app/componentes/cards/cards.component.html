@@ -16,7 +16,7 @@
   
   <ng-template *ngIf="authservice.isCustomer()" pTemplate="footer">
     <div class="flex gap-2 mt-4 justify-end">
-      <p-button label="Ver más" icon="pi pi-search" styleClass="p-button-sm p-button-info" />
+      <p-button (onClick)="emitirVerMas()" label="Ver más" icon="pi pi-search" styleClass="p-button-sm p-button-info" />
       <p-button label="Comprar" icon="pi pi-shopping-cart" styleClass="p-button-sm p-button-success" />
     </div>
   </ng-template>
