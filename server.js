@@ -4,7 +4,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Servir archivos estáticos
-const staticPath = path.join(__dirname, 'dist/smart-cart-frontend/browser');
+const staticPath = path.join(__dirname, 'dist/proyecto-frontend/browser');
 app.use(express.static(staticPath));
 
 // Ruta de fallback para SPA
