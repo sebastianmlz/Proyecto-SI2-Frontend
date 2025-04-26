@@ -22,6 +22,8 @@ import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
 import { MessageModule } from 'primeng/message';
+import { MarkdownModule } from 'ngx-markdown';
+import { TabViewModule } from 'primeng/tabview';
 
 @Component({
   selector: 'app-table-products',
@@ -44,6 +46,8 @@ import { MessageModule } from 'primeng/message';
     ButtonModule,
     PaginatorModule, 
     MessageModule,
+    MarkdownModule,
+    TabViewModule
   ],
   templateUrl: './table-products.component.html',
   styleUrl: './table-products.component.css'
@@ -71,6 +75,11 @@ export class TableProductsComponent {
     stock: 0
   };
   nuevoProductoModalVisible = false;
+  mostrarEditorEspecificaciones: boolean = false;
+  especificacionesTemp: string = '';
+  mostrarEditorMarkdown: boolean = false;
+  markdownTemp: string = '';
+  activeTabIndex: number = 0;
   
   // Propiedades para paginación
   currentPage: number = 1;
@@ -352,5 +361,39 @@ export class TableProductsComponent {
         this.noti.error('Error', 'No se pudo actualizar el producto');
       }
     });
+  }
+  abrirEditorMarkdown(): void {
+    if (this.editarProductoModalVisible) {
+      this.markdownTemp = this.productoEditable.technical_specifications || '';
+    } else {
+      this.markdownTemp = this.nuevoProducto.technical_specifications || '';
+    }
+    this.activeTabIndex = 0;
+    this.mostrarEditorMarkdown = true;
+    
+    setTimeout(() => {
+      const dialogs = document.querySelectorAll('.p-dialog');
+      const markdownDialog = Array.from(dialogs).find(dialog => 
+        dialog.querySelector('.p-tabview') && 
+        dialog.textContent?.includes('Editor de Especificaciones')
+      );
+      
+      if (markdownDialog) {
+        markdownDialog.classList.add('editor-markdown');
+      }
+    }, 100);
+  }
+  
+  guardarMarkdown(): void {
+    if (this.editarProductoModalVisible) {
+      this.productoEditable.technical_specifications = this.markdownTemp;
+    } else {
+      this.nuevoProducto.technical_specifications = this.markdownTemp;
+    }
+    this.mostrarEditorMarkdown = false;
+  }
+  
+  cancelarEdicionMarkdown(): void {
+    this.mostrarEditorMarkdown = false;
   }
 }

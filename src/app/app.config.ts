@@ -3,16 +3,17 @@ import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura';
-import { provideHttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, HTTP_INTERCEPTORS, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { routes } from './app.routes';
+import { provideMarkdown } from 'ngx-markdown';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideHttpClient(), // sin withInterceptors
+    provideHttpClient(withInterceptorsFromDi()), // sin withInterceptors
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
@@ -36,6 +37,6 @@ export const appConfig: ApplicationConfig = {
           
         }
     }),
-    
+    provideMarkdown()
   ]
 };

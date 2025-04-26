@@ -92,8 +92,25 @@
         <textarea pInputTextarea [(ngModel)]="nuevoProducto.description" name="description" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
-        <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
+        <div class="flex justify-between items-center">
+          <label>Especificaciones</label>
+          <button 
+            pButton 
+            type="button" 
+            icon="pi pi-pencil" 
+            label="Editor Markdown" 
+            class="p-button-text p-button-sm"
+            (click)="abrirEditorMarkdown()"
+          ></button>
+        </div>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="nuevoProducto.technical_specifications" 
+          name="technical_specifications" 
+          class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"
+          rows="4"
+          placeholder="Escriba las especificaciones técnicas (o use el Editor Markdown para una interfaz más amplia)"
+        ></textarea>
       </div>
       <div class="space-y-1">
         <label>Marca</label>
@@ -150,8 +167,25 @@
         <textarea pInputTextarea [(ngModel)]="productoEditable.description" name="edit_description" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
-        <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
+        <div class="flex justify-between items-center">
+          <label>Especificaciones</label>
+          <button 
+            pButton 
+            type="button" 
+            icon="pi pi-pencil" 
+            label="Editor Markdown" 
+            class="p-button-text p-button-sm"
+            (click)="abrirEditorMarkdown()"
+          ></button>
+        </div>
+        <textarea 
+          pInputTextarea 
+          [(ngModel)]="productoEditable.technical_specifications" 
+          name="edit_specifications" 
+          class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"
+          rows="4"
+          placeholder="Escriba las especificaciones técnicas (o use el Editor Markdown para una interfaz más amplia)"
+        ></textarea>
       </div>
       <div class="space-y-1">
         <label>Marca</label>
@@ -194,5 +228,83 @@
         <button pButton type="button" label="Guardar cambios" class="p-button-success" (click)="editarProducto()"></button>
       </div>
     </form>
+  </p-dialog>
+  <p-dialog 
+    header="Editor de Especificaciones Técnicas (Markdown)" 
+    [(visible)]="mostrarEditorMarkdown" 
+    [modal]="true" 
+    [maximizable]="true" 
+    [style]="{width: '90vw'}" 
+    [contentStyle]="{padding: '0'}"
+    [baseZIndex]="10000">
+    
+    <div class="flex flex-col h-full" style="height: 70vh;">
+      <p-tabView [(activeIndex)]="activeTabIndex" class="h-full flex-grow">
+        <p-tabPanel header="Editar">
+          <div class="p-0" style="height: calc(70vh - 115px);">
+            <textarea 
+              pInputTextarea 
+              [(ngModel)]="markdownTemp" 
+              class="w-full h-full font-mono text-sm p-4 border-0"
+              style="resize: none; box-sizing: border-box; outline: none; border: none;"
+              placeholder="Escriba las especificaciones técnicas usando formato Markdown.
+
+  # Título principal
+  ## Subtítulo
+
+  - Elemento de lista
+  - Otro elemento
+
+  **Texto en negrita** y *texto en cursiva*
+
+  | Columna 1 | Columna 2 |
+  |-----------|-----------|
+  | Celda 1   | Celda 2   |
+  "></textarea>
+          </div>
+        </p-tabPanel>
+        
+        <p-tabPanel header="Vista previa">
+          <div class="p-4 bg-white" style="height: calc(70vh - 115px); overflow: auto;">
+            <markdown [data]="markdownTemp || 'No hay contenido para mostrar'"></markdown>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+    
+    <ng-template pTemplate="footer">
+      <div class="w-full flex flex-col-reverse sm:flex-row justify-between items-center gap-4 sm:gap-0">
+        <!-- Enlace de ayuda -->
+        <div>
+          <a 
+            href="https://www.markdownguide.org/basic-syntax/" 
+            target="_blank" 
+            class="text-blue-600 hover:text-blue-800 hover:underline flex items-center text-sm"
+          >
+            <i class="pi pi-info-circle mr-1"></i>Ayuda Markdown
+          </a>
+        </div>
+        
+        <!-- Botones -->
+        <div class="flex gap-3 w-full sm:w-auto justify-center sm:justify-end">
+          <button 
+            pButton 
+            type="button" 
+            icon="pi pi-times" 
+            label="Cancelar" 
+            class="p-button-outlined p-button-danger w-32" 
+            (click)="cancelarEdicionMarkdown()"
+          ></button>
+          <button 
+            pButton 
+            type="button" 
+            icon="pi pi-check" 
+            label="Guardar" 
+            class="p-button-success w-32" 
+            (click)="guardarMarkdown()"
+          ></button>
+        </div>
+      </div>
+    </ng-template>
   </p-dialog>
 </div>
