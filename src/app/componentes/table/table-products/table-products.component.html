@@ -27,8 +27,6 @@
     [rowsPerPageOptions]="[5, 10, 20, 50]"
     [first]="(currentPage-1) * pageSize"
   >
-    
-  >
     <ng-template pTemplate="caption">
       <div class="flex justify-center items-center py-4 bg-gradient-to-r from-green-700 to-green-900 rounded-t-lg shadow-md">
         <h5 class="text-white text-xl font-bold tracking-wider uppercase">
@@ -71,7 +69,7 @@
             (stock bajo)
           </span>
         </td>
-                <td>
+        <td>
           <img [src]="product.image_url" alt="Imagen" width="60" height="60" style="border-radius: 0.5rem" />
         </td>
         <td>
@@ -99,20 +97,28 @@
       </div>
       <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full border border-green-300 rounded-lg" />
+        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full border border-green-300 rounded-lg" (onChange)="onBrandChange($event)" />
       </div>
       <div class="space-y-1">
         <label>Categoría</label>
         <p-dropdown [options]="categories" [(ngModel)]="nuevoProducto.category_id" name="category_id" optionLabel="name" optionValue="id" placeholder="Seleccione una categoría" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
-        <label>Garantias</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranties_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantia" class="w-full border border-green-300 rounded-lg" />
+        <div class="flex items-center">
+          <label class="mr-2">Garantía</label>
+          <span *ngIf="!nuevoProducto.brand_id" class="text-red-500 text-xs">* Primero seleccione una marca</span>
+        </div>
+        <p-dropdown 
+          [options]="warranties" 
+          [(ngModel)]="nuevoProducto.warranty_id" 
+          name="warranty_id" 
+          optionLabel="name" 
+          optionValue="id" 
+          placeholder="Seleccione una garantía" 
+          class="w-full border border-green-300 rounded-lg" 
+          [disabled]="!nuevoProducto.brand_id"
+        ></p-dropdown>
       </div>
-      <!-- <div class="space-y-1">
-        <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranty_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantía" class="w-full border border-green-300 rounded-lg" />
-      </div> -->
       <div class="space-y-1">
         <label>Imagen</label>
         <input type="file" accept="image/*" (change)="onFileSelected($event)" class="w-full" />
@@ -149,15 +155,27 @@
       </div>
       <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
+        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" (onChange)="onEditBrandChange($event)" />
       </div>
       <div class="space-y-1">
         <label>Categoría</label>
         <p-dropdown [options]="categories" [(ngModel)]="productoEditable.category_id" name="edit_category_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
-        <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="productoEditable.warranty_id" name="edit_warranty_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
+        <div class="flex items-center">
+          <label class="mr-2">Garantía</label>
+          <span *ngIf="!productoEditable.brand_id" class="text-red-500 text-xs">* Primero seleccione una marca</span>
+        </div>
+        <p-dropdown 
+          [options]="warranties" 
+          [(ngModel)]="productoEditable.warranty_id" 
+          name="edit_warranty_id" 
+          optionLabel="name" 
+          optionValue="id" 
+          placeholder="Seleccione una garantía" 
+          class="w-full border border-green-300 rounded-lg"
+          [disabled]="!productoEditable.brand_id"
+        ></p-dropdown>
       </div>
       <div class="space-y-1">
         <label>Imagen</label>

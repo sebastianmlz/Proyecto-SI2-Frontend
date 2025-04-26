@@ -92,10 +92,16 @@ export class ProductosService {
     return this.http.get<PaginatedResponse<Category>>(`${this.baseUrl}categories/`, { headers });
   }
   
-  getWarranties(): Observable<PaginatedResponse<Warranty>> {
+  getWarranties(brandId?: number): Observable<PaginatedResponse<Warranty>> {
     const token = localStorage.getItem('access');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<PaginatedResponse<Warranty>>(`${this.baseUrl}warranties/`, { headers });
+    
+    let params = new HttpParams();
+    if (brandId) {
+      params = params.set('brand', brandId.toString());
+    }
+    
+    return this.http.get<PaginatedResponse<Warranty>>(`${this.baseUrl}warranties/`, { headers, params });
   }
 
   getRecomendaciones(query: string, count: number = 8): Observable<any> {

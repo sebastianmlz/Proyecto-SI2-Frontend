@@ -21,6 +21,7 @@ import { FormsModule } from '@angular/forms';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
 import { PaginatorModule } from 'primeng/paginator';
+import { MessageModule } from 'primeng/message';
 
 @Component({
   selector: 'app-table-products',
@@ -41,7 +42,8 @@ import { PaginatorModule } from 'primeng/paginator';
     DropdownModule,
     InputTextModule,
     ButtonModule,
-    PaginatorModule, // Añadido para la paginación
+    PaginatorModule, 
+    MessageModule,
   ],
   templateUrl: './table-products.component.html',
   styleUrl: './table-products.component.css'
@@ -142,7 +144,7 @@ export class TableProductsComponent {
       },
     });
   }
-  
+
   cargarFormOpciones(): void {
     this.productos.getBrands().subscribe({
       next: (res) => this.brands = res.items,
@@ -154,14 +156,52 @@ export class TableProductsComponent {
       error: (err) => console.error('Error al cargar categories', err)
     });
 
-    this.productos.getWarranties().subscribe({
+    // Al inicio no cargamos garantías, se cargarán cuando se seleccione una marca
+    // this.loadWarranties();
+  }
+
+  // Método corregido para cargar garantías filtradas por marca
+  loadWarranties(brandId?: number): void {
+    if (!brandId) {
+      this.warranties = [];
+      return;
+    }
+    
+    console.log(`Cargando garantías para marca ID: ${brandId}`);
+    
+    this.productos.getWarranties(brandId).subscribe({
       next: (res) => {
         this.warranties = res.items;
-        // console.log("garantias:", this.warranties);
-        // console.log("respuesta del backend:", res);
-      } ,
+        console.log("Garantías cargadas:", this.warranties);
+      },
       error: (err) => console.error('Error al cargar warranties', err)
     });
+  }
+
+  // Método corregido para manejar el cambio de marca en el formulario de creación
+  onBrandChange(event: any): void {
+    // En PrimeNG dropdown, el valor seleccionado está en event.value
+    const brandId = event.value;
+    console.log("Marca seleccionada:", brandId);
+    
+    // Resetear el valor de garantía cuando cambia la marca
+    this.nuevoProducto.warranty_id = 0;
+    
+    // Cargar garantías filtradas por la marca seleccionada
+    this.loadWarranties(brandId);
+  }
+
+  // Método corregido para manejar el cambio de marca en el formulario de edición
+  onEditBrandChange(event: any): void {
+    // En PrimeNG dropdown, el valor seleccionado está en event.value
+    const brandId = event.value;
+    console.log("Marca seleccionada (edición):", brandId);
+    
+    // Resetear el valor de garantía cuando cambia la marca
+    this.productoEditable.warranty_id = 0;
+    
+    // Cargar garantías filtradas por la marca seleccionada
+    this.loadWarranties(brandId);
   }
 
   abrirModalNuevoProducto(): void {
@@ -179,6 +219,9 @@ export class TableProductsComponent {
       stock: 0
     };
     this.nuevoProductoModalVisible = true;
+    
+    // Al abrir el modal, no cargamos garantías hasta que se seleccione una marca
+    this.warranties = [];
   }
 
   onFileSelected(event: any): void {
@@ -212,7 +255,7 @@ export class TableProductsComponent {
       console.log(pair[0] + ':', pair[1]);
     }
     console.log('¿Archivo es tipo File?', this.nuevoProducto.image_url instanceof File);
-
+  
     this.productos.createProduct(formData).subscribe({
       next: () => {
         this.noti.success('Producto registrado', '¡Registro exitoso!');
@@ -263,10 +306,17 @@ export class TableProductsComponent {
       stock: producto.inventory?.stock || 0,
       image_url: producto.image_url,
     };
+    
+    // Al abrir el modal de edición, cargar las garantías filtradas por la marca actual
+    if (producto.brand?.id) {
+      this.loadWarranties(producto.brand.id);
+    } else {
+      this.warranties = [];
+    }
   
     this.editarProductoModalVisible = true;
   }
-  
+
   onEditFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
