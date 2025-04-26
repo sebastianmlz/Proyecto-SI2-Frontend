@@ -1,4 +1,4 @@
-<div class="flex justify-center items-start min-h-[80vh] pt-8 bg-gradient-to-tr from-blue-950 via-purple-950 to-black px-4 text-white">
+<div class="flex justify-center items-start min-h-[80vh] pt-8 bg-gradient-to-tr from-blue-950 via-green-950 to-black px-4 text-white">
   <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
 
     <!-- Cuadro izquierdo: Datos del perfil -->
@@ -12,7 +12,7 @@
             *ngIf="modoEdicion"
             [(ngModel)]="usuario.first_name"
             type="text"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-purple-500 focus:ring-2 focus:ring-purple-300 transition rounded-lg"
+            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
             />
           <p *ngIf="!modoEdicion">{{ usuario?.first_name }}</p>
         </div>
@@ -24,7 +24,7 @@
             *ngIf="modoEdicion"
             [(ngModel)]="usuario.last_name"
             type="text"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-purple-500 focus:ring-2 focus:ring-purple-300 transition rounded-lg"
+            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
           />
           <p *ngIf="!modoEdicion">{{ usuario?.last_name }}</p>
         </div>
@@ -36,7 +36,7 @@
             *ngIf="modoEdicion"
             [(ngModel)]="usuario.email"
             type="email"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-purple-500 focus:ring-2 focus:ring-purple-300 transition rounded-lg"
+            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
           />
           <p *ngIf="!modoEdicion">{{ usuario?.email }}</p>
         </div>
@@ -54,7 +54,7 @@
             pButton
             label="Editar"
             icon="pi pi-pencil"
-            class="p-button-sm bg-purple-600 text-white hover:bg-purple-700 transition-all"
+            class="p-button-sm bg-green-600 text-white hover:bg-green-700 transition-all"
             (click)="modoEdicion = true"
           ></button>
 
@@ -88,7 +88,7 @@
           pButton
           label="Cambiar contraseña"
           icon="pi pi-key"
-          class="p-button-sm w-full bg-purple-600 text-white hover:bg-purple-700 transition-all"
+          class="p-button-sm w-full bg-green-600 text-white hover:bg-green-700 transition-all"
           (click)="mostrarCambioPassword = true"
         ></button>
 
@@ -101,7 +101,7 @@
                 [(ngModel)]="cambioPassword.oldPassword"
                 name="oldPassword"
                 required
-                class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-purple-500 focus:ring-2 focus:ring-purple-300 transition rounded-lg"
+                class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
                 />
           
               <label class="font-semibold">Nueva contraseña</label>
@@ -110,7 +110,7 @@
                 [(ngModel)]="cambioPassword.newPassword"
                 name="newPassword"
                 required
-                class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-purple-500 focus:ring-2 focus:ring-purple-300 transition rounded-lg"
+                class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
                 />
           
               <div class="flex gap-2 mt-4">

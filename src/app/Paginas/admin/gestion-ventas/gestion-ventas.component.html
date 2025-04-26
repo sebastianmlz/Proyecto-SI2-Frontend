@@ -10,9 +10,15 @@
   <!-- Tabla -->
   <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
     <p-table
-      [value]="ventas"
-      [paginator]="true"
-      [rows]="5"
+      [value]="ventas" 
+      [rows]="pageSize" 
+      [paginator]="true" 
+      [lazy]="true"
+      [totalRecords]="totalRecords" 
+      (onPage)="onPageChange($event)"
+      [loading]="loading"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [first]="(currentPage-1) * pageSize"
       responsiveLayout="scroll"
       class="p-datatable-sm"
     >
@@ -49,8 +55,8 @@
               {{ venta.payment?.payment_status || 'sin pago' }}
             </span>
           </td>
-          <td class="py-2 px-3">{{ venta.created_at | date: 'short' }}</td>
-          <td class="py-2 px-3">{{ venta.payment.updated_at| date: 'short' }}</td>
+          <td class="py-2 px-3">{{ venta?.created_at | date: 'short' }}</td>
+          <td class="py-2 px-3">{{ venta.payment?.updated_at| date: 'short' }}</td>
           <td class="py-2 px-3">
             <button
               pButton

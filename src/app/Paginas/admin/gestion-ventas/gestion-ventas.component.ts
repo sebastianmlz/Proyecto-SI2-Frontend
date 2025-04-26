@@ -18,6 +18,15 @@ export class GestionVentasComponent implements OnInit {
   ventaSeleccionada: any = null; // Venta seleccionada para el modal
   modalVerMasVisible: boolean = false; // Controla la visibilidad del modal
 
+  // Propiedades para paginación
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalRecords: number = 0;
+  totalPages: number = 0;
+  hasNextPage: boolean = false;
+  hasPrevPage: boolean = false;
+  loading: boolean = false;
+
   constructor(
     private ordersService: OrdersService,
     private authService: AuthService
@@ -27,13 +36,24 @@ export class GestionVentasComponent implements OnInit {
     this.obtenerVentas();
   }
 
-  obtenerVentas(): void {
-    this.ordersService.getVentas().subscribe({
+  obtenerVentas(page: number = 1, pageSize: number = 10): void {
+    this.loading = true;
+    this.ordersService.getVentas(page, pageSize).subscribe({
       next: (res: any) => {
-        console.log('Ventas obtenidas:', res);
-        this.ventas = res.items.filter(
-          (venta: any) => venta.payment?.payment_status === 'completed'
-        );
+        // this.ventas = res.items.filter(
+        //   (venta: any) => venta.payment?.payment_status === 'completed'
+        // );
+        this.ventas = res.items;
+        this.totalRecords = res.total;
+        this.currentPage = res.page;
+        this.pageSize = res.page_size;
+        this.totalPages = res.pages;
+        this.hasNextPage = res.has_next;
+        this.hasPrevPage = res.has_prev;
+        this.loading = false;
+        
+        console.log("Productos con stock:", this.ventas);
+        console.log("respuesta del backend:", res);
 
         this.ventas.forEach((venta: any) => {
           const userId = venta.user;
@@ -53,6 +73,25 @@ export class GestionVentasComponent implements OnInit {
         console.error('Error al cargar ventas:', err);
       }
     });
+  }
+
+  // Nuevo método para manejar el cambio de página
+  onPageChange(event: any): void {
+    // Si usas p-paginator de PrimeNG
+    if (event.page !== undefined) {
+      // PrimeNG paginator usa base 0 (primera página = 0)
+      this.currentPage = event.page + 1;
+      this.pageSize = event.rows;
+    } 
+    // Si usas p-table con paginación integrada
+    else if (event.first !== undefined) {
+      // Calcular página basado en first y rows
+      this.currentPage = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+    }
+    
+    console.log(`Cambiando a página ${this.currentPage}, tamaño: ${this.pageSize}`);
+    this.obtenerVentas(this.currentPage, this.pageSize);
   }
 
   getNombreUsuario(id: number): string {

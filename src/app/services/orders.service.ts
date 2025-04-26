@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PaginatedResponse } from '../models/paginated-response.model';
 
 @Injectable({
     providedIn: 'root'
@@ -50,12 +51,16 @@ export class OrdersService {
         );
     }
 
-    getVentas(): Observable<any> {
+    getVentas(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<any>> {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
         
-        return this.http.get(`${this.baseUrl}/finance/`, { headers });
-    }      
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('page_size', pageSize.toString());
+        
+        return this.http.get<PaginatedResponse<any>>(`${this.baseUrl}/finance/`, { headers, params });
+    }    
 
 
 

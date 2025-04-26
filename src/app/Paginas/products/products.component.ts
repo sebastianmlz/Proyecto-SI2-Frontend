@@ -11,6 +11,8 @@ import { CardModule } from 'primeng/card';
 import { InputTextModule } from 'primeng/inputtext';
 import { Router } from '@angular/router';
 import { OrdersService } from '../../services/orders.service';
+import { PaginatorModule } from 'primeng/paginator';
+
 
 
 @Component({
@@ -22,7 +24,8 @@ import { OrdersService } from '../../services/orders.service';
     ButtonModule,
     FormsModule,
     CardModule,
-    InputTextModule
+    InputTextModule,
+    PaginatorModule
   ],
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
@@ -42,6 +45,15 @@ export class ProductsComponent {
   //recomendacion por texto
   recomendacionTexto: string = '';
 
+    // Propiedades para paginación
+    currentPage: number = 1;
+    pageSize: number = 10;
+    totalRecords: number = 0;
+    totalPages: number = 0;
+    hasNextPage: boolean = false;
+    hasPrevPage: boolean = false;
+    loading: boolean = false;
+
 
   constructor(
     private productosService: ProductosService,
@@ -52,17 +64,47 @@ export class ProductsComponent {
   ) {}
 
   ngOnInit() {
-    this.obtenerProductos();
+    this.obtenerProductos(this.currentPage,this.pageSize);
     this.verificarRol();
   }
 
-  obtenerProductos(): void {
-    this.productosService.obtenerProductos(1,10).subscribe({
+  obtenerProductos(page: number = 1, pageSize: number = 10): void {
+    this.loading = true;
+    this.productosService.obtenerProductos(page, pageSize).subscribe({
       next: (res) => {
         this.products = res.items;
+        this.totalRecords = res.total;
+        this.currentPage = res.page;
+        this.pageSize = res.page_size;
+        this.totalPages = res.pages;
+        this.hasNextPage = res.has_next;
+        this.hasPrevPage = res.has_prev;
+        this.loading = false;
+        
+        console.log("Productos con stock:", this.products);
+        console.log("respuesta del backend:", res);
       },
       error: (err) => console.error('Error al obtener productos', err)
     });
+  }
+
+  // Nuevo método para manejar el cambio de página
+  onPageChange(event: any): void {
+    // Si usas p-paginator de PrimeNG
+    if (event.page !== undefined) {
+      // PrimeNG paginator usa base 0 (primera página = 0)
+      this.currentPage = event.page + 1;
+      this.pageSize = event.rows;
+    } 
+    // Si usas p-table con paginación integrada
+    else if (event.first !== undefined) {
+      // Calcular página basado en first y rows
+      this.currentPage = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+    }
+    
+    console.log(`Cambiando a página ${this.currentPage}, tamaño: ${this.pageSize}`);
+    this.obtenerProductos(this.currentPage, this.pageSize);
   }
 
   verificarRol(): void {

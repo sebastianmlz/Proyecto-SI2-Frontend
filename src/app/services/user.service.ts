@@ -4,6 +4,7 @@ import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { User } from '../models/user.model';
 import { observableToBeFn } from 'rxjs/internal/testing/TestScheduler';
+import { PaginatedResponse } from '../models/paginated-response.model';
 
 
 
@@ -23,11 +24,16 @@ export class UserService {
     return this.http.post<User>(this.baseUrl, user, { headers });
   }
 
-  obtenerUsers(): Observable<{ items: User[] }> {
-    const token = localStorage.getItem('access');
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<{ items: User[] }>(`${this.baseUrl}`, { headers });
-  }
+  obtenerUsers(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<User>> {
+      const token = localStorage.getItem('access');
+      const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+      
+      const params = new HttpParams()
+        .set('page', page.toString())
+        .set('page_size', pageSize.toString());
+        
+      return this.http.get<PaginatedResponse<User>>(`${this.baseUrl}`, { headers, params });
+    }
   
   
   actualizarUser(id: number, user: Partial<User>): Observable<User> {

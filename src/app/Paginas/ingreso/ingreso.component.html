@@ -1,8 +1,8 @@
-<div class="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-900 via-purple-900 to-black px-4 text-white">
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-tr from-blue-900 via-green-900 to-black px-4 text-white">
     <div class="w-full max-w-md p-8 bg-white/10  rounded-2xl shadow-2xl border border-white/20 transition-transform hover:scale-[1.01]">
   
       <h1 class="text-3xl font-bold text-center mb-4 drop-shadow">
-        Bienvenido a <span class="text-purple-300">Smart Cart</span>
+        Bienvenido a <br> <span class="text-green-300">e-Commerce FICCT</span>
       </h1>
   
       <p class="text-center text-sm text-gray-300 mb-6">
@@ -18,7 +18,7 @@
             type="email"
             placeholder="Correo electrónico"
             [(ngModel)]="email"
-            class="w-full p-inputtext-sm bg-white/20 text-white placeholder-white/70 border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg p-2"
+            class="w-full p-inputtext-sm bg-white/20 text-white placeholder-white/70 border-white/30 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-lg p-2"
           />
         </span>
   
@@ -30,29 +30,25 @@
             type="password"
             placeholder="Contraseña"
             [(ngModel)]="password"
-            class="w-full p-inputtext-sm bg-white/20 text-white placeholder-white/70 border-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded-lg p-2"
+            class="w-full p-inputtext-sm bg-white/20 text-white placeholder-white/70 border-white/30 focus:outline-none focus:ring-2 focus:ring-green-500 rounded-lg p-2"
           />
         </span>
   
         <!-- Botón: Iniciar sesión -->
         <button
-  class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-xl shadow"
-  (click)="iniciarSesion()"
->
-  Iniciar sesión
-</button>
-
+          class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-xl shadow"
+          (click)="iniciarSesion()"
+        >
+          Iniciar sesión
+        </button>
   
         <!-- Botón: Registrarse -->
         <button
-  class="w-full bg-white text-purple-700 font-semibold py-2 rounded-xl border border-purple-500 hover:bg-purple-100"
-  [routerLink]="['/registro']"
->
-  Registrarse
-</button>
-
+          class="w-full bg-white text-green-700 font-semibold py-2 rounded-xl border border-green-500 hover:bg-green-100"
+          [routerLink]="['/registro']"
+        >
+          Registrarse
+        </button>
       </div>
-  
     </div>
   </div>
-  

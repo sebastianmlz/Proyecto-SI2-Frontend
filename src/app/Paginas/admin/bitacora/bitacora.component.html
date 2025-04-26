@@ -1,6 +1,6 @@
 <!-- Encabezado -->
 <div class="p-4 space-y-4">
-    <div class="flex items-center justify-center bg-gradient-to-r from-purple-600 to-purple-800 rounded-xl px-6 py-3 text-white">
+    <div class="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 text-white">
       <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
         <i class="pi pi-clock text-xl"></i> Bitácora del sistema
       </h2>
@@ -8,7 +8,13 @@
   
     <!-- Tabla -->
     <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
-      <p-table [value]="logs" [paginator]="true" [rows]="10" responsiveLayout="scroll">
+      <p-table 
+      [value]="logs" 
+      [paginator]="true" 
+      [rows]="10" 
+      responsiveLayout="scroll"
+      
+      >
         <!-- Cabecera -->
         <ng-template pTemplate="header">
           <tr class="bg-gray-100 text-gray-800 text-sm font-semibold">
@@ -64,7 +70,7 @@
 >
   <!-- 🟣 Header personalizado -->
   <ng-template pTemplate="header">
-    <div class="w-full text-center text-white text-lg font-bold bg-purple-700 py-2 rounded-t-xl">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
       <h2 class="text-center text-white text-lg font-bold m-0">
         Detalle del evento
       </h2>
@@ -97,11 +103,10 @@
         type="button"
         icon="pi pi-times"
         label="Cerrar"
-        class="p-button-sm bg-purple-600 text-white border-none hover:bg-purple-700"
+        class="p-button-sm bg-green-600 text-white border-none hover:bg-green-700"
         (click)="cerrarModal()"
       ></button>
     </div>
   </ng-template>
 </p-dialog>
 
-  

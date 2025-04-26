@@ -94,6 +94,17 @@
       </ng-template>
     </p-card>
   </div>
+  <!-- 📦 Paginador visual debajo del grid -->
+<div class="flex justify-center mt-10 mb-20">
+  <p-paginator
+    [rows]="pageSize"
+    [totalRecords]="totalRecords"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    (onPageChange)="onPageChange($event)"
+    [first]="(currentPage - 1) * pageSize"
+    styleClass="p-4 rounded-xl shadow-md w-full max-w-3xl text-lg"
+  />
+</div>
   
   <!-- Modal ver más info -->
   <p-dialog

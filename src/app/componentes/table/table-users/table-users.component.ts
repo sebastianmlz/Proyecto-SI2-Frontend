@@ -66,6 +66,15 @@ export class TableUsersComponent {
     
   ];
 
+  // Propiedades para paginación
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalRecords: number = 0;
+  totalPages: number = 0;
+  hasNextPage: boolean = false;
+  hasPrevPage: boolean = false;
+  loading: boolean = false;
+
   constructor(private usuarioService: UserService,
     private authService: AuthService,
     private noti: NotificacionService,
@@ -73,17 +82,49 @@ export class TableUsersComponent {
   ) { }
 
   ngOnInit() {
-    this.cargarUsers();
+    this.cargarUsers(this.currentPage, this.pageSize);
   }
 
-  cargarUsers(): void {
-    this.usuarioService.obtenerUsers().subscribe({
+  cargarUsers(page: number = 1, pageSize: number = 10): void {
+    this.loading = true;
+    this.usuarioService.obtenerUsers(page, pageSize).subscribe({
       next: (res) => {
-        this.usuarios = res.items;  // << aquí está el array correcto
-        console.log("usuarios: ", this.usuarios);
+        this.usuarios = res.items;
+        this.totalRecords = res.total;
+        this.currentPage = res.page;
+        this.pageSize = res.page_size;
+        this.totalPages = res.pages;
+        this.hasNextPage = res.has_next;
+        this.hasPrevPage = res.has_prev;
+        this.loading = false;
+        
+        console.log("Productos con stock:", this.usuarios);
+        console.log("respuesta del backend:", res);
       },
-      error: (err) => console.error('Error al cargar los usuarios', err),
+      error: (err) => {
+        console.error("Error al cargar productos", err);
+        this.loading = false;
+      },
     });
+  }
+
+  // Nuevo método para manejar el cambio de página
+  onPageChange(event: any): void {
+    // Si usas p-paginator de PrimeNG
+    if (event.page !== undefined) {
+      // PrimeNG paginator usa base 0 (primera página = 0)
+      this.currentPage = event.page + 1;
+      this.pageSize = event.rows;
+    } 
+    // Si usas p-table con paginación integrada
+    else if (event.first !== undefined) {
+      // Calcular página basado en first y rows
+      this.currentPage = Math.floor(event.first / event.rows) + 1;
+      this.pageSize = event.rows;
+    }
+    
+    console.log(`Cambiando a página ${this.currentPage}, tamaño: ${this.pageSize}`);
+    this.cargarUsers(this.currentPage, this.pageSize);
   }
   
   

@@ -1,7 +1,7 @@
 <div class="card">
     <p-toast />
 <!-- Sección: Registrar nuevo usuario -->
-<div class="bg-gradient-to-r from-purple-700 to-purple-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
+<div class="bg-gradient-to-r from-green-700 to-green-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
   <div class="flex items-center justify-center">
     <h5 class="text-white text-lg font-bold tracking-wider uppercase mr-2">
       Registrar nuevo usuario
@@ -10,7 +10,7 @@
     <p-button
       icon="pi pi-user-plus"
       (onClick)="abrirModalNuevoUsuario()"
-      styleClass="bg-white hover:bg-purple-600 text-purple-800 font-bold border-none rounded-md p-2"
+      styleClass="bg-white hover:bg-green-600 text-green-800 font-bold border-none rounded-md p-2"
     />
   </div>
 </div>
@@ -18,9 +18,19 @@
 
 
   
-    <p-table [value]="usuarios" [rows]="10" [paginator]="true" [rowHover]="true" dataKey="id">
+    <p-table 
+      [value]="usuarios" 
+      [rows]="pageSize" 
+      [paginator]="true" 
+      [lazy]="true"
+      [totalRecords]="totalRecords" 
+      (onPage)="onPageChange($event)"
+      [loading]="loading"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [first]="(currentPage-1) * pageSize"
+    >
       <ng-template pTemplate="caption">
-        <div class="flex justify-center items-center py-4 bg-gradient-to-r from-purple-700 to-purple-900 rounded-t-lg shadow-md">
+        <div class="flex justify-center items-center py-4 bg-gradient-to-r from-green-700 to-green-800 rounded-t-lg shadow-md">
           <h5 class="text-white text-xl font-bold tracking-wider uppercase">
             Gestionar Usuarios
           </h5>
@@ -29,7 +39,7 @@
       
   
       <ng-template pTemplate="header">
-        <tr class="bg-gradient-to-r from-purple-600 to-purple-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
+        <tr class="bg-gradient-to-r from-green-600 to-green-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
           <th class="py-3 px-2">ID</th>
           <th class="py-3 px-2">Nombre</th>
           <th class="py-3 px-2">Apellido</th>
@@ -50,7 +60,7 @@
           <td>{{ usuario.role }}</td>
           <td><p-tag 
             [value]="usuario.email" 
-            class="bg-purple-100 text-purple-800 border-purple-300 font-semibold"
+            class="bg-green-100 text-green-800 border-green-300 font-semibold"
           />
           </td>
           <td>
@@ -69,19 +79,19 @@
       <div class="bg-white p-4 rounded-xl shadow space-y-4">
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Nombre</label>
-          <input type="text" pInputText [(ngModel)]="usuarioEditando.first_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="text" pInputText [(ngModel)]="usuarioEditando.first_name" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Apellido</label>
-          <input type="text" pInputText [(ngModel)]="usuarioEditando.last_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="text" pInputText [(ngModel)]="usuarioEditando.last_name" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Correo</label>
-          <input type="email" pInputText [(ngModel)]="usuarioEditando.email" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="email" pInputText [(ngModel)]="usuarioEditando.email" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
@@ -93,7 +103,7 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Seleccione un rol"
-            class="w-full border border-purple-300 rounded-lg"
+            class="w-full border border-green-300 rounded-lg"
             />
         </div>
     
@@ -106,14 +116,14 @@
             ]"
             [(ngModel)]="usuarioEditando.active"
             placeholder="Seleccionar estado"
-            class="w-full border border-purple-300 rounded-lg"
+            class="w-full border border-green-300 rounded-lg"
 
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input type="password" pInputText [(ngModel)]="usuarioEditando.password" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="password" pInputText [(ngModel)]="usuarioEditando.password" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
       </div>
@@ -130,19 +140,19 @@
       <div class="bg-white p-4 rounded-xl shadow space-y-4">
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Nombre</label>
-          <input type="text" pInputText [(ngModel)]="usuario.first_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="text" pInputText [(ngModel)]="usuario.first_name" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Apellido</label>
-          <input type="text" pInputText [(ngModel)]="usuario.last_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="text" pInputText [(ngModel)]="usuario.last_name" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Correo</label>
-          <input type="email" pInputText [(ngModel)]="usuario.email" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="email" pInputText [(ngModel)]="usuario.email" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
     
@@ -154,14 +164,14 @@
             optionLabel="label"
             optionValue="value"
             placeholder="Seleccione un rol"
-            class="w-full border border-purple-300 rounded-lg"
+            class="w-full border border-green-300 rounded-lg"
 
           />
         </div>
     
         <div class="space-y-1">
           <label class="block text-sm font-medium text-gray-700">Contraseña</label>
-          <input type="password" pInputText [(ngModel)]="usuario.password" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-1 focus:ring-purple-600 rounded-lg px-3 py-2"
+          <input type="password" pInputText [(ngModel)]="usuario.password" class="w-full border border-green-300 focus:border-green-600 focus:ring-1 focus:ring-green-600 rounded-lg px-3 py-2"
           />
         </div>
       </div>
@@ -182,4 +192,3 @@
     
 
   </div>
-  

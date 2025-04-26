@@ -6,4 +6,4 @@ export interface PaginatedResponse<T> {
     pages: number;
     has_next: boolean;
     has_prev: boolean;
-  }
+}

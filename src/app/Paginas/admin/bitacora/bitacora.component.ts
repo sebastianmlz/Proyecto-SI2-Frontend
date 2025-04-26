@@ -23,6 +23,7 @@ export class BitacoraComponent implements OnInit {
   logSeleccionado: any = null;
   usuarioDetalle: any = null;
   modalVisible: boolean = false;
+  
 
   constructor(
     private logsService: LogsService,

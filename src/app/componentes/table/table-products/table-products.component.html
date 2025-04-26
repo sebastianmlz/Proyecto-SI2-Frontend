@@ -2,7 +2,7 @@
   <p-toast />
 
   <!-- Sección: Registrar nuevo producto -->
-  <div class="bg-gradient-to-r from-purple-700 to-purple-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
+  <div class="bg-gradient-to-r from-green-700 to-green-800 px-6 py-4 mb-3 rounded-t-lg shadow-md">
     <div class="flex items-center justify-center">
       <h5 class="text-white text-lg font-bold tracking-wider uppercase mr-2">
         Registrar nuevo producto
@@ -11,24 +11,26 @@
       <p-button
         icon="pi pi-plus"
         (onClick)="abrirModalNuevoProducto()"
-        styleClass="bg-white hover:bg-purple-600 text-purple-800 font-bold border-none rounded-md p-2"
+        styleClass="bg-white hover:bg-green-600 text-green-800 font-bold border-none rounded-md p-2"
       />
     </div>
   </div>
 
   <p-table 
-  [value]="products" 
+    [value]="products" 
+    [rows]="pageSize" 
     [paginator]="true" 
-    [rows]="pageSize"
-    [totalRecords]="totalItems"
-    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [lazy]="true"
+    [totalRecords]="totalRecords" 
     (onPage)="onPageChange($event)"
-    [rowHover]="true"
-    dataKey="id"
+    [loading]="loading"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [first]="(currentPage-1) * pageSize"
   >
-
+    
+  >
     <ng-template pTemplate="caption">
-      <div class="flex justify-center items-center py-4 bg-gradient-to-r from-purple-700 to-purple-900 rounded-t-lg shadow-md">
+      <div class="flex justify-center items-center py-4 bg-gradient-to-r from-green-700 to-green-900 rounded-t-lg shadow-md">
         <h5 class="text-white text-xl font-bold tracking-wider uppercase">
           Gestionar Productos
         </h5>
@@ -36,7 +38,7 @@
     </ng-template>
 
     <ng-template pTemplate="header">
-      <tr class="bg-gradient-to-r from-purple-600 to-purple-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
+      <tr class="bg-gradient-to-r from-green-600 to-green-800 text-white text-center uppercase text-sm tracking-wider shadow-sm">
         <th class="py-3 px-2">ID</th>
         <th class="py-3 px-2">Nombre</th>
         <th class="py-3 px-2">Precio</th>
@@ -85,31 +87,31 @@
     <form class="grid gap-4 bg-white p-4 rounded-xl shadow">
       <div class="space-y-1">
         <label>Nombre</label>
-        <input pInputText [(ngModel)]="nuevoProducto.name" name="name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="nuevoProducto.name" name="name" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="space-y-1">
         <label>Descripción</label>
-        <textarea pInputTextarea [(ngModel)]="nuevoProducto.description" name="description" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
+        <textarea pInputTextarea [(ngModel)]="nuevoProducto.description" name="description" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
         <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
+        <textarea pInputTextarea [(ngModel)]="nuevoProducto.technical_specifications" name="technical_specifications" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="brands" [(ngModel)]="nuevoProducto.brand_id" name="brand_id" optionLabel="name" optionValue="id" placeholder="Seleccione una marca" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
         <label>Categoría</label>
-        <p-dropdown [options]="categories" [(ngModel)]="nuevoProducto.category_id" name="category_id" optionLabel="name" optionValue="id" placeholder="Seleccione una categoría" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="categories" [(ngModel)]="nuevoProducto.category_id" name="category_id" optionLabel="name" optionValue="id" placeholder="Seleccione una categoría" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
         <label>Garantias</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranties_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantia" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranties_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantia" class="w-full border border-green-300 rounded-lg" />
       </div>
       <!-- <div class="space-y-1">
         <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranty_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantía" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="warranties" [(ngModel)]="nuevoProducto.warranty_id" name="warranty_id" optionLabel="name" optionValue="id" placeholder="Seleccione una garantía" class="w-full border border-green-300 rounded-lg" />
       </div> -->
       <div class="space-y-1">
         <label>Imagen</label>
@@ -117,11 +119,11 @@
       </div>
       <div class="space-y-1">
         <label>Stock</label>
-        <input pInputText [(ngModel)]="nuevoProducto.stock" name="stock" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="nuevoProducto.stock" name="stock" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="space-y-1">
         <label>Precio $</label>
-        <input pInputText [(ngModel)]="nuevoProducto.price_usd" name="price_usd" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="nuevoProducto.price_usd" name="price_usd" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="text-right">
         <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-text mr-2" (click)="nuevoProductoModalVisible = false"></button>
@@ -135,27 +137,27 @@
     <form class="grid gap-4 bg-white p-4 rounded-xl shadow">
       <div class="space-y-1">
         <label>Nombre</label>
-        <input pInputText [(ngModel)]="productoEditable.name" name="edit_name" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="productoEditable.name" name="edit_name" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="space-y-1">
         <label>Descripción</label>
-        <textarea pInputTextarea [(ngModel)]="productoEditable.description" name="edit_description" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
+        <textarea pInputTextarea [(ngModel)]="productoEditable.description" name="edit_description" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
         <label>Especificaciones</label>
-        <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2"></textarea>
+        <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" name="edit_specifications" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2"></textarea>
       </div>
       <div class="space-y-1">
         <label>Marca</label>
-        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="brands" [(ngModel)]="productoEditable.brand_id" name="edit_brand_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
         <label>Categoría</label>
-        <p-dropdown [options]="categories" [(ngModel)]="productoEditable.category_id" name="edit_category_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="categories" [(ngModel)]="productoEditable.category_id" name="edit_category_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
         <label>Garantía</label>
-        <p-dropdown [options]="warranties" [(ngModel)]="productoEditable.warranty_id" name="edit_warranty_id" optionLabel="name" optionValue="id" class="w-full border border-purple-300 rounded-lg" />
+        <p-dropdown [options]="warranties" [(ngModel)]="productoEditable.warranty_id" name="edit_warranty_id" optionLabel="name" optionValue="id" class="w-full border border-green-300 rounded-lg" />
       </div>
       <div class="space-y-1">
         <label>Imagen</label>
@@ -163,11 +165,11 @@
       </div>
       <div class="space-y-1">
         <label>Stock</label>
-        <input pInputText [(ngModel)]="productoEditable.stock" name="edit_stock" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="productoEditable.stock" name="edit_stock" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="space-y-1">
         <label>Precio $</label>
-        <input pInputText [(ngModel)]="productoEditable.price_usd" name="price_usd" class="w-full border border-purple-300 focus:border-purple-600 focus:ring-purple-600 rounded-lg px-3 py-2" />
+        <input pInputText [(ngModel)]="productoEditable.price_usd" name="price_usd" class="w-full border border-green-300 focus:border-green-600 focus:ring-green-600 rounded-lg px-3 py-2" />
       </div>
       <div class="text-right">
         <button pButton type="button" label="Cancelar" class="p-button-text mr-2" (click)="editarProductoModalVisible = false"></button>
