@@ -1,105 +1,228 @@
 <div class="px-6 py-6">
-    <h1 class="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2 justify-center">
-      <i class="pi pi-shopping-cart text-xl"></i> Carrito de compra
-    </h1>
-  
-    <!-- Vista tipo TABLA para pantallas grandes -->
-    <div class="hidden md:block max-w-5xl mx-auto overflow-x-auto bg-white shadow-xl rounded-xl">
-      <table class="w-full table-auto text-center text-black">
-        <thead class="bg-green-700 text-white">
-          <tr>
-            <th class="p-3">Imagen</th>
-            <th>Nombre</th>
-            <th>Precio (USD)</th>
-            <th>Cantidad</th>
-            <th>Subtotal</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let item of carrito">
-            <td class="p-2">
-              <img [src]="item.image_url" alt="Imagen" class="h-16 w-16 object-contain mx-auto" />
-            </td>
-            <td>{{ item.name }}</td>
-            <td>${{ item.price_usd }}</td>
-            <td>
-              <input
-                type="number"
-                [(ngModel)]="item.quantity"
-                (ngModelChange)="marcarComoEditado(item.id); calcularTotal()"
-                class="border p-1 w-16 text-center rounded"
-                min="1"
-              />
+  <h1 class="text-2xl font-bold text-green-700 mb-6 flex items-center gap-2 justify-center">
+    <i class="pi pi-shopping-cart text-xl"></i> Carrito de compra
+  </h1>
 
-              <!-- Mostrar botón solo si ese item fue editado -->
-              <button
-                *ngIf="editedItems[item.id]"
-                pButton
-                icon="pi pi-save"
-                class="p-button-sm p-button-info ml-2"
-                (click)="guardarCantidad(item)">
-                Guardar
-              </button>
-            </td>
-            <td>${{ (item.price_usd * item.quantity).toFixed(2) }}</td>
-            <td>
-              <button
-                pButton
-                icon="pi pi-trash"
-                class="p-button-rounded p-button-danger p-button-sm"
-                (click)="eliminarItem(item)"
-              ></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  
-    <!-- Vista tipo CARDS para pantallas pequeñas -->
-    <div class="md:hidden space-y-4">
-      <div *ngFor="let item of carrito" class="bg-white shadow-md rounded-xl p-4 text-sm text-black">
-        <div class="flex items-center space-x-4">
-          <img [src]="item.image_url" alt="Imagen" class="w-16 h-16 object-cover rounded" />
-          <div>
-            <p class="font-semibold">{{ item.name }}</p>
-            <p class="text-gray-600">Precio: ${{ item.price_usd }}</p>
-            <p class="text-gray-600">Subtotal: ${{ (item.price_usd * item.quantity).toFixed(2) }}</p>
-          </div>
-        </div>
-        <div class="flex items-center justify-between mt-3">
-          <input
-            type="number"
-            min="1"
-            [(ngModel)]="item.quantity"
-            (ngModelChange)="calcularTotal()"
-            class="p-1 border w-16 rounded"
-          />
-          <button
-            pButton
-            icon="pi pi-trash"
-            class="p-button-rounded p-button-danger"
-            (click)="eliminarItemBackend(item)"
-          ></button>
+  <!-- Vista tipo TABLA para pantallas grandes -->
+  <div class="hidden md:block max-w-5xl mx-auto overflow-x-auto bg-white shadow-xl rounded-xl">
+    <table class="w-full table-auto text-center text-black">
+      <thead class="bg-green-700 text-white">
+        <tr>
+          <th class="p-3">Imagen</th>
+          <th>Nombre</th>
+          <th>Precio (USD)</th>
+          <th>Cantidad</th>
+          <th>Subtotal</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of carrito">
+          <td class="p-2">
+            <img [src]="item.image_url" alt="Imagen" class="h-16 w-16 object-contain mx-auto" />
+          </td>
+          <td>{{ item.name }}</td>
+          <td>${{ item.price_usd }}</td>
+          <td>
+            <input type="number" [(ngModel)]="item.quantity"
+              (ngModelChange)="marcarComoEditado(item.id); calcularTotal()" class="border p-1 w-16 text-center rounded"
+              min="1" />
+
+            <!-- Mostrar botón solo si ese item fue editado -->
+            <button *ngIf="editedItems[item.id]" pButton icon="pi pi-save" class="p-button-sm p-button-info ml-2"
+              (click)="guardarCantidad(item)">
+              Guardar
+            </button>
+          </td>
+          <td>${{ (item.price_usd * item.quantity).toFixed(2) }}</td>
+          <td>
+            <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
+              (click)="eliminarItem(item)"></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Vista tipo CARDS para pantallas pequeñas -->
+  <div class="md:hidden space-y-4">
+    <div *ngFor="let item of carrito" class="bg-white shadow-md rounded-xl p-4 text-sm text-black">
+      <div class="flex items-center space-x-4">
+        <img [src]="item.image_url" alt="Imagen" class="w-16 h-16 object-cover rounded" />
+        <div>
+          <p class="font-semibold">{{ item.name }}</p>
+          <p class="text-gray-600">Precio: ${{ item.price_usd }}</p>
+          <p class="text-gray-600">Subtotal: ${{ (item.price_usd * item.quantity).toFixed(2) }}</p>
         </div>
       </div>
-    </div>
-  
-<!-- Total y botón de compra -->
-<div class="w-full max-w-5xl mx-auto mt-6 px-4">
-    <div
-      class="bg-white shadow-md rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4"
-    >
-      <span class="text-lg font-bold text-green-700 text-center md:text-left">
-        Total a pagar (USD): ${{ totalPagar.toFixed(2) }}
-      </span>
-      <button
-        pButton
-        label="Realizar compra"
-        icon="pi pi-credit-card"
-        class="p-button-success w-full md:w-auto"
-        (click)="ordenar()"
-      ></button>
+      <div class="flex items-center justify-between mt-3">
+        <input type="number" min="1" [(ngModel)]="item.quantity" (ngModelChange)="calcularTotal()"
+          class="p-1 border w-16 rounded" />
+        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger"
+          (click)="eliminarItemBackend(item)"></button>
+      </div>
     </div>
   </div>
 
+  <!--Seccion de direcciones -->
+  
+
+
+
+  <!-- Total y botón de compra -->
+  <div class="w-full max-w-5xl mx-auto mt-6 px-4">
+    <div class="bg-white shadow-md rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <span class="text-lg font-bold text-green-700 text-center md:text-left">
+        Total a pagar (USD): ${{ totalPagar.toFixed(2) }}
+      </span>
+
+      <!-- BOTONES -->
+      <div class="flex flex-col md:flex-row gap-2">
+        <!-- Botón Mis Direcciones -->
+        <button pButton label="Mis direcciones" icon="pi pi-list" class="p-button-primary w-full md:w-auto"
+          (click)="abrirMisDirecciones()"></button>
+          
+        <!-- Botón Agregar Dirección -->
+        <button pButton label="Agregar dirección" icon="pi pi-map-marker" class="p-button-info w-full md:w-auto"
+          (click)="abrirModalDireccion()"></button>
+
+        <!-- Botón Realizar compra -->
+        <button pButton label="Realizar compra" icon="pi pi-credit-card" class="p-button-success w-full md:w-auto"
+          (click)="ordenar()"></button>
+      </div>
+    </div>
+  </div>
+
+  <p-dialog [(visible)]="mostrarModalDireccion" [modal]="true" [style]="{ width: '50vw' }"
+    header="Agregar Dirección de Entrega">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <!-- Nombre de la dirección -->
+      <div class="md:col-span-2">
+        <label class="block font-semibold mb-1">Nombre de la dirección</label>
+        <input type="text" [(ngModel)]="addressLine1" class="w-full border p-2 rounded"
+          placeholder="Ej: Casa, Trabajo, Mamá" />
+      </div>
+
+      <!-- País -->
+      <div>
+        <label class="block font-semibold mb-1">País</label>
+        <p-dropdown *ngIf="countries" [options]="countries" [(ngModel)]="selectedCountry" optionLabel="name"
+          optionValue="id" placeholder="Seleccionar país" class="w-full border p-2 rounded" name="country"
+          (onChange)="onCountrySelected()"></p-dropdown>
+      </div>
+
+      <!-- Estado -->
+      <div>
+        <label class="block font-semibold mb-1">Estado/Provincia</label>
+        <p-dropdown [options]="states" [(ngModel)]="selectedState" optionLabel="name" optionValue="id"
+          placeholder="Seleccionar estado" class="w-full border p-2 rounded" name="state" (onChange)="onStateSelected()"
+          [disabled]="!selectedCountry"></p-dropdown>
+      </div>
+
+      <!-- Ciudad -->
+      <div>
+        <label class="block font-semibold mb-1">Ciudad</label>
+        <p-dropdown  [options]="cities" [(ngModel)]="selectedCity" optionLabel="name" optionValue="id"
+          placeholder="Seleccionar ciudad" class="w-full border p-2 rounded" name="city"
+          [disabled]="!selectedState"></p-dropdown>
+      </div>
+      <!-- Código Postal -->
+      <div>
+        <label class="block font-semibold mb-1">Código Postal</label>
+        <input type="text" [(ngModel)]="postalCode" class="w-full border p-2 rounded" placeholder="Ej: 0000" />
+      </div>
+
+      <!-- Nombre del destinatario -->
+      <div>
+        <label class="block font-semibold mb-1">Nombre del destinatario</label>
+        <input type="text" [(ngModel)]="recipientName" class="w-full border p-2 rounded" placeholder="Ej: Juan Pérez" />
+      </div>
+
+      <!-- Teléfono -->
+      <div>
+        <label class="block font-semibold mb-1">Teléfono</label>
+        <input type="text" [(ngModel)]="recipientPhone" class="w-full border p-2 rounded"
+          placeholder="Ej: 59177123456" />
+      </div>
+
+      <!-- Dirección Línea 1 -->
+      <div class="md:col-span-2">
+        <label class="block font-semibold mb-1">Dirección Línea 1</label>
+        <input type="text" [(ngModel)]="addressLine1" class="w-full border p-2 rounded"
+          placeholder="Ej: Calle Los Pinos #123" />
+      </div>
+
+      <!-- Dirección Línea 2 -->
+      <div class="md:col-span-2">
+        <label class="block font-semibold mb-1">Dirección Línea 2</label>
+        <input type="text" [(ngModel)]="addressLine2" class="w-full border p-2 rounded"
+          placeholder="Opcional: Entre Av. Beni y Av. Alemana" />
+      </div>
+    </div>
+
+    <!-- BOTONES DEL MODAL -->
+    <div class="flex justify-end gap-4 mt-6">
+      <!-- Botón Cancelar -->
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary w-full md:w-auto"
+        (click)="cerrarModalDireccion()"></button>
+
+      <!-- Botón Guardar -->
+      <button pButton label="Guardar Dirección" icon="pi pi-save" class="p-button-success w-full md:w-auto"
+        (click)="crearDireccion()"></button>
+    </div>
+  </p-dialog>
+
+  <!-- Diálogo para Mis Direcciones -->
+  <p-dialog [(visible)]="mostrarMisDirecciones" [modal]="true" [style]="{ width: '60vw' }"
+    header="Mis Direcciones de Entrega">
+    
+    <div *ngIf="direcciones.length === 0" class="text-center py-4">
+      <p class="text-gray-500">No tienes direcciones guardadas.</p>
+      <button pButton label="Agregar dirección" icon="pi pi-plus" class="p-button-info mt-3"
+        (click)="cerrarMisDirecciones(); abrirModalDireccion()"></button>
+    </div>
+    
+    <div *ngIf="direcciones.length > 0" class="grid grid-cols-1 gap-4">
+      <div *ngFor="let direccion of direcciones" 
+           class="border rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-lg"
+           [class.bg-green-50]="selectedDireccionId === direccion.id"
+           [class.border-green-500]="selectedDireccionId === direccion.id"
+           (click)="seleccionarDireccion(direccion.id)">
+        
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="font-bold text-lg">{{direccion.address_name}}</h3>
+          <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full" *ngIf="direccion.is_default">Predeterminada</span>
+        </div>
+        
+        <p class="text-gray-700 mb-1"><i class="pi pi-user mr-2"></i> {{direccion.recipient_name}}</p>
+        <p class="text-gray-700 mb-1"><i class="pi pi-phone mr-2"></i> {{direccion.recipient_phone}}</p>
+        <p class="text-gray-700 mb-1">
+          <i class="pi pi-map-marker mr-2"></i> 
+          {{direccion.address_line1}}
+          <span *ngIf="direccion.address_line2">, {{direccion.address_line2}}</span>
+        </p>
+        <p class="text-gray-700 mb-1">
+          <i class="pi pi-globe mr-2"></i> 
+          <span *ngIf="direccion.city?.name">{{direccion.city.name}}, </span>
+          <span *ngIf="direccion.state?.name">{{direccion.state.name}}, </span>
+          <span *ngIf="direccion.country?.name">{{direccion.country.name}}</span>
+        </p>
+        <p class="text-gray-700" *ngIf="direccion.postal_code">
+          <i class="pi pi-envelope mr-2"></i> CP: {{direccion.postal_code}}
+        </p>
+      </div>
+    </div>
+
+    <!-- BOTONES DEL MODAL -->
+    <div class="flex justify-end gap-4 mt-6">
+      <!-- Botón Cancelar -->
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-secondary w-full md:w-auto"
+        (click)="cerrarMisDirecciones()"></button>
+
+      <!-- Botón Seleccionar -->
+      <button pButton label="Seleccionar dirección" icon="pi pi-check" class="p-button-success w-full md:w-auto"
+        [disabled]="!selectedDireccionId"
+        (click)="confirmarSeleccionDireccion()"></button>
+    </div>
+  </p-dialog>
+</div>

@@ -62,10 +62,13 @@ export class OrdersService {
         return this.http.get<PaginatedResponse<any>>(`${this.baseUrl}/finance/`, { headers, params });
     }    
 
-
-
-
-
+    // Agregar este método al OrdersService
+    associateAddressToOrder(orderId: number, addressId: number): Observable<any> {
+        const token = localStorage.getItem('access');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        
+        return this.http.patch(`${this.baseUrl}${orderId}/`, { delivery_address: addressId }, { headers });
+    }
 
     // // Crear delivery
     // createDelivery(data: any): Observable<any> {
