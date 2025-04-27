@@ -93,7 +93,7 @@
     </div>
   </div>
 
-  <p-dialog [(visible)]="mostrarModalDireccion" [modal]="true" [style]="{ width: '50vw' }"
+  <p-dialog [(visible)]="mostrarModalDireccion" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
     header="Agregar Dirección de Entrega">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Nombre de la dirección -->
@@ -173,7 +173,7 @@
   </p-dialog>
 
   <!-- Diálogo para Mis Direcciones -->
-  <p-dialog [(visible)]="mostrarMisDirecciones" [modal]="true" [style]="{ width: '60vw' }"
+  <p-dialog [(visible)]="mostrarMisDirecciones" [modal]="true" [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" [dismissableMask]="true"
     header="Mis Direcciones de Entrega">
     
     <div *ngIf="direcciones.length === 0" class="text-center py-4">
