@@ -10,10 +10,15 @@
     <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
       <p-table 
       [value]="logs" 
+      [rows]="pageSize" 
       [paginator]="true" 
-      [rows]="10" 
+      [lazy]="true"
+      [totalRecords]="totalRecords" 
+      (onPage)="onPageChange($event)"
+      [loading]="loading"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      [first]="(currentPage-1) * pageSize"
       responsiveLayout="scroll"
-      
       >
         <!-- Cabecera -->
         <ng-template pTemplate="header">
@@ -80,17 +85,23 @@
   <div *ngIf="logSeleccionado" class="p-5 text-sm text-gray-800 space-y-2">
     <div class="grid grid-cols-2 gap-y-2">
       <div><strong>ID:</strong> {{ logSeleccionado.id }}</div>
-      <div><strong>ID Usuario:</strong> {{ logSeleccionado.user_id }}</div>
+      <div><strong>ID Usuario:</strong> {{ logSeleccionado.user }}</div>
       <div><strong>Nombre:</strong> {{ usuarioDetalle?.first_name || '-' }}</div>
       <div><strong>Apellido:</strong> {{ usuarioDetalle?.last_name || '-' }}</div>
       <div><strong>Correo:</strong> {{ usuarioDetalle?.email || '-' }}</div>
       <div><strong>Rol:</strong> {{ usuarioDetalle?.role || '-' }}</div>
       <div><strong>Acción:</strong> {{ logSeleccionado.action }}</div>
       <div><strong>Nivel:</strong> {{ logSeleccionado.level }}</div>
+
+      <hr class="col-span-2 border-green-500 my-2" />
       <div class="col-span-2"><strong>Descripción:</strong> {{ logSeleccionado.description }}</div>
       <div class="col-span-2">
         <strong>Fecha:</strong>
-        {{ logSeleccionado.created_at | date: 'full' }}
+        {{ logSeleccionado.created_at | date: 'short' }}
+      </div>
+      <div class="col-span-2">
+        <strong>Direccion IP:</strong>
+        {{ logSeleccionado.ip_address || '-' }}
       </div>
     </div>
   </div>

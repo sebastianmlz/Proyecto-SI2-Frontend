@@ -1,5 +1,5 @@
 // src/app/services/logs.service.ts
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 
@@ -11,9 +11,12 @@ export class LogsService {
 
     constructor(private http: HttpClient) {}
 
-    obtenerBitacora() {
+    obtenerBitacora(page: number = 1, pageSize: number = 10) {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        return this.http.get<any>(this.baseUrl, { headers });
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('page_size', pageSize.toString());
+        return this.http.get<any>(this.baseUrl, { headers, params });
     }
 }
