@@ -1,42 +1,45 @@
-<!-- 🔍 Buscador centrado arriba -->
-<div class="flex justify-center w-full mt-4" >
-  <div class="flex items-center w-full max-w-md bg-white rounded-full shadow-md px-3 py-2 border border-gray-300 mx-4" >
-    <i class="pi pi-search text-gray-500 text-lg mr-2"></i>
-    <input
-      [(ngModel)]="recomendacionTexto"
-      type="text"
-      placeholder="Recomendación por texto"
-      class="w-full focus:outline-none text-sm"
-    />
-    <button
-      pButton
-      icon="pi pi-arrow-right"
-      class="p-button-sm p-button-rounded p-button-info ml-2"
-      (click)="verRecomendacionPorTexto()"
-    ></button>
-  </div>
-</div>
+<!-- Fondo con gradiente suave -->
+<div class="min-h-screen w-full bg-gradient-to-tr from-green-50 via-green-100 to-blue-50 pb-20">
 
+  <!-- 🔍 Buscador centrado arriba -->
+  <!-- <div class="flex justify-center w-full pt-8 mb-6">
+    <div class="flex items-center w-full max-w-md bg-white rounded-full shadow-md px-3 py-2 border border-green-200 mx-4">
+      <i class="pi pi-search text-green-500 text-lg mr-2"></i>
+      <input
+        [(ngModel)]="recomendacionTexto"
+        type="text"
+        placeholder="Buscar o recomendar producto"
+        class="w-full focus:outline-none text-sm bg-transparent"
+      />
+      <button
+        pButton
+        icon="pi pi-arrow-right"
+        class="p-button-sm p-button-rounded bg-green-500 hover:bg-green-600 text-white ml-2"
+        (click)="verRecomendacionPorTexto()"
+      ></button>
+    </div>
+  </div> -->
 
-
-<div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-    <p-card *ngFor="let producto of products" class="shadow-xl rounded-xl">
+  <!-- Grid de productos -->
+  <div class="p-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <p-card *ngFor="let producto of products" class="shadow-lg rounded-2xl bg-white/90 border border-green-100 hover:shadow-2xl transition-all duration-200">
       <ng-template pTemplate="header">
-        <img 
-          [src]="producto.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'" 
-          alt="Imagen producto"
-          class="w-full h-40 object-contain rounded-t-xl"
-        />
+        <div class="flex justify-center items-center bg-gradient-to-t from-green-50 to-green-200 rounded-t-2xl h-44">
+          <img 
+            [src]="producto.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'" 
+            alt="Imagen producto"
+            class="w-28 h-28 object-contain drop-shadow"
+          />
+        </div>
       </ng-template>
   
-      <div class="p-2 text-center space-y-2">
-        <h2 class="font-bold text-lg text-purple-700">{{ producto.name }}</h2>
+      <div class="p-4 text-center space-y-2">
+        <h2 class="font-bold text-lg text-green-700 truncate">{{ producto.name }}</h2>
         <p class="text-green-600 font-semibold text-md">${{ producto.price_usd }}</p>
       </div>
   
       <ng-template pTemplate="footer">
-        <div class="flex justify-center gap-2 mt-2">
+        <div class="flex flex-wrap justify-center gap-2 mt-2">
           <!-- Vista para cliente -->
           <ng-container *ngIf="!isAdmin">
             <button 
@@ -44,7 +47,7 @@
               type="button" 
               label="Agregar al carrito" 
               icon="pi pi-shopping-cart"
-              class="p-button-sm p-button-success"
+              class="p-button-sm bg-green-500 hover:bg-green-600 text-white rounded-lg"
               (click)="agregarAlCarrito(producto)"
             ></button>
   
@@ -53,13 +56,10 @@
               type="button" 
               label="Ver más info" 
               icon="pi pi-eye"
-              class="p-button-sm p-button-info"
+              class="p-button-sm bg-blue-100 text-green-700 border-none rounded-lg"
               (click)="verMasInfo(producto)"
             ></button>
           </ng-container>
-
-
-
   
           <!-- Vista para admin -->
           <ng-container *ngIf="isAdmin">
@@ -67,7 +67,7 @@
               pButton 
               type="button" 
               icon="pi pi-pencil" 
-              class="p-button-sm p-button-warning"
+              class="p-button-sm bg-yellow-400 text-white border-none rounded-lg"
               (click)="abrirModalEditar(producto)"
             ></button>
   
@@ -75,105 +75,105 @@
               pButton 
               type="button" 
               icon="pi pi-trash" 
-              class="p-button-sm p-button-danger"
+              class="p-button-sm bg-red-500 text-white border-none rounded-lg"
               (click)="eliminarProducto(producto.id)"
             ></button>
           </ng-container>
         </div>
-        <div class="flex justify-center gap-2 mt-2">
-            <!-- Botón de recomendaciones -->
-            <button
+        <div class="flex justify-center gap-2 mt-3">
+          <!-- Botón de recomendaciones -->
+          <!-- <button
             pButton
-            class="p-button-sm p-button-info"
+            class="p-button-sm bg-green-100 text-green-700 border-none rounded-lg"
             (click)="verRecomendaciones(producto.name, producto.category.name, producto.brand.name)"
-            >
+          >
             <i class="pi pi-star mr-2"></i>
             Mostrar recomendaciones
-          </button>
+          </button> -->
         </div>
       </ng-template>
     </p-card>
   </div>
+
   <!-- 📦 Paginador visual debajo del grid -->
-<div class="flex justify-center mt-10 mb-20">
-  <p-paginator
-    [rows]="pageSize"
-    [totalRecords]="totalRecords"
-    [rowsPerPageOptions]="[5, 10, 20, 50]"
-    (onPageChange)="onPageChange($event)"
-    [first]="(currentPage - 1) * pageSize"
-    styleClass="p-4 rounded-xl shadow-md w-full max-w-3xl text-lg"
-  />
-</div>
-  
+  <div class="flex justify-center mt-10 mb-20">
+    <p-paginator
+      [rows]="pageSize"
+      [totalRecords]="totalRecords"
+      [rowsPerPageOptions]="[5, 10, 20, 50]"
+      (onPageChange)="onPageChange($event)"
+      [first]="(currentPage - 1) * pageSize"
+      styleClass="p-4 rounded-xl shadow-md w-full max-w-3xl text-lg"
+    />
+  </div>
+
   <!-- Modal ver más info -->
   <p-dialog
-  [(visible)]="modalVerMasVisible"
-  [modal]="true"
-  [closable]="true"
-  [dismissableMask]="true"
-  [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'"
-  class="rounded-xl overflow-hidden"
->
-  <!-- Header personalizado -->
-  <ng-template pTemplate="header">
-    <div class="bg-purple-700 text-white py-3 px-4 text-center text-lg font-semibold rounded-t-xl">
-      Detalles del producto
-    </div>
-  </ng-template>
+    [(visible)]="modalVerMasVisible"
+    [modal]="true"
+    [closable]="true"
+    [dismissableMask]="true"
+    [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'"
+    class="rounded-xl overflow-hidden"
+  >
+    <!-- Header personalizado -->
+    <ng-template pTemplate="header">
+      <div class="bg-green-700 text-white py-3 px-4 text-center text-lg font-semibold rounded-t-xl">
+        Detalles del producto
+      </div>
+    </ng-template>
 
-  <!-- Contenido -->
-  <ng-container *ngIf="productoSeleccionado">
-    <div class="flex flex-col items-center p-4 text-gray-800">
-      <img
-        [src]="productoSeleccionado.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'"
-        alt="Imagen producto"
-        class="w-40 h-40 object-contain rounded mb-4"
-      />
+    <!-- Contenido -->
+    <ng-container *ngIf="productoSeleccionado">
+      <div class="flex flex-col items-center p-4 text-gray-800">
+        <img
+          [src]="productoSeleccionado.image_url || 'https://img.freepik.com/vector-premium/e-commerce-linea-carrito-compras-pago-linea-tienda-linea-producto-ilustracion-vector-icono_679085-37.jpg'"
+          alt="Imagen producto"
+          class="w-40 h-40 object-contain rounded mb-4"
+        />
 
-      <div class="w-full space-y-2 text-sm">
-        <div class="flex justify-between">
-          <strong class="text-gray-600">Nombre:</strong>
-          <span>{{ productoSeleccionado.name }}</span>
-        </div>
-        <div class="flex justify-between">
-          <strong class="text-gray-600">Precio:</strong>
-          <span>{{ productoSeleccionado.price_usd | currency }}</span>
-        </div>
-        <div class="flex justify-between">
-          <strong class="text-gray-600">Marca:</strong>
-          <span>{{ productoSeleccionado.brand?.name || '-' }}</span>
-        </div>
-        <div class="flex justify-between">
-          <strong class="text-gray-600">Categoría:</strong>
-          <span>{{ productoSeleccionado.category?.name || '-' }}</span>
-        </div>
-        <div class="flex justify-between">
-          <strong class="text-gray-600">Garantía:</strong>
-          <span>{{ productoSeleccionado.warranty?.name || '-' }}</span>
-        </div>
-        <div class="flex flex-col">
-          <strong class="text-gray-600">Descripción:</strong>
-          <span>{{ productoSeleccionado.description || 'Sin descripción' }}</span>
+        <div class="w-full space-y-2 text-sm">
+          <div class="flex justify-between">
+            <strong class="text-gray-600">Nombre:</strong>
+            <span>{{ productoSeleccionado.name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <strong class="text-gray-600">Precio:</strong>
+            <span>{{ productoSeleccionado.price_usd | currency }}</span>
+          </div>
+          <div class="flex justify-between">
+            <strong class="text-gray-600">Marca:</strong>
+            <span>{{ productoSeleccionado.brand?.name || '-' }}</span>
+          </div>
+          <div class="flex justify-between">
+            <strong class="text-gray-600">Categoría:</strong>
+            <span>{{ productoSeleccionado.category?.name || '-' }}</span>
+          </div>
+          <div class="flex justify-between">
+            <strong class="text-gray-600">Garantía:</strong>
+            <span>{{ productoSeleccionado.warranty?.name || '-' }}</span>
+          </div>
+          <div class="flex flex-col">
+            <strong class="text-gray-600">Descripción:</strong>
+            <span>{{ productoSeleccionado.description || 'Sin descripción' }}</span>
+          </div>
         </div>
       </div>
-    </div>
-  </ng-container>
+    </ng-container>
 
-  <!-- Footer -->
-  <ng-template pTemplate="footer">
-    <button
-      pButton
-      type="button"
-      icon="pi pi-times"
-      label="Cerrar"
-      (click)="cerrarModales()"
-      class="p-button-sm p-button-rounded p-button-secondary bg-purple-600 text-white border-none"
-    ></button>
-  </ng-template>
-</p-dialog>
+    <!-- Footer -->
+    <ng-template pTemplate="footer">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Cerrar"
+        (click)="cerrarModales()"
+        class="p-button-sm p-button-rounded bg-green-600 text-white border-none"
+      ></button>
+    </ng-template>
+  </p-dialog>
 
-  
   <!-- Modal de edición -->
   <p-dialog 
     [(visible)]="modalEditarVisible" 
@@ -186,18 +186,18 @@
     <div class="space-y-3">
       <label class="block text-sm font-semibold">Nombre</label>
       <input pInputText [(ngModel)]="productoEditable.name" class="w-full" />
-  
+
       <label class="block text-sm font-semibold">Descripción</label>
       <textarea pInputTextarea [(ngModel)]="productoEditable.description" rows="2" class="w-full"></textarea>
-  
+
       <label class="block text-sm font-semibold">Especificaciones</label>
       <textarea pInputTextarea [(ngModel)]="productoEditable.technical_specifications" rows="2" class="w-full"></textarea>
-  
+
       <label class="block text-sm font-semibold">Precio</label>
       <input pInputText type="number" [(ngModel)]="productoEditable.price_usd" class="w-full" />
-  
+
       <!-- Puedes agregar select de marca/categoría si ya tienes cargadas las listas -->
-  
+
       <div class="flex justify-end gap-2 pt-4">
         <button 
           pButton 
@@ -216,4 +216,4 @@
       </div>
     </div>
   </p-dialog>
-  
+</div>

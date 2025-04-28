@@ -63,19 +63,17 @@ export class OrdersService {
     }    
 
     // Agregar este método al OrdersService
-    associateAddressToOrder(orderId: number, addressId: number): Observable<any> {
+    associateAddressToOrder(orderId: number, addressData: any): Observable<any> {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        
-        return this.http.patch(`${this.baseUrl}${orderId}/`, { delivery_address: addressId }, { headers });
+        // Combina el orderId y los datos de la dirección en un solo objeto
+        const payload = {
+            order_id: orderId,
+            ...addressData
+        };
+        return this.http.post(`${this.baseUrl}/deliveries/`, payload, { headers });
     }
 
-    // // Crear delivery
-    // createDelivery(data: any): Observable<any> {
-    //     const token = localStorage.getItem('access');
-    //     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    //     return this.http.post(`${this.baseUrl}/deliveries/`, data, { headers });
-    // }
 
     // Obtener ítems (opcional)
     getOrderItems(): Observable<any> {

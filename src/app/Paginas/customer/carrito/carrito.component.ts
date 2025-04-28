@@ -50,6 +50,7 @@ export class CarritoComponent {
   direcciones: any[] = [];
   selectedDireccionId: number | null = null;
   mostrarMisDirecciones: boolean = false;
+  selectedDireccion: any = null; // Agrega esta variable para guardar la dirección seleccionada
 
 
   constructor(
@@ -61,19 +62,6 @@ export class CarritoComponent {
     private deliveryAdressService: DeliveryAdressService,
     private parametersService: ParametersService
   ) { }
-
-  cargarPaises(): void {
-    this.parametersService.getCountries().subscribe({
-      next: (res: any) => {
-        console.log('Países cargados:', res);
-        this.countries = res.items || []; // 🔥 CORRECTO: acceder a res.items
-      },
-      error: (err) => {
-        console.error('Error al cargar países:', err);
-        this.countries = [];
-      }
-    });
-  }
 
 
   ngOnInit(): void {
@@ -128,12 +116,17 @@ export class CarritoComponent {
     });
   }
 
-  abrirModalDireccion(): void {
-    this.mostrarModalDireccion = true;
-  }
-
-  cerrarModalDireccion(): void {
-    this.mostrarModalDireccion = false;
+  cargarPaises(): void {
+    this.parametersService.getCountries().subscribe({
+      next: (res: any) => {
+        console.log('Países cargados:', res);
+        this.countries = res.items || []; // 🔥 CORRECTO: acceder a res.items
+      },
+      error: (err) => {
+        console.error('Error al cargar países:', err);
+        this.countries = [];
+      }
+    });
   }
 
   onCountrySelected(): void {
@@ -168,6 +161,14 @@ export class CarritoComponent {
         }
       });
     }
+  }
+
+  abrirModalDireccion(): void {
+    this.mostrarModalDireccion = true;
+  }
+
+  cerrarModalDireccion(): void {
+    this.mostrarModalDireccion = false;
   }
 
   guardarCantidad(item: any): void {
@@ -260,7 +261,9 @@ export class CarritoComponent {
 
   seleccionarDireccion(direccionId: number): void {
     this.selectedDireccionId = direccionId;
-    console.log('Dirección seleccionada ID:', direccionId);
+    // Busca y guarda el objeto dirección completo
+    this.selectedDireccion = this.direcciones.find(dir => dir.id === direccionId) || null;
+    console.log('Dirección seleccionada:', this.selectedDireccion);
   }
 
   confirmarSeleccionDireccion(): void {
@@ -269,6 +272,7 @@ export class CarritoComponent {
       const direccionSeleccionada = this.direcciones.find(dir => dir.id === this.selectedDireccionId);
       if (direccionSeleccionada) {
         this.noti.success('Dirección seleccionada', 'Se ha seleccionado la dirección correctamente');
+        console.log('Dirección seleccionada:', direccionSeleccionada);
         this.mostrarMisDirecciones = false;
         // Aquí puedes almacenar la dirección o usarla para el proceso de compra
       }
@@ -295,51 +299,73 @@ export class CarritoComponent {
       return;
     }
 
-    // Verificar si hay una dirección seleccionada
-    if (!this.selectedDireccionId) {
-      this.noti.warn('Dirección requerida', 'Por favor selecciona una dirección de entrega');
-      this.abrirMisDirecciones();
-      return;
-    }
+    // // Verificar si hay una dirección seleccionada
+    // if (!this.selectedDireccion) {
+    //   this.noti.warn('Dirección requerida', 'Por favor selecciona una dirección de entrega');
+    //   this.abrirMisDirecciones();
+    //   return;
+    // }
 
-    // Asociar la dirección a la orden antes de proceder al pago
-    this.ordersService.associateAddressToOrder(orderId, this.selectedDireccionId).subscribe({
-      next: () => {
-        // Proceder con el checkout de Stripe
-        this.ordersService.createStripeCheckout(orderId).subscribe({
-          next: (res: any) => {
-            if (res.checkout_url) {
-              localStorage.setItem('pendingOrder', String(orderId));
-              window.location.href = res.checkout_url;
-            } else {
-              this.noti.error('Error', 'No se recibió la URL de Stripe');
-            }
-          },
-          error: (err) => {
-            console.error('Error al generar el checkout:', err);
-            this.noti.error('Error', 'No se pudo generar el checkout');
-          }
-        });
+    // // Prepara el payload con los datos requeridos por la API
+    // const direccionPayload = {
+    //   recipient_name: this.selectedDireccion.recipient_name,
+    //   recipient_phone: this.selectedDireccion.recipient_phone,
+    //   address_line1: this.selectedDireccion.address_line1,
+    //   address_line2: this.selectedDireccion.address_line2,
+    //   city: this.selectedDireccion.city,
+    //   state: this.selectedDireccion.state,
+    //   country: this.selectedDireccion.country,
+    //   postal_code: this.selectedDireccion.postal_code,
+    //   // delivery_status: 'pending', // o el valor por defecto que requiera tu backend
+    //   // estimated_arrival: '',      // puedes dejarlo vacío o calcularlo si es necesario
+    //   delivery_notes: ''          // puedes dejarlo vacío o agregar notas si tienes
+    // };
+
+    // // Asociar la dirección a la orden antes de proceder al pago
+    // this.ordersService.associateAddressToOrder(orderId, direccionPayload).subscribe({
+    //   next: () => {
+    //     // Proceder con el checkout de Stripe
+    //     this.ordersService.createStripeCheckout(orderId).subscribe({
+    //       next: (res: any) => {
+    //         if (res.checkout_url) {
+    //           localStorage.setItem('pendingOrder', String(orderId));
+    //           window.location.href = res.checkout_url;
+    //         } else {
+    //           this.noti.error('Error', 'No se recibió la URL de Stripe');
+    //         }
+    //       },
+    //       error: (err) => {
+    //         console.error('Error al generar el checkout:', err);
+    //         this.noti.error('Error', 'No se pudo generar el checkout');
+    //       }
+    //     });
+    //   },
+    //   error: (err) => {
+    //     console.error('Error al asociar dirección:', err);
+    //     this.noti.error('Error', 'No se pudo asociar la dirección a la orden');
+    //   }
+    // });
+    this.ordersService.createStripeCheckout(orderId).subscribe({
+      next: (res: any) => {
+        if (res.checkout_url) {
+          localStorage.setItem('pendingOrder', String(orderId));
+          window.location.href = res.checkout_url;
+        } else {
+          this.noti.error('Error', 'No se recibió la URL de Stripe');
+        }
       },
       error: (err) => {
-        console.error('Error al asociar dirección:', err);
-        this.noti.error('Error', 'No se pudo asociar la dirección a la orden');
+        console.error('Error al generar el checkout:', err);
+        this.noti.error('Error', 'No se pudo generar el checkout');
       }
     });
   }
-
-  eliminarDelCarrito(index: number): void {
-    this.carrito.splice(index, 1);
-    localStorage.setItem('carrito', JSON.stringify(this.carrito));
-  }
-
 
   calcularTotal(): void {
     this.totalPagar = this.carrito.reduce((acc, item) =>
       acc + (item.price_usd * item.quantity), 0);
     localStorage.setItem('carrito', JSON.stringify(this.carrito));
   }
-
 
   eliminarItem(item: any): void {
     if (confirm('¿Estás seguro de que deseas eliminar este producto del carrito?')) {
@@ -364,137 +390,6 @@ export class CarritoComponent {
       });
     }
   }
-
-
-  realizarCompra(): void {
-    const user = this.authService.getUser();
-
-    const dataFinance = {
-      currency: 'USD',
-      items: this.carrito.map((item: any) => ({
-        product_id: item.id,
-        quantity: item.quantity
-      }))
-    };
-
-    this.ordersService.createFinance(dataFinance).subscribe({
-      next: (orden: any) => {
-        const orderId = orden.id;
-        console.log('Orden creada con éxito:', orden);
-        this.noti.success('Compra realizada', 'Tu pedido fue registrado correctamente');
-
-        // 1. Preparar los items solo con lo necesario
-        const itemsData = this.carrito.map((item: any) => ({
-          order_id: orderId,
-          product_id: item.id,
-          quantity: item.quantity
-        }));
-
-        // 2. Enviar cada item
-        const requests = itemsData.map((itemData: any) =>
-          this.ordersService.createOrderItem(itemData)
-        );
-
-        // 3. Esperar a que todos los items se registren
-        forkJoin(requests).subscribe({
-          next: () => {
-            this.noti.success('Productos Registrados a la orden', 'Tus productos fueron registradoa correctamente');
-            // 4. Lanzar la pasarela de pago Stripe
-            this.ordersService.createStripeCheckout(orderId).subscribe({
-              next: (res: any) => {
-                if (res.checkout_url) {
-                  // Guardar que hay un pago pendiente
-                  localStorage.setItem('pendingOrder', String(orderId));
-                  // Redirigir a Stripe
-                  window.location.href = res.checkout_url;
-                } else {
-                  this.noti.error('Error', 'No se recibió URL de Stripe');
-                }
-              },
-              error: (err) => {
-                console.error('Error al iniciar pago:', err);
-                this.noti.error('Pago', 'No se pudo iniciar el pago');
-              }
-            });
-          },
-          error: (err) => {
-            console.error('Error al registrar items:', err);
-            this.noti.error('Error', 'No se pudieron registrar los productos');
-          }
-        });
-      },
-      error: (err) => {
-        console.error('Error al crear orden:', err);
-        this.noti.error('Error', 'No se pudo crear la orden');
-      }
-    });
-  }
-
-  // crearItems(ordenId: number): void {
-  //   const items = this.carrito.map((item: any) => ({
-  //     order: ordenId,
-  //     product: item.id,
-  //     quantity: item.quantity,
-  //     unit_price: item.price_usd
-  //   }));
-
-  //   this.ordersService.createOrderItem(items).subscribe({
-  //     next: () => {
-  //       this.crearPago(ordenId);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al crear ítems:', err);
-  //       this.noti.error('Error', 'No se pudieron registrar los productos');
-  //     }
-  //   });
-  // }
-
-  // crearPago(ordenId: number): void {
-  //   const payment = {
-  //     order: ordenId,
-  //     amount: this.totalPagar,
-  //     method: 'Efectivo',
-  //     status: 'Pendiente',
-  //     transaction_id: 'trans' + Date.now()
-  //   };
-
-  //   this.ordersService.createPayment(payment).subscribe({
-  //     next: () => {
-  //       this.crearEntrega(ordenId);
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al registrar el pago:', err);
-  //       this.noti.error('Error', 'No se pudo registrar el pago');
-  //     }
-  //   });
-  // }
-
-  // crearEntrega(ordenId: number): void {
-  //   const delivery = {
-  //     order: ordenId,
-  //     delivery_address: 'Santa Cruz, Bolivia',
-  //     delivery_status: 'Pendiente',
-  //     tracking_info: 'En preparación',
-  //     estimated_arrival: new Date(new Date().setDate(new Date().getDate() + 3)).toISOString()
-  //   };
-
-  //   this.ordersService.createDelivery(delivery).subscribe({
-  //     next: () => {
-  //       this.noti.success('Compra realizada', 'Tu pedido fue registrado correctamente');
-  //       localStorage.removeItem('carrito');
-  //       this.carrito = [];
-  //       this.totalPagar = 0;
-  //     },
-  //     error: (err) => {
-  //       console.error('Error al registrar la entrega:', err);
-  //       this.noti.error('Error', 'No se pudo registrar la entrega');
-  //     }
-  //   });
-  // }
-
-
-
-
 
 
 }
