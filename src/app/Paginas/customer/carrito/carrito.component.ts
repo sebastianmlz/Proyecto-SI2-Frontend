@@ -299,66 +299,66 @@ export class CarritoComponent {
       return;
     }
 
-    // // Verificar si hay una dirección seleccionada
-    // if (!this.selectedDireccion) {
-    //   this.noti.warn('Dirección requerida', 'Por favor selecciona una dirección de entrega');
-    //   this.abrirMisDirecciones();
-    //   return;
-    // }
+    // Verificar si hay una dirección seleccionada
+    if (!this.selectedDireccion) {
+      this.noti.warn('Dirección requerida', 'Por favor selecciona una dirección de entrega');
+      this.abrirMisDirecciones();
+      return;
+    }
 
-    // // Prepara el payload con los datos requeridos por la API
-    // const direccionPayload = {
-    //   recipient_name: this.selectedDireccion.recipient_name,
-    //   recipient_phone: this.selectedDireccion.recipient_phone,
-    //   address_line1: this.selectedDireccion.address_line1,
-    //   address_line2: this.selectedDireccion.address_line2,
-    //   city: this.selectedDireccion.city,
-    //   state: this.selectedDireccion.state,
-    //   country: this.selectedDireccion.country,
-    //   postal_code: this.selectedDireccion.postal_code,
-    //   // delivery_status: 'pending', // o el valor por defecto que requiera tu backend
-    //   // estimated_arrival: '',      // puedes dejarlo vacío o calcularlo si es necesario
-    //   delivery_notes: ''          // puedes dejarlo vacío o agregar notas si tienes
-    // };
+    // Prepara el payload con los datos requeridos por la API
+    const direccionPayload = {
+      recipient_name: this.selectedDireccion.recipient_name,
+      recipient_phone: this.selectedDireccion.recipient_phone,
+      address_line1: this.selectedDireccion.address_line1,
+      address_line2: this.selectedDireccion.address_line2,
+      city: this.selectedDireccion.city,
+      state: this.selectedDireccion.state,
+      country: this.selectedDireccion.country,
+      postal_code: this.selectedDireccion.postal_code,
+      // delivery_status: 'pending', // o el valor por defecto que requiera tu backend
+      // estimated_arrival: '',      // puedes dejarlo vacío o calcularlo si es necesario
+      delivery_notes: ''          // puedes dejarlo vacío o agregar notas si tienes
+    };
 
-    // // Asociar la dirección a la orden antes de proceder al pago
-    // this.ordersService.associateAddressToOrder(orderId, direccionPayload).subscribe({
-    //   next: () => {
-    //     // Proceder con el checkout de Stripe
-    //     this.ordersService.createStripeCheckout(orderId).subscribe({
-    //       next: (res: any) => {
-    //         if (res.checkout_url) {
-    //           localStorage.setItem('pendingOrder', String(orderId));
-    //           window.location.href = res.checkout_url;
-    //         } else {
-    //           this.noti.error('Error', 'No se recibió la URL de Stripe');
-    //         }
-    //       },
-    //       error: (err) => {
-    //         console.error('Error al generar el checkout:', err);
-    //         this.noti.error('Error', 'No se pudo generar el checkout');
-    //       }
-    //     });
-    //   },
-    //   error: (err) => {
-    //     console.error('Error al asociar dirección:', err);
-    //     this.noti.error('Error', 'No se pudo asociar la dirección a la orden');
-    //   }
-    // });
-    this.ordersService.createStripeCheckout(orderId).subscribe({
-      next: (res: any) => {
-        if (res.checkout_url) {
-          localStorage.setItem('pendingOrder', String(orderId));
-          window.location.href = res.checkout_url;
-        } else {
-          this.noti.error('Error', 'No se recibió la URL de Stripe');
-        }
+    // Asociar la dirección a la orden antes de proceder al pago
+    this.ordersService.associateAddressToOrder(orderId, direccionPayload).subscribe({
+      next: () => {
+        // Proceder con el checkout de Stripe
+        this.ordersService.createStripeCheckout(orderId).subscribe({
+          next: (res: any) => {
+            if (res.checkout_url) {
+              localStorage.setItem('pendingOrder', String(orderId));
+              window.location.href = res.checkout_url;
+            } else {
+              this.noti.error('Error', 'No se recibió la URL de Stripe');
+            }
+          },
+          error: (err) => {
+            console.error('Error al generar el checkout:', err);
+            this.noti.error('Error', 'No se pudo generar el checkout');
+          }
+        });
       },
       error: (err) => {
-        console.error('Error al generar el checkout:', err);
-        this.noti.error('Error', 'No se pudo generar el checkout');
+        console.error('Error al asociar dirección:', err);
+        this.noti.error('Error', 'No se pudo asociar la dirección a la orden');
       }
     });
+    // this.ordersService.createStripeCheckout(orderId).subscribe({
+    //   next: (res: any) => {
+    //     if (res.checkout_url) {
+    //       localStorage.setItem('pendingOrder', String(orderId));
+    //       window.location.href = res.checkout_url;
+    //     } else {
+    //       this.noti.error('Error', 'No se recibió la URL de Stripe');
+    //     }
+    //   },
+    //   error: (err) => {
+    //     console.error('Error al generar el checkout:', err);
+    //     this.noti.error('Error', 'No se pudo generar el checkout');
+    //   }
+    // });
   }
 
   calcularTotal(): void {
