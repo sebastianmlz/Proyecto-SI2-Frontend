@@ -3,7 +3,7 @@
   <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl px-6 py-3 text-center">
     <h2 class="text-xl font-semibold text-white flex justify-center items-center gap-2">
       <i class="pi pi-book text-white text-xl"></i>
-      Historial de ventas
+      Historial de Pedidos
     </h2>
   </div>
 
@@ -24,10 +24,10 @@
           <th class="py-2 px-3">Total (USD)</th>
           <th class="py-2 px-3">Método de pago</th>
           <th class="py-2 px-3">Estado de pago</th>
-          <th class="py-2 px-3">Estado del pedido</th>
+          <th class="py-2 px-3 w-36 sm:w-auto text-center">Estado del pedido</th>
           <th class="py-2 px-3">Fecha de creación</th>
           <th class="py-2 px-3">Fecha de pago</th>
-          <th class="py-2 px-3">Acción</th>
+          <th class="py-2 px-3 w-28 sm:w-auto text-center">Acción</th>
         </tr>
       </ng-template>
 
@@ -50,8 +50,8 @@
               {{ venta.payment?.payment_status || 'sin pago' }}
             </span>
           </td>
-          <td class="py-2 px-3">
-            <span class="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-700"
+          <td class="py-2 px-3 w-36 sm:w-auto text-center">
+            <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
             [ngClass]="{
               'bg-green-100 text-green-700': venta.estado_pedido === 'Entregado',
               'bg-blue-100 text-blue-700': venta.estado_pedido === 'En reparto',
@@ -63,21 +63,25 @@
           </td>
           <td class="py-2 px-3">{{ venta.created_at | date: 'short' }}</td>
           <td class="py-2 px-3">{{ venta.payment.updated_at| date: 'short' }}</td>
-          <td class="py-2 px-3">
-            <button
-              pButton
-              type="button"
-              label="Ver más"
-              class="p-button-sm p-button-info"
-              (click)="abrirModalVerMas(venta)"
-            ></button>
-            <button 
-            pButton icon="pi pi-comment" 
-            class="p-button-rounded p-button-info p-button-sm ml-2"
-            pTooltip="Dejar feedback" 
-            tooltipPosition="top" 
-            (click)="abrirModalFeedback(venta)"
-            *ngIf="!venta.feedback"></button>
+          <td class="py-2 px-3 w-28 sm:w-auto text-center">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-2">
+              <button
+                pButton
+                type="button"
+                label="Ver más"
+                class="p-button-sm p-button-info w-full sm:w-auto"
+                (click)="abrirModalVerMas(venta)"
+              ></button>
+              <button 
+                pButton 
+                icon="pi pi-comment" 
+                class="p-button-rounded p-button-info p-button-sm w-full sm:w-auto"
+                pTooltip="Dejar feedback" 
+                tooltipPosition="top" 
+                (click)="abrirModalFeedback(venta)"
+                *ngIf="!venta.feedback"
+              ></button>
+            </div>
           </td>
         </tr>
       </ng-template>
@@ -161,51 +165,60 @@
 </p-dialog>
 
 <!-- Modal de Feedback -->
-<p-dialog [(visible)]="modalFeedbackVisible" [modal]="true" [style]="{width: '90vw', maxWidth: '700px'}" 
-          [draggable]="false" [resizable]="false" header="Tu opinión nos importa" 
-          (onHide)="cerrarModalFeedback()">
-  <div class="p-4">
-    <h2 class="text-xl font-bold mb-4">Pedido #{{ ventaSeleccionada?.id }}</h2>
+<p-dialog [(visible)]="modalFeedbackVisible" [modal]="true" [style]="{width: '95vw', maxWidth: '650px'}"
+          [draggable]="false" [resizable]="false" (onHide)="cerrarModalFeedback()"[dismissableMask]="true" [closable]="true">
+  <ng-template pTemplate="header">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
+      Tu opinion nos importa
+    </div>
+  </ng-template>
+  <div class="p-4 bg-gray-50 rounded-xl">
+    <h2 class="text-2xl font-bold mb-2 text-green-700 text-center">Pedido #{{ ventaSeleccionada?.id }}</h2>
 
     <div *ngIf="ventaSeleccionada">
       <!-- Valoración de productos -->
-      <div class="mb-6">
-        <h3 class="text-lg font-semibold mb-2">Productos</h3>
-        <div *ngFor="let item of ventaSeleccionada.items">
-          <div class="flex items-center gap-4 mb-2">
-            <label class="font-medium">{{ item.product.name }}</label>
-            <p-rating [(ngModel)]="item.product._rating" [readonly]="item.product._feedbackSent" [stars]="5"></p-rating>
-            <textarea [(ngModel)]="item.product._comment" rows="2" class="w-full p-2 border rounded mb-2"
+      <div class="mb-8">
+        <h3 class="text-lg font-semibold mb-4 text-green-800">Productos</h3>
+        <div *ngFor="let item of ventaSeleccionada.items" class="bg-white rounded-lg shadow p-4 mb-5 border border-green-100">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
+            <label class="font-medium text-green-700">{{ item.product.name }}</label>
+            <p-rating [(ngModel)]="item.product._rating" [readonly]="item.product._feedbackSent" [stars]="5"
+                      class="text-green-600"></p-rating>
+          </div>
+          <textarea [(ngModel)]="item.product._comment" rows="2" class="w-full p-2 border rounded mb-2 focus:border-green-400 focus:ring-green-200 transition"
               [readonly]="item.product._feedbackSent"
               placeholder="Comentarios sobre el producto (opcional)"></textarea>
-            <button pButton label="Enviar feedback producto" icon="pi pi-check" class="p-button-success mb-4"
+          <button pButton label="Enviar feedback producto" icon="pi pi-check" class="p-button-success w-full md:w-auto mb-2"
               (click)="enviarFeedbackProducto(item)"
               [disabled]="item.product._feedbackSent || !item.product._rating"></button>
+          <div *ngIf="item.product._feedbackSent" class="text-green-600 text-xs mb-1 flex items-center gap-1">
+            <i class="pi pi-check-circle"></i> ¡Feedback enviado!
           </div>
-          <div *ngIf="item.product._feedbackSent" class="text-green-600 text-xs mb-2">¡Feedback enviado!</div>
-          <hr class="my-2 border-green-200" />
         </div>
       </div>
     </div>
 
     <!-- Valoración de entrega -->
-    <div class="mb-6">
-      <h3 class="text-lg font-semibold mb-2">Entrega</h3>
-      <div class="flex items-center gap-4 mb-2">
-        <label class="font-medium">¿Cómo fue el servicio de delivery?</label>
-        <p-rating [(ngModel)]="valoracionEntrega" [readonly]="deliveryFeedbackSent" [stars]="5"></p-rating>
-        <textarea [(ngModel)]="comentarioEntrega" rows="2" class="w-full p-2 border rounded"
-                  [readonly]="deliveryFeedbackSent"
-                  placeholder="Comentarios sobre velocidad, estado de la entrega o atención del repartidor (opcional)"></textarea>
-        <button pButton label="Enviar feedback delivery" icon="pi pi-check" class="p-button-success mt-2"
+    <div class="mb-6 bg-white rounded-lg shadow p-4 border border-green-100">
+      <h3 class="text-lg font-semibold mb-3 text-green-800">Entrega</h3>
+      <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-2">
+        <label class="font-medium text-green-700 mb-2 md:mb-0">¿Cómo fue el servicio de delivery?</label>
+        <p-rating [(ngModel)]="valoracionEntrega" [readonly]="deliveryFeedbackSent" [stars]="5"
+                  class="text-green-600"></p-rating>
+      </div>
+      <textarea [(ngModel)]="comentarioEntrega" rows="2" class="w-full p-2 border rounded focus:border-green-400 focus:ring-green-200 transition"
+                [readonly]="deliveryFeedbackSent"
+                placeholder="Comentarios sobre velocidad, estado de la entrega o atención del repartidor (opcional)"></textarea>
+      <button pButton label="Enviar feedback delivery" icon="pi pi-check" class="p-button-success mt-2 w-full md:w-auto"
                 (click)="enviarFeedbackDelivery()"
                 [disabled]="deliveryFeedbackSent || !valoracionEntrega"></button>
+      <div *ngIf="deliveryFeedbackSent" class="text-green-600 text-xs mt-2 flex items-center gap-1">
+        <i class="pi pi-check-circle"></i> ¡Feedback de entrega enviado!
       </div>
-      <div *ngIf="deliveryFeedbackSent" class="text-green-600 text-xs mt-2">¡Feedback de entrega enviado!</div>
     </div>
 
     <div class="flex justify-end gap-3 mt-6">
-      <button pButton label="Cerrar" icon="pi pi-times" class="p-button-outlined"
+      <button pButton label="Cerrar" icon="pi pi-times" class="p-button-outlined p-button-sm"
               (click)="cerrarModalFeedback()"></button>
     </div>
   </div>
