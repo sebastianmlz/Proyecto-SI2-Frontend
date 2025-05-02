@@ -56,9 +56,14 @@ export class ProductosService {
       
     return this.http.get<PaginatedResponse<Product>>(`${this.baseUrl}`, { headers, params });
   }
-  
-  
 
+  getProductoById(id: number): Observable<Product> {
+    const token = localStorage.getItem('access');
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    return this.http.get<Product>(`${this.baseUrl}${id}/`, { headers });
+  }
+  
+  
   editarProducto(product_id: number, data: FormData): Observable<any> {
     const token = localStorage.getItem('access');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);

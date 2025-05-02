@@ -30,6 +30,9 @@ export class HistorialPedidosComponent implements OnInit {
   valoracionEntrega: number = 0;
   comentarioEntrega: string = '';
 
+  deliveryFeedbackSent: boolean = false;
+
+
   constructor(
     private ordersService: OrdersService,
     private authService: AuthService,
@@ -43,7 +46,6 @@ export class HistorialPedidosComponent implements OnInit {
   obtenerVentas(): void {
     this.ordersService.getVentas().subscribe({
       next: (res: any) => {
-        console.log('Ventas obtenidas:', res);
         this.ventas = res.items.filter(
           (venta: any) => venta.payment?.payment_status === 'completed'
         );
@@ -60,6 +62,15 @@ export class HistorialPedidosComponent implements OnInit {
               }
             });
           }
+          // Obtener estado del pedido (delivery)
+          this.ordersService.getOrderDeliveryStatus(venta.id).subscribe({
+            next: (deliveryData) => {
+              venta.estado_pedido = deliveryData.status_display;
+            },
+            error: (err) => {
+              venta.estado_pedido = 'Sin estado';
+            }
+          });
         });
       },
       error: (err) => {
@@ -83,21 +94,43 @@ export class HistorialPedidosComponent implements OnInit {
     this.ventaSeleccionada = null;
   }
 
-  abrirModalFeedback(venta: any): void {
-    this.ventaSeleccionada = venta;
-    this.modalFeedbackVisible = true;
+  // Feedback
+
+  enviarFeedbackProducto(item: any): void {
+    const payload = {
+      order: this.ventaSeleccionada.id,
+      product: item.product.id,
+      product_rating: item.product._rating,
+      product_comment: item.product._comment || 'Sin comentarios'
+    };
+
+    this.ordersService.rateProductFeedback(payload).subscribe({
+      next: () => {
+        item.product._feedbackSent = true;
+        this.notificacionService.success('¡Gracias!', 'Feedback de producto enviado');
+      },
+      error: () => {
+        this.notificacionService.error('Error', 'No se pudo enviar el feedback del producto');
+      }
+    });
   }
 
-  cerrarModalFeedback(): void {
-    this.modalFeedbackVisible = false;
-    this.ventaSeleccionada = null;
-    // Resetear valores
-    this.valoracionGeneral = 0;
-    this.comentarioGeneral = '';
-    this.valoracionProducto = 0;
-    this.comentarioProducto = '';
-    this.valoracionEntrega = 0;
-    this.comentarioEntrega = '';
+  enviarFeedbackDelivery(): void {
+    const payload = {
+      order: this.ventaSeleccionada.id,
+      delivery_rating: this.valoracionEntrega,
+      delivery_comment: this.comentarioEntrega || 'Sin comentarios'
+    };
+
+    this.ordersService.rateDeliveryFeedback(payload).subscribe({
+      next: () => {
+        this.deliveryFeedbackSent = true;
+        this.notificacionService.success('¡Gracias!', 'Feedback de entrega enviado');
+      },
+      error: () => {
+        this.notificacionService.error('Error', 'No se pudo enviar el feedback de entrega');
+      }
+    });
   }
 
   crearFeedback(): void {
@@ -133,5 +166,50 @@ export class HistorialPedidosComponent implements OnInit {
     });
   }
 
-  
-}   
+  abrirModalFeedback(venta: any): void {
+    this.ventaSeleccionada = venta;
+    this.modalFeedbackVisible = true;
+    this.deliveryFeedbackSent = false;
+
+    // Obtener feedbacks existentes para la orden
+    this.ordersService.getOrderFeedback(1, 10).subscribe({
+      next: (res: any) => {
+        const feedbacks = res.items.filter((f: any) => f.order === venta.id);
+
+        // Marcar productos con feedback existente
+        this.ventaSeleccionada.items.forEach((item: any) => {
+          const prodFeedback = feedbacks.find((f: any) => f.product === item.product.id);
+          item.product._feedbackSent = !!prodFeedback;
+          item.product._rating = prodFeedback?.product_rating || 0;
+          item.product._comment = prodFeedback?.product_comment || '';
+        });
+
+        // Marcar feedback de entrega si existe
+        const deliveryFb = feedbacks.find((f: any) => f.delivery_rating !== null);
+        this.deliveryFeedbackSent = !!deliveryFb;
+        this.valoracionEntrega = deliveryFb?.delivery_rating || 0;
+        this.comentarioEntrega = deliveryFb?.delivery_comment || '';
+      },
+      error: () => {
+        // Si hay error, deja los campos editables
+        this.ventaSeleccionada.items.forEach((item: any) => {
+          item.product._feedbackSent = false;
+        });
+        this.deliveryFeedbackSent = false;
+      }
+    });
+  }
+
+  cerrarModalFeedback(): void {
+    this.modalFeedbackVisible = false;
+    this.ventaSeleccionada = null;
+    // Resetear valores
+    this.valoracionGeneral = 0;
+    this.comentarioGeneral = '';
+    this.valoracionProducto = 0;
+    this.comentarioProducto = '';
+    this.valoracionEntrega = 0;
+    this.comentarioEntrega = '';
+  }
+
+}
