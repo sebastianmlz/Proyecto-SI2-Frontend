@@ -1,0 +1,107 @@
+<div class="p-6">
+    <h2 class="text-2xl text-green-700 font-bold text-center mb-6">
+        <i class="pi pi-comments mr-2"></i> Opiniones de Clientes
+    </h2>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let feedback of feedbacks" class="border rounded-xl p-5 shadow-sm hover:shadow-md transition">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-gray-800">Pedido #{{ feedback.order }}</h3>
+                <button pButton icon="pi pi-search" class="p-button-rounded p-button-sm p-button-outlined p-button-info"
+                    (click)="verDetalle(feedback)" pTooltip="Ver detalle del comentario" tooltipPosition="top"></button>
+            </div>
+
+            <!-- Valoración del producto -->
+            <p class="text-sm font-semibold text-gray-600 mb-1">Valoración del Producto:</p>
+            <p-rating [(ngModel)]="feedback.product_rating" [readonly]="true" [stars]="5" class="mb-1"></p-rating>
+            <p class="text-sm italic text-gray-500 mb-3">
+                {{ (feedback.product_comment || 'Sin comentario') | slice:0:60 }}{{ feedback.product_comment?.length > 60 ? '...' : '' }}
+            </p>
+
+            <!-- Valoración de la entrega -->
+            <p class="text-sm font-semibold text-gray-600 mb-1">Valoración de la Entrega:</p>
+            <p-rating [(ngModel)]="feedback.delivery_rating" [readonly]="true" [stars]="5" class="mb-1"></p-rating>
+            <p class="text-sm italic text-gray-500">
+                {{ (feedback.delivery_comment || 'Sin comentario') | slice:0:60 }}{{ feedback.delivery_comment?.length > 60 ? '...' : '' }}
+            </p>
+            
+            <!-- Info de cliente y fecha -->
+            <div class="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
+                <p class="text-xs text-gray-500">
+                    <i class="pi pi-user mr-1"></i> {{ feedback.user_name || 'Cliente' }}
+                </p>
+                <p class="text-xs text-gray-500">
+                    <i class="pi pi-calendar mr-1"></i> {{ feedback.order_date | date:'dd/MM/yy' }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<p-dialog 
+  [(visible)]="modalVisible"
+  [modal]="true"
+  [closable]="false"
+  [dismissableMask]="true"
+  [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'"
+  class="rounded-xl custom-dialog p-0 overflow-hidden"
+>
+  <!-- 🟢 Header personalizado -->
+  <ng-template pTemplate="header">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
+      <h2 class="text-center text-white text-lg font-bold m-0">
+        Detalle del Comentario
+      </h2>
+    </div>
+  </ng-template>
+
+  <div *ngIf="feedbackSeleccionado" class="p-5 text-sm text-gray-800 space-y-2">
+    <div class="grid grid-cols-2 gap-y-2">
+      <div><strong>Pedido:</strong> #{{ feedbackSeleccionado.order }}</div>
+      <div><strong>Fecha:</strong> {{ feedbackSeleccionado.order_date || 'No disponible' }}</div>
+      <div><strong>ID Cliente:</strong> {{ feedbackSeleccionado?.user }}</div>
+      <div><strong>Nombre:</strong> {{ usuarioDetalle?.first_name || '-' }} </div>
+      <div><strong>Apellido:</strong> {{ usuarioDetalle?.last_name || '-' }}</div>
+      <div><strong>Correo:</strong> {{ usuarioDetalle?.email || '-' }}</div>
+      <div><strong>Rol:</strong> {{ usuarioDetalle?.role || '-' }}</div>
+
+      <hr class="col-span-2 border-green-500 my-2" />
+      
+      <div class="col-span-2">
+        <strong>⭐ Valoración del Producto:</strong> 
+        <p-rating [(ngModel)]="feedbackDetalle.product_rating" [readonly]="true" [stars]="5"></p-rating>
+        <p class="italic mt-1 text-gray-600">
+          {{ feedbackDetalle.product_comment || 'Sin comentario' }}
+        </p>
+      </div>
+
+      <div class="col-span-2">
+        <strong>🚚 Valoración de la Entrega:</strong> 
+        <p-rating [(ngModel)]="feedbackDetalle.delivery_rating" [readonly]="true" [stars]="5"></p-rating>
+        <p class="italic mt-1 text-gray-600">
+          {{ feedbackDetalle.delivery_comment || 'Sin comentario' }}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔄 Cargando -->
+  <div *ngIf="!feedbackDetalle" class="p-6 text-center">
+    <i class="pi pi-spin pi-spinner text-2xl text-primary"></i>
+    <p class="mt-3">Cargando detalles...</p>
+  </div>
+
+  <!-- 🔴 Footer / Botón cerrar -->
+  <ng-template pTemplate="footer">
+    <div class="w-full flex justify-end px-5 pb-4">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Cerrar"
+        class="p-button-sm bg-green-600 text-white border-none hover:bg-green-700"
+        (click)="cerrarModal()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
+

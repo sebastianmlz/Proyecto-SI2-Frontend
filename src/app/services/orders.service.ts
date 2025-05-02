@@ -10,7 +10,7 @@ import { PaginatedResponse } from '../models/paginated-response.model';
 export class OrdersService {
     private baseUrl = environment.apiUrl + '/orders';
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient) { }
 
     // Crear orden general
     createFinance(data: any): Observable<any> {
@@ -30,37 +30,37 @@ export class OrdersService {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
         return this.http.patch<any>(`${this.baseUrl}/order-items/${itemId}/`, data, { headers });
-    }      
+    }
 
     eliminarOrderItem(id: number): Observable<any> {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
         return this.http.delete(`${this.baseUrl}/order-items/${id}/`, { headers });
-    }      
+    }
 
 
     /**  ⬇️  NUEVO  —  POST /orders/stripe-checkout/  */
     createStripeCheckout(orderId: number): Observable<any> {
-        const token  = localStorage.getItem('access');
+        const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
         return this.http.post(
-        `${this.baseUrl}/stripe-checkout/`,
-        { order_id: orderId },
-        { headers }
+            `${this.baseUrl}/stripe-checkout/`,
+            { order_id: orderId },
+            { headers }
         );
     }
 
     getVentas(page: number = 1, pageSize: number = 10): Observable<PaginatedResponse<any>> {
         const token = localStorage.getItem('access');
         const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        
+
         const params = new HttpParams()
             .set('page', page.toString())
             .set('page_size', pageSize.toString());
-        
+
         return this.http.get<PaginatedResponse<any>>(`${this.baseUrl}/finance/`, { headers, params });
-    }    
+    }
 
     // Agregar este método al OrdersService
     associateAddressToOrder(orderId: number, addressData: any): Observable<any> {
@@ -84,6 +84,25 @@ export class OrdersService {
     deleteOrderItem(id: number): Observable<any> {
         return this.http.delete(`${this.baseUrl}/items/${id}/`);
     }
+
+    createOrderFeedback(data: any): Observable<any> {
+        const token = localStorage.getItem('access');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.post(`${this.baseUrl}/feedback/submit/`, data, { headers });
+    }
+
+    getOrderFeedback(): Observable<any> {
+        const token = localStorage.getItem('access');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.get(`${this.baseUrl}/feedback/`, { headers });
+    }
+
+    getOrderFeedbackById(id: number): Observable<any> {
+        const token = localStorage.getItem('access');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        return this.http.get(`${this.baseUrl}/feedback/${id}/`, { headers });
+    }
+
 }
 
 

@@ -59,6 +59,13 @@
               class="p-button-sm p-button-info"
               (click)="abrirModalVerMas(venta)"
             ></button>
+            <button 
+            pButton icon="pi pi-comment" 
+            class="p-button-rounded p-button-info p-button-sm"
+            pTooltip="Dejar feedback" 
+            tooltipPosition="top" 
+            (click)="abrirModalFeedback(venta)"
+            *ngIf="!venta.feedback"></button>
           </td>
         </tr>
       </ng-template>
@@ -140,3 +147,56 @@
     </div>
   </ng-template>
 </p-dialog>
+
+<!-- Modal de Feedback -->
+<p-dialog [(visible)]="modalFeedbackVisible" [modal]="true" [style]="{width: '90vw', maxWidth: '700px'}" 
+          [draggable]="false" [resizable]="false" header="Tu opinión nos importa" 
+          (onHide)="cerrarModalFeedback()">
+    
+  <div class="p-4">
+    <h2 class="text-xl font-bold mb-4">Pedido #{{ ventaSeleccionada?.id }}</h2>
+    
+    <!-- Valoración general -->
+   <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-2">Valoración general</h3>
+      <div class="flex items-center gap-4 mb-2">
+        <label class="font-medium">¿Cómo calificarías tu experiencia?</label>
+        <p-rating [(ngModel)]="valoracionGeneral" [readonly]="false" [stars]="5"></p-rating>
+      </div>
+      <textarea [(ngModel)]="comentarioGeneral" rows="2" class="w-full p-2 border rounded" 
+                placeholder="Cuéntanos más sobre tu experiencia general (opcional)"></textarea>
+    </div>
+    
+    <!-- Valoración de productos -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-2">Productos</h3>
+      <div class="flex items-center gap-4 mb-2">
+        <label class="font-medium">¿Qué te parecieron los productos?</label>
+        <p-rating [(ngModel)]="valoracionProducto" [readonly]="false" [stars]="5"></p-rating>
+      </div>
+      <textarea [(ngModel)]="comentarioProducto" rows="2" class="w-full p-2 border rounded" 
+                placeholder="Comentarios sobre la calidad, precio o estado de los productos (opcional)"></textarea>
+    </div>
+    
+    <!-- Valoración de entrega -->
+    <div class="mb-6">
+      <h3 class="text-lg font-semibold mb-2">Entrega</h3>
+      <div class="flex items-center gap-4 mb-2">
+        <label class="font-medium">¿Cómo fue el servicio de entrega?</label>
+        <p-rating [(ngModel)]="valoracionEntrega" [readonly]="false" [stars]="5"></p-rating>
+      </div>
+      <textarea [(ngModel)]="comentarioEntrega" rows="2" class="w-full p-2 border rounded" 
+                placeholder="Comentarios sobre velocidad, estado de la entrega o atención del repartidor (opcional)"></textarea>
+    </div>
+    
+    <div class="flex justify-end gap-3 mt-6">
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-outlined" 
+              (click)="cerrarModalFeedback()"></button>
+      <button pButton label="Enviar feedback" icon="pi pi-check" class="p-button-success" 
+              [disabled]="valoracionGeneral === 0"
+              (click)="crearFeedback()"></button>
+    </div>
+  </div>
+</p-dialog>
+
+

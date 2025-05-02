@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { customerGuard } from './guards/customer.guard';
 import { redirectLoggedInGuard } from './guards/redirectLoggedInGuard';
+import { FeedbackComponent } from './Paginas/feedback/feedback.component';
 
 export const routes: Routes = [
   // Público
@@ -14,6 +15,7 @@ export const routes: Routes = [
   { path: 'ingreso', component: IngresoComponent, canActivate: [redirectLoggedInGuard] },
   { path: 'registro', component: RegistroComponent, canActivate: [redirectLoggedInGuard] },
   { path: 'Home', component: HomeComponent },
+  { path: 'Feedback', component: FeedbackComponent},
 
   // Rutas comunes protegidas
   { path: 'productos', component: ProductsComponent, canActivate: [authGuard] },
@@ -57,6 +59,11 @@ export const routes: Routes = [
   {
     path: 'admin/reportes',
     loadComponent: () => import('./Paginas/admin/reportes/reportes.component').then((m) => m.ReportesComponent),
+    canActivate: [adminGuard],
+  },
+  {
+    path: 'admin/Mensajes',
+    loadComponent: () => import('./Paginas/admin/messages/messages.component').then((m) => m.MessagesComponent),
     canActivate: [adminGuard],
   },
 

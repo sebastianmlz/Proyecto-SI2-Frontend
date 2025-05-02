@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-
+import { MessageModule } from 'primeng/message';
 import { ButtonModule } from 'primeng/button';
 import { DrawerModule } from 'primeng/drawer';
 import { AvatarModule } from 'primeng/avatar';
@@ -19,7 +19,8 @@ import { OnInit } from '@angular/core'; // 👈 importá esto si no lo tenés a�
     ButtonModule,
     DrawerModule,
     AvatarModule,
-    RippleModule
+    RippleModule,
+    MessageModule
   ],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
