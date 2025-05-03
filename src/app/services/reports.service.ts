@@ -19,7 +19,17 @@ export class reportsService {
     // Crear nuevo reporte
     crearReporte(data: any) {
         const token = localStorage.getItem('access');
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        return this.http.post<any>(this.baseUrl, data, { headers });
+        const headers = new HttpHeaders()
+            .set('Authorization', `Bearer ${token}`)
+            .set('Accept', 'application/json')
+            .set('Content-Type', 'application/json');
+        
+        // Crea una copia del objeto para no modificar el original
+        const payload = { ...data };
+        
+        // Muestra en consola qué estamos enviando, útil para depurar
+        console.log('Enviando solicitud de reporte/recibo:', payload);
+        
+        return this.http.post<any>(this.baseUrl, payload, { headers });
     }
 }

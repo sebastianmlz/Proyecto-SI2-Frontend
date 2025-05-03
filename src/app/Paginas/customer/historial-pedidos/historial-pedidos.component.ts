@@ -8,10 +8,12 @@ import { DialogModule } from 'primeng/dialog';
 import { NotificacionService } from '../../../services/notificacion.service';
 import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
+import { reportsService } from '../../../services/reports.service';
+import { DropdownModule } from 'primeng/dropdown';
 
 @Component({
   selector: 'app-historial-pedidos',
-  imports: [CommonModule, TableModule, ButtonModule, DialogModule, RatingModule, FormsModule],
+  imports: [CommonModule, TableModule, ButtonModule, DialogModule, RatingModule, FormsModule, DropdownModule],
   templateUrl: './historial-pedidos.component.html',
   styleUrl: './historial-pedidos.component.css'
 })
@@ -21,6 +23,39 @@ export class HistorialPedidosComponent implements OnInit {
   ventaSeleccionada: any = null; // Venta seleccionada para el modal
   modalVerMasVisible: boolean = false; // Controla la visibilidad del modal
   modalFeedbackVisible: boolean = false;
+  reportes: any[] = [];
+  nuevoReporte = {
+    name: '',
+    report_type: '',
+    format: '',
+    language: ''
+  };
+
+  Recibo={
+    name:'',
+    report_type:'order_receipt',
+    format:'',
+    language:''
+  }
+
+  tiposReporte = [
+    { label: 'Compras', value: 'my_orders' },
+    { label: 'Recibo', value: 'order_receipt' }
+  ];
+
+  idiomas = [
+    { label: 'Español', value: 'es' },
+    { label: 'Inglés', value: 'en' }
+  ];
+
+  formatos = [
+    { label: 'PDF', value: 'pdf' },
+    { label: 'Excel', value: 'excel' },
+    { label: 'CSV', value: 'csv' }
+  ];
+
+  modalCrearReporteVisible: boolean = false; // Para el modal de creación
+  modalReportesGeneradosVisible: boolean = false; // Para ver reportes generados
 
   // Variables para el feedback
   valoracionGeneral: number = 0;
@@ -29,14 +64,17 @@ export class HistorialPedidosComponent implements OnInit {
   comentarioProducto: string = '';
   valoracionEntrega: number = 0;
   comentarioEntrega: string = '';
-
   deliveryFeedbackSent: boolean = false;
 
+  // Agregar estas variables nuevas
+  ordenSeleccionada: number |null=null;
+  ordenesDisponibles: any[] = [];
 
   constructor(
     private ordersService: OrdersService,
     private authService: AuthService,
-    private notificacionService: NotificacionService
+    private notificacionService: NotificacionService,
+    private reportesService: reportsService,
   ) { }
 
   ngOnInit(): void {
@@ -138,7 +176,7 @@ export class HistorialPedidosComponent implements OnInit {
       this.notificacionService.warn('Campos requeridos', 'Debes valorar al menos producto y entrega');
       return;
     }
-  
+
     const payload = {
       order_id: this.ventaSeleccionada.id,
       delivery_rating: this.valoracionEntrega,
@@ -151,9 +189,9 @@ export class HistorialPedidosComponent implements OnInit {
         }
       ]
     };
-  
+
     console.log('Payload a enviar:', payload);
-  
+
     this.ordersService.createOrderFeedback(payload).subscribe({
       next: () => {
         this.notificacionService.success('Feedback enviado', 'Gracias por tu opinión');
@@ -212,4 +250,113 @@ export class HistorialPedidosComponent implements OnInit {
     this.comentarioEntrega = '';
   }
 
+  obtenerReportes(): void {
+    this.reportesService.obtenerReportes().subscribe({
+      next: (res: any) => {
+        console.log("Reportes obtenidos:", res);
+        // ✅ Filtrar solo los reportes con file_path válido
+        this.reportes = res.items.filter((reporte: any) => reporte.file_path !== null);
+
+        // Obtener los nombres de usuario asociados a cada reporte
+        this.reportes.forEach((reporte: any) => {
+          const userId = reporte.user;
+          if (!this.usuarios[userId]) {
+            this.authService.getUserById(userId).subscribe({
+              next: (usuario: any) => {
+                this.usuarios[userId] = usuario;
+              },
+              error: (err) => {
+                console.error("Error al obtener usuario:", err);
+              }
+            });
+          }
+        });
+      },
+      error: (err) => {
+        console.error("Error al cargar reportes:", err);
+      }
+    });
+  }
+
+  crearNuevoReporte(): void {
+    // Si el tipo de reporte es un recibo y no se seleccionó una orden
+    if (this.nuevoReporte.report_type === 'order_receipt' && !this.ordenSeleccionada) {
+      this.notificacionService.warn('Selecciona una orden', 'Debes seleccionar una orden para generar el recibo');
+      return;
+    }
+
+    // Preparamos el payload según el tipo de reporte
+    let payload;
+    
+    if (this.nuevoReporte.report_type === 'order_receipt') {
+      payload = {
+        name: this.nuevoReporte.name,
+        report_type: 'order_receipt',
+        format: this.nuevoReporte.format,
+        language: this.nuevoReporte.language,
+        order_id: this.ordenSeleccionada // Incluimos el ID de la orden seleccionada
+      };
+    } else {
+      payload = this.nuevoReporte;
+    }
+
+    this.reportesService.crearReporte(payload).subscribe({
+      next: (res: any) => {
+        const mensaje = this.nuevoReporte.report_type === 'order_receipt' 
+          ? 'Recibo generado con éxito' 
+          : 'Reporte creado con éxito';
+          
+        this.notificacionService.success('¡Listo!', mensaje);
+        this.cerrarModalCrear();
+        // Mostrar los reportes generados después de crear uno nuevo
+        this.abrirModalReportesGenerados();
+      },
+      error: (err) => {
+        console.error('Error al crear reporte/recibo:', err);
+        this.notificacionService.error('Error', 'No se pudo generar el documento');
+      }
+    });
+  }
+
+  abrirModalCrear(): void {
+    // Reset the form values
+    this.nuevoReporte = {
+      name: '',
+      report_type: '',
+      language: '',
+      format: ''
+    };
+    
+    // Cargar órdenes disponibles para el selector de recibos
+    this.ordenesDisponibles = this.ventas.map(venta => ({
+      label: `Pedido #${venta.id} - ${new Date(venta.created_at).toLocaleDateString()}`,
+      value: venta.id
+    }));
+    
+    this.ordenSeleccionada = null;
+    this.modalCrearReporteVisible = true;
+  }
+
+  cerrarModalCrear(): void {
+    this.modalCrearReporteVisible = false;
+  }
+
+  abrirModalReportesGenerados(): void {
+    this.obtenerReportes();
+    this.modalReportesGeneradosVisible = true;
+  }
+
+  cerrarModalReportesGenerados(): void {
+    this.modalReportesGeneradosVisible = false;
+  }
+
+  // Agregamos un método para manejar el cambio de tipo de reporte
+  onReportTypeChange(): void {
+    // Si es recibo, asignamos un nombre predeterminado
+    if (this.nuevoReporte.report_type === 'order_receipt') {
+      this.nuevoReporte.name = 'Recibo de mi pedido';
+    } else {
+      this.nuevoReporte.name = '';
+    }
+  }
 }

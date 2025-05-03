@@ -1,21 +1,37 @@
 <div class="p-4">
-  <!-- Título -->
-  <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl px-6 py-3 text-center">
-    <h2 class="text-xl font-semibold text-white flex justify-center items-center gap-2">
-      <i class="pi pi-book text-white text-xl"></i>
-      Historial de Pedidos
-    </h2>
+  <!-- Título y botones -->
+  <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
+    <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-xl px-6 py-3 text-center mb-3 md:mb-0 md:w-auto">
+      <h2 class="text-xl font-semibold text-white flex justify-center items-center gap-2">
+        <i class="pi pi-book text-white text-xl"></i>
+        Historial de Pedidos
+      </h2>
+    </div>
+    
+    <div class="flex gap-2">
+      <button 
+        pButton 
+        class="p-button-outlined p-button-success px-4 py-2 rounded-xl flex items-center gap-2" 
+        (click)="abrirModalReportesGenerados()"
+      >
+        <i class="pi pi-list"></i>
+        <span>Mis Reportes</span>
+      </button>
+      
+      <button 
+        pButton 
+        class="p-button-success px-4 py-2 rounded-xl flex items-center gap-2 shadow-md" 
+        (click)="abrirModalCrear()"
+      >
+        <i class="pi pi-file-pdf"></i>
+        <span>Generar Reporte</span>
+      </button>
+    </div>
   </div>
 
   <!-- Tabla -->
   <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
-    <p-table
-      [value]="ventas"
-      [paginator]="true"
-      [rows]="5"
-      responsiveLayout="scroll"
-      class="p-datatable-sm"
-    >
+    <p-table [value]="ventas" [paginator]="true" [rows]="5" responsiveLayout="scroll" class="p-datatable-sm">
       <!-- CABECERA -->
       <ng-template pTemplate="header">
         <tr class="bg-gray-100 text-gray-800 text-base font-semibold">
@@ -39,20 +55,16 @@
           <td class="py-2 px-3">{{ venta.total_amount }}</td>
           <td class="py-2 px-3">{{ venta.payment?.payment_method || '-' }}</td>
           <td class="py-2 px-3">
-            <span
-              class="px-3 py-1 text-xs font-semibold rounded-full"
-              [ngClass]="{
+            <span class="px-3 py-1 text-xs font-semibold rounded-full" [ngClass]="{
                 'bg-green-100 text-green-700': venta.payment?.payment_status === 'completed',
                 'bg-yellow-100 text-yellow-700': venta.payment?.payment_status === 'pending',
                 'bg-red-100 text-red-700': venta.payment?.payment_status === 'failed'
-              }"
-            >
+              }">
               {{ venta.payment?.payment_status || 'sin pago' }}
             </span>
           </td>
           <td class="py-2 px-3 w-36 sm:w-auto text-center">
-            <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
-            [ngClass]="{
+            <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap" [ngClass]="{
               'bg-green-100 text-green-700': venta.estado_pedido === 'Entregado',
               'bg-blue-100 text-blue-700': venta.estado_pedido === 'En reparto',
               'bg-yellow-100 text-yellow-700': venta.estado_pedido === 'Pendiente',
@@ -65,22 +77,11 @@
           <td class="py-2 px-3">{{ venta.payment.updated_at| date: 'short' }}</td>
           <td class="py-2 px-3 w-28 sm:w-auto text-center">
             <div class="flex flex-col sm:flex-row justify-center items-center gap-2">
-              <button
-                pButton
-                type="button"
-                label="Ver más"
-                class="p-button-sm p-button-info w-full sm:w-auto"
-                (click)="abrirModalVerMas(venta)"
-              ></button>
-              <button 
-                pButton 
-                icon="pi pi-comment" 
-                class="p-button-rounded p-button-info p-button-sm w-full sm:w-auto"
-                pTooltip="Dejar feedback" 
-                tooltipPosition="top" 
-                (click)="abrirModalFeedback(venta)"
-                *ngIf="!venta.feedback"
-              ></button>
+              <button pButton type="button" label="Ver más" class="p-button-sm p-button-info w-full sm:w-auto"
+                (click)="abrirModalVerMas(venta)"></button>
+              <button pButton icon="pi pi-comment" class="p-button-rounded p-button-info p-button-sm w-full sm:w-auto"
+                pTooltip="Dejar feedback" tooltipPosition="top" (click)="abrirModalFeedback(venta)"
+                *ngIf="!venta.feedback"></button>
             </div>
           </td>
         </tr>
@@ -90,14 +91,8 @@
 </div>
 
 <!-- Modal Ver Más -->
-<p-dialog
-  [(visible)]="modalVerMasVisible"
-  [modal]="true"
-  [closable]="true"
-  [dismissableMask]="true"
-  [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'"
-  class="rounded-xl custom-dialog"
->
+<p-dialog [(visible)]="modalVerMasVisible" [modal]="true" [closable]="true" [dismissableMask]="true"
+  [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'" class="rounded-xl custom-dialog">
   <ng-template pTemplate="header">
     <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
       Detalles de la Venta
@@ -116,12 +111,10 @@
       <div><strong>Método de Pago:</strong> {{ ventaSeleccionada.payment?.payment_method }}</div>
       <div>
         <strong>Estado de Pago:</strong>
-        <span
-          [ngClass]="{
+        <span [ngClass]="{
             'text-green-600': ventaSeleccionada.payment?.payment_status === 'completed',
             'text-red-600': ventaSeleccionada.payment?.payment_status !== 'completed'
-          }"
-        >
+          }">
           {{ ventaSeleccionada.payment?.payment_status || 'Pendiente' }}
         </span>
       </div>
@@ -150,23 +143,19 @@
     </table>
   </div>
 
+
   <ng-template pTemplate="footer">
     <div class="w-full flex justify-end">
-      <button
-        pButton
-        type="button"
-        icon="pi pi-times"
-        label="Cerrar"
+      <button pButton type="button" icon="pi pi-times" label="Cerrar"
         class="p-button-sm bg-green-600 text-white border-none hover:bg-green-700"
-        (click)="cerrarModalVerMas()"
-      ></button>
+        (click)="cerrarModalVerMas()"></button>
     </div>
   </ng-template>
 </p-dialog>
 
 <!-- Modal de Feedback -->
 <p-dialog [(visible)]="modalFeedbackVisible" [modal]="true" [style]="{width: '95vw', maxWidth: '650px'}"
-          [draggable]="false" [resizable]="false" (onHide)="cerrarModalFeedback()"[dismissableMask]="true" [closable]="true">
+  [draggable]="false" [resizable]="false" (onHide)="cerrarModalFeedback()" [dismissableMask]="true" [closable]="true">
   <ng-template pTemplate="header">
     <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
       Tu opinion nos importa
@@ -179,18 +168,19 @@
       <!-- Valoración de productos -->
       <div class="mb-8">
         <h3 class="text-lg font-semibold mb-4 text-green-800">Productos</h3>
-        <div *ngFor="let item of ventaSeleccionada.items" class="bg-white rounded-lg shadow p-4 mb-5 border border-green-100">
+        <div *ngFor="let item of ventaSeleccionada.items"
+          class="bg-white rounded-lg shadow p-4 mb-5 border border-green-100">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
             <label class="font-medium text-green-700">{{ item.product.name }}</label>
             <p-rating [(ngModel)]="item.product._rating" [readonly]="item.product._feedbackSent" [stars]="5"
-                      class="text-green-600"></p-rating>
+              class="text-green-600"></p-rating>
           </div>
-          <textarea [(ngModel)]="item.product._comment" rows="2" class="w-full p-2 border rounded mb-2 focus:border-green-400 focus:ring-green-200 transition"
-              [readonly]="item.product._feedbackSent"
-              placeholder="Comentarios sobre el producto (opcional)"></textarea>
-          <button pButton label="Enviar feedback producto" icon="pi pi-check" class="p-button-success w-full md:w-auto mb-2"
-              (click)="enviarFeedbackProducto(item)"
-              [disabled]="item.product._feedbackSent || !item.product._rating"></button>
+          <textarea [(ngModel)]="item.product._comment" rows="2"
+            class="w-full p-2 border rounded mb-2 focus:border-green-400 focus:ring-green-200 transition"
+            [readonly]="item.product._feedbackSent" placeholder="Comentarios sobre el producto (opcional)"></textarea>
+          <button pButton label="Enviar feedback producto" icon="pi pi-check"
+            class="p-button-success w-full md:w-auto mb-2" (click)="enviarFeedbackProducto(item)"
+            [disabled]="item.product._feedbackSent || !item.product._rating"></button>
           <div *ngIf="item.product._feedbackSent" class="text-green-600 text-xs mb-1 flex items-center gap-1">
             <i class="pi pi-check-circle"></i> ¡Feedback enviado!
           </div>
@@ -204,14 +194,14 @@
       <div class="flex flex-col md:flex-row md:items-center md:gap-4 mb-2">
         <label class="font-medium text-green-700 mb-2 md:mb-0">¿Cómo fue el servicio de delivery?</label>
         <p-rating [(ngModel)]="valoracionEntrega" [readonly]="deliveryFeedbackSent" [stars]="5"
-                  class="text-green-600"></p-rating>
+          class="text-green-600"></p-rating>
       </div>
-      <textarea [(ngModel)]="comentarioEntrega" rows="2" class="w-full p-2 border rounded focus:border-green-400 focus:ring-green-200 transition"
-                [readonly]="deliveryFeedbackSent"
-                placeholder="Comentarios sobre velocidad, estado de la entrega o atención del repartidor (opcional)"></textarea>
+      <textarea [(ngModel)]="comentarioEntrega" rows="2"
+        class="w-full p-2 border rounded focus:border-green-400 focus:ring-green-200 transition"
+        [readonly]="deliveryFeedbackSent"
+        placeholder="Comentarios sobre velocidad, estado de la entrega o atención del repartidor (opcional)"></textarea>
       <button pButton label="Enviar feedback delivery" icon="pi pi-check" class="p-button-success mt-2 w-full md:w-auto"
-                (click)="enviarFeedbackDelivery()"
-                [disabled]="deliveryFeedbackSent || !valoracionEntrega"></button>
+        (click)="enviarFeedbackDelivery()" [disabled]="deliveryFeedbackSent || !valoracionEntrega"></button>
       <div *ngIf="deliveryFeedbackSent" class="text-green-600 text-xs mt-2 flex items-center gap-1">
         <i class="pi pi-check-circle"></i> ¡Feedback de entrega enviado!
       </div>
@@ -219,9 +209,174 @@
 
     <div class="flex justify-end gap-3 mt-6">
       <button pButton label="Cerrar" icon="pi pi-times" class="p-button-outlined p-button-sm"
-              (click)="cerrarModalFeedback()"></button>
+        (click)="cerrarModalFeedback()"></button>
     </div>
   </div>
 </p-dialog>
 
+<!-- Modal de Creación de Reportes -->
+<p-dialog 
+  [(visible)]="modalCrearReporteVisible" 
+  [modal]="true" 
+  [style]="{width: '95vw', maxWidth: '550px'}"
+  [draggable]="false" 
+  [resizable]="false" 
+  [closable]="true"
+  [dismissableMask]="true"
+  styleClass="report-dialog"
+>
+  <ng-template pTemplate="header">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
+      <i class="pi pi-file-export mr-2"></i> Generar Reporte de Compras
+    </div>
+  </ng-template>
 
+  <div class="p-4 bg-gray-50 rounded-xl">
+    <div class="mb-6">
+      <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500 mb-4">
+        <p class="text-green-800">
+          <i class="pi pi-info-circle mr-2"></i> 
+          Los reportes te permiten analizar tus compras por fechas, montos y productos. Elige las opciones que necesites.
+        </p>
+      </div>
+
+      <!-- Nombre del reporte -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del reporte</label>
+        <input type="text" [(ngModel)]="nuevoReporte.name" 
+               class="w-full p-2 border rounded-lg focus:ring-green-500 focus:border-green-500" 
+               placeholder="Ej: Mis compras de abril">
+      </div>
+
+      <!-- Tipo de reporte -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de reporte</label>
+        <p-dropdown 
+          class="w-full"
+          [options]="tiposReporte"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona un tipo"
+          [(ngModel)]="nuevoReporte.report_type"
+          (onChange)="onReportTypeChange()">
+        </p-dropdown>
+      </div>
+
+      <!-- Agregar selector de orden para recibos (visible solo si se selecciona tipo order_receipt) -->
+      <div class="mb-4" *ngIf="nuevoReporte.report_type === 'order_receipt'">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Selecciona el pedido</label>
+        <p-dropdown 
+          class="w-full"
+          [options]="ordenesDisponibles"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona el pedido para el recibo"
+          [(ngModel)]="ordenSeleccionada">
+        </p-dropdown>
+        <p class="text-xs text-gray-500 mt-1">
+          <i class="pi pi-info-circle"></i> 
+          El recibo incluirá todos los detalles de este pedido específico
+        </p>
+      </div>
+
+      <!-- Formato del reporte -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Formato</label>
+        <p-dropdown 
+          class="w-full"
+          [options]="formatos"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona formato"
+          [(ngModel)]="nuevoReporte.format">
+        </p-dropdown>
+      </div>
+
+      <!-- Idioma del reporte -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Idioma</label>
+        <p-dropdown 
+          class="w-full"
+          [options]="idiomas"
+          optionLabel="label"
+          optionValue="value"
+          placeholder="Selecciona idioma"
+          [(ngModel)]="nuevoReporte.language">
+        </p-dropdown>
+      </div>
+    </div>
+
+    <div class="flex justify-end gap-3">
+      <button pButton label="Cancelar" icon="pi pi-times" class="p-button-outlined p-button-sm"
+              (click)="cerrarModalCrear()"></button>
+      <button pButton 
+              [label]="nuevoReporte.report_type === 'order_receipt' ? 'Generar Recibo' : 'Generar Reporte'" 
+              [icon]="nuevoReporte.report_type === 'order_receipt' ? 'pi pi-file-pdf' : 'pi pi-file-export'"
+              class="p-button-success p-button-sm"
+              [disabled]="!nuevoReporte.name || !nuevoReporte.report_type || !nuevoReporte.format || !nuevoReporte.language || (nuevoReporte.report_type === 'order_receipt' && !ordenSeleccionada)"
+              (click)="crearNuevoReporte()"></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- Modal para mostrar reportes generados -->
+<p-dialog 
+  [(visible)]="modalReportesGeneradosVisible" 
+  [modal]="true" 
+  [style]="{width: '95vw', maxWidth: '650px'}"
+  [draggable]="false" 
+  [resizable]="false" 
+  [closable]="true"
+  [dismissableMask]="true"
+>
+  <ng-template pTemplate="header">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
+      <i class="pi pi-list mr-2"></i> Mis Reportes Generados
+    </div>
+  </ng-template>
+
+  <div class="p-4">
+    <div *ngIf="reportes.length === 0" class="text-center py-8 text-gray-500">
+      <i class="pi pi-folder-open text-4xl mb-3"></i>
+      <p>No tienes reportes generados todavía</p>
+    </div>
+    
+    <div *ngIf="reportes.length > 0" class="space-y-3">
+      <div *ngFor="let reporte of reportes" class="border rounded-lg p-3 hover:shadow-md transition-all">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="font-semibold text-gray-800">{{ reporte.name }}</h3>
+            <p class="text-sm text-gray-500">{{ reporte.created_at | date: 'medium' }}</p>
+          </div>
+          <div class="flex gap-2">
+            <a [href]="reporte.file_path" target="_blank" 
+               class="p-2 bg-green-50 text-green-700 rounded-full hover:bg-green-100 transition-all"
+               pTooltip="Descargar reporte" tooltipPosition="top">
+              <i class="pi pi-download"></i>
+            </a>
+          </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+          <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+            {{ reporte.report_type === 'sales_by_customer' ? 'Compras por Cliente' : 'Compras por periodo' }}
+          </span>
+          <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full uppercase">
+            {{ reporte.format }}
+          </span>
+          <span class="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+            {{ reporte.language === 'es' ? 'Español' : 'English' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div class="flex justify-end">
+      <button pButton label="Cerrar" icon="pi pi-times" class="p-button-outlined p-button-sm"
+              (click)="cerrarModalReportesGenerados()"></button>
+      <button pButton label="Generar Nuevo" icon="pi pi-plus" class="p-button-success p-button-sm ml-2"
+              (click)="cerrarModalReportesGenerados(); abrirModalCrear()"></button>
+    </div>
+  </ng-template>
+</p-dialog>
