@@ -10,3 +10,7 @@
     @tailwind components;
     @tailwind utilities;
 }
+
+.p-dropdown-panel {
+    z-index: 1200 !important;
+}

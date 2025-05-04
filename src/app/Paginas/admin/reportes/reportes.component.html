@@ -2,9 +2,9 @@
 
   <!-- Encabezado -->
   <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 mt-2 text-white">
-    <div class="flex justify-between items-center">
-      <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
-        <i class="pi pi-file"></i> Gestión de reportes
+    <div class="flex justify-center ">
+      <h2 class="text-lg md:text-xl font-bold flex items-center gap-2 mr-2">
+        <i class="pi pi-file"></i>Gestión de reportes
       </h2>
       <button 
         pButton 
@@ -16,7 +16,7 @@
   </div>
 
   <!-- Tabla de reportes -->
-  <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
+  <div class="bg-white rounded-xl overflow-visible shadow-md mt-3">
     <p-table 
       [value]="reportes" 
       [paginator]="true" 

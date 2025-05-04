@@ -13,7 +13,8 @@
           <th>Precio (USD)</th>
           <th>Cantidad</th>
           <th>Subtotal</th>
-          <th>Acción</th>
+          <th>Recomendaciones</th>
+          <th class="p-2">Acción</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,16 @@
           </td>
           <td>${{ (item.price_usd * item.quantity).toFixed(2) }}</td>
           <td>
+            <button
+              pButton
+              class="p-button-sm bg-green-100 text-green-700 border-none rounded-lg"
+              label="Recomendaciones"
+              (click)="verRecomendaciones(item.name, item.category.name, item.brand.name)"
+            >
+              <i class="pi pi-star mr-2"></i>
+            </button>
+          </td>
+          <td class="p-3">
             <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger p-button-sm"
               (click)="eliminarItem(item)"></button>
           </td>
@@ -59,8 +70,19 @@
         <input type="number" min="1" [(ngModel)]="item.quantity" (ngModelChange)="calcularTotal()"
           class="p-1 border w-16 rounded" />
         <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger"
-          (click)="eliminarItemBackend(item)"></button>
+          (click)="eliminarItem(item)"></button>
       </div>
+      <div class="flex items-center justify-between mt-3">
+        <button
+              pButton
+              class="p-button-sm bg-green-100 text-green-700 border-none rounded-lg w-full p-3"
+              (click)="verRecomendaciones(item.name, item.category.name, item.brand.name)"
+            >
+              <i class="pi pi-star mr-2"></i>
+              Mostrar recomendaciones
+            </button>
+      </div>
+      
     </div>
   </div>
 

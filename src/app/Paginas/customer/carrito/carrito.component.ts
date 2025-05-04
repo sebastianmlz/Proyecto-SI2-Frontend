@@ -6,7 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { AuthService } from '../../../services/auth.service';
 import { NotificacionService } from '../../../services/notificacion.service';
 import { OrdersService } from '../../../services/orders.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DeliveryAdressService } from '../../../services/delivery-adress.service';
 import { forkJoin } from 'rxjs';
 import { ParametersService } from '../../../services/parameters.service';
@@ -27,7 +27,8 @@ export class CarritoComponent {
   totalPagar: number = 0;
 
   ordenActivaId: number | null = null;
-  editedItems: { [id: number]: boolean } = {}; // controlamos qué item fue editado
+  editedItems: { [id: number]: boolean } = {}; // controlar item fue editado
+
   //agregamos las direcciones en estas variables
   countries: any[] = [];
   states: any[] = [];
@@ -50,7 +51,7 @@ export class CarritoComponent {
   direcciones: any[] = [];
   selectedDireccionId: number | null = null;
   mostrarMisDirecciones: boolean = false;
-  selectedDireccion: any = null; // Agrega esta variable para guardar la dirección seleccionada
+  selectedDireccion: any = null; 
 
 
   constructor(
@@ -58,7 +59,8 @@ export class CarritoComponent {
     private authService: AuthService,
     private ordersService: OrdersService,
     private noti: NotificacionService,
-    private router: ActivatedRoute, // 👈 agrega esto
+    private route: ActivatedRoute, // 👈 mantiene ActivatedRoute
+    private router: Router, // 👈 agrega Router
     private deliveryAdressService: DeliveryAdressService,
     private parametersService: ParametersService
   ) { }
@@ -68,7 +70,7 @@ export class CarritoComponent {
     this.cargarPaises();
     this.cargarDirecciones(); // Añadir esta línea
     
-    const pagoExitoso = this.router.snapshot.queryParamMap.get('payment') === 'success';
+    const pagoExitoso = this.route.snapshot.queryParamMap.get('payment') === 'success';
     const ordenPendiente = localStorage.getItem('pendingOrder');
 
     if (pagoExitoso && ordenPendiente) {
@@ -99,7 +101,9 @@ export class CarritoComponent {
             price_usd: item.product.price_usd,
             quantity: item.quantity,
             image_url: item.product.image_url,
-            order_item_id: item.id // para luego usarlo en el PATCH
+            order_item_id: item.id,
+            category: item.product.category, // <--- agrega esto
+            brand: item.product.brand        // <--- y esto
           }));
           this.calcularTotal();
           console.log('Última orden activa cargada:', this.carrito);
@@ -115,6 +119,65 @@ export class CarritoComponent {
       }
     });
   }
+
+    //-------------Funcionalidades de items de carrito-----------------
+
+  guardarCantidad(item: any): void {
+    if (!item.order_item_id || item.quantity <= 0) {
+      this.noti.warn('Cantidad inválida', 'No se puede actualizar');
+      return;
+    }
+
+    const data = { quantity: item.quantity };
+    this.ordersService.patchOrderItem(item.order_item_id, data).subscribe({
+      next: () => {
+        this.noti.success('Cantidad actualizada', 'El producto fue actualizado');
+        this.editedItems[item.id] = false; // ocultar botón
+        this.calcularTotal();
+      },
+      error: (err) => {
+        console.error('Error al actualizar cantidad:', err);
+        this.noti.error('Error', 'No se pudo actualizar la cantidad');
+      }
+    });
+  }
+
+  marcarComoEditado(itemId: number): void {
+    this.editedItems[itemId] = true;
+  }
+
+  verRecomendaciones(nombre: string, categoria: string, marca: string): void {
+    const query = `${nombre} ${categoria} ${marca}`;
+    this.router.navigate(['/recomendaciones'], {
+      queryParams: { q: query }
+    });
+  }
+
+  eliminarItem(item: any): void {
+    if (confirm('¿Estás seguro de que deseas eliminar este producto del carrito?')) {
+      // Verificar que el item tenga un order_item_id válido
+      if (!item.order_item_id) {
+        this.noti.error('Error', 'No se encontró el ID del item para eliminar');
+        return;
+      }
+
+      // Llamar al servicio para eliminar en el backend
+      this.ordersService.eliminarOrderItem(item.order_item_id).subscribe({
+        next: () => {
+          // Si la eliminación en el backend fue exitosa, actualizar el frontend
+          this.carrito = this.carrito.filter(i => i.order_item_id !== item.order_item_id);
+          this.calcularTotal();
+          this.noti.success('Producto eliminado', 'El producto fue eliminado del carrito');
+        },
+        error: (err) => {
+          console.error('Error al eliminar el producto:', err);
+          this.noti.error('Error', 'No se pudo eliminar el producto del carrito');
+        }
+      });
+    }
+  }
+
+  //-------------direcciones-----------------
 
   cargarPaises(): void {
     this.parametersService.getCountries().subscribe({
@@ -169,53 +232,6 @@ export class CarritoComponent {
 
   cerrarModalDireccion(): void {
     this.mostrarModalDireccion = false;
-  }
-
-  guardarCantidad(item: any): void {
-    if (!item.order_item_id || item.quantity <= 0) {
-      this.noti.warn('Cantidad inválida', 'No se puede actualizar');
-      return;
-    }
-
-    const data = { quantity: item.quantity };
-    this.ordersService.patchOrderItem(item.order_item_id, data).subscribe({
-      next: () => {
-        this.noti.success('Cantidad actualizada', 'El producto fue actualizado');
-        this.editedItems[item.id] = false; // ocultar botón
-        this.calcularTotal();
-      },
-      error: (err) => {
-        console.error('Error al actualizar cantidad:', err);
-        this.noti.error('Error', 'No se pudo actualizar la cantidad');
-      }
-    });
-  }
-
-  marcarComoEditado(itemId: number): void {
-    this.editedItems[itemId] = true;
-  }
-
-  eliminarItemBackend(item: any): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto del carrito?')) {
-      const orderItemId = item.order_item_id; // asegurate que este campo exista
-      if (!orderItemId) {
-        this.noti.error('Error', 'No se encontró el ID del item para eliminar');
-        return;
-      }
-
-      this.ordersService.eliminarOrderItem(orderItemId).subscribe({
-        next: () => {
-          // Eliminar del array del frontend también
-          this.carrito = this.carrito.filter(i => i.order_item_id !== orderItemId);
-          this.noti.success('Producto eliminado', 'El producto fue eliminado del carrito');
-          this.calcularTotal();
-        },
-        error: (err) => {
-          console.error('Error al eliminar el producto:', err);
-          this.noti.error('Error', 'No se pudo eliminar el producto');
-        }
-      });
-    }
   }
 
   crearDireccion(): void {
@@ -290,6 +306,15 @@ export class CarritoComponent {
     this.mostrarMisDirecciones = false;
   }
 
+
+  //-------------realizar compra-----------------
+
+  calcularTotal(): void {
+    this.totalPagar = this.carrito.reduce((acc, item) =>
+      acc + (item.price_usd * item.quantity), 0);
+    localStorage.setItem('carrito', JSON.stringify(this.carrito));
+  }
+
   ordenar(): void {
     const orderId = this.ordenActivaId;
     console.log('orden activa:', orderId);
@@ -316,8 +341,6 @@ export class CarritoComponent {
       state: this.selectedDireccion.state,
       country: this.selectedDireccion.country,
       postal_code: this.selectedDireccion.postal_code,
-      // delivery_status: 'pending', // o el valor por defecto que requiera tu backend
-      // estimated_arrival: '',      // puedes dejarlo vacío o calcularlo si es necesario
       delivery_notes: ''          // puedes dejarlo vacío o agregar notas si tienes
     };
 
@@ -345,50 +368,6 @@ export class CarritoComponent {
         this.noti.error('Error', 'No se pudo asociar la dirección a la orden');
       }
     });
-    // this.ordersService.createStripeCheckout(orderId).subscribe({
-    //   next: (res: any) => {
-    //     if (res.checkout_url) {
-    //       localStorage.setItem('pendingOrder', String(orderId));
-    //       window.location.href = res.checkout_url;
-    //     } else {
-    //       this.noti.error('Error', 'No se recibió la URL de Stripe');
-    //     }
-    //   },
-    //   error: (err) => {
-    //     console.error('Error al generar el checkout:', err);
-    //     this.noti.error('Error', 'No se pudo generar el checkout');
-    //   }
-    // });
-  }
-
-  calcularTotal(): void {
-    this.totalPagar = this.carrito.reduce((acc, item) =>
-      acc + (item.price_usd * item.quantity), 0);
-    localStorage.setItem('carrito', JSON.stringify(this.carrito));
-  }
-
-  eliminarItem(item: any): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto del carrito?')) {
-      // Verificar que el item tenga un order_item_id válido
-      if (!item.order_item_id) {
-        this.noti.error('Error', 'No se encontró el ID del item para eliminar');
-        return;
-      }
-
-      // Llamar al servicio para eliminar en el backend
-      this.ordersService.eliminarOrderItem(item.order_item_id).subscribe({
-        next: () => {
-          // Si la eliminación en el backend fue exitosa, actualizar el frontend
-          this.carrito = this.carrito.filter(i => i.order_item_id !== item.order_item_id);
-          this.calcularTotal();
-          this.noti.success('Producto eliminado', 'El producto fue eliminado del carrito');
-        },
-        error: (err) => {
-          console.error('Error al eliminar el producto:', err);
-          this.noti.error('Error', 'No se pudo eliminar el producto del carrito');
-        }
-      });
-    }
   }
 
 
