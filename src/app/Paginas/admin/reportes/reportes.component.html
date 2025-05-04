@@ -1,137 +1,175 @@
 <div class="px-4 space-y-4">
 
-    <!-- Encabezado -->
-    <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 mt-2 text-white">
-        <div class="flex justify-center items-center">
-            <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
-                <i class="pi pi-file"></i> Gestión de reportes
-            </h2>
-            <button 
-                pButton 
-                icon="pi pi-plus" 
-                label="" 
-                class="p-button-sm p-button-success ml-4"
-                (click)="abrirModalCrear()">
-            </button>
-        </div>
+  <!-- Encabezado -->
+  <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 mt-2 text-white">
+    <div class="flex justify-between items-center">
+      <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
+        <i class="pi pi-file"></i> Gestión de reportes
+      </h2>
+      <button 
+        pButton 
+        icon="pi pi-plus" 
+        class="p-button-sm p-button-success"
+        (click)="abrirModalCrear()">
+      </button>
     </div>
+  </div>
 
-    <!-- Tabla -->
-    <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
-      <p-table 
-        [value]="reportes" 
-        [paginator]="true" 
-        [rows]="5" 
-        responsiveLayout="scroll" 
-        [rowsPerPageOptions]="[5,10,20]" 
-        [styleClass]="'w-full text-sm text-gray-800'">
+  <!-- Tabla de reportes -->
+  <div class="bg-white rounded-xl overflow-hidden shadow-md mt-3">
+    <p-table 
+      [value]="reportes" 
+      [paginator]="true" 
+      [rows]="5" 
+      [rowsPerPageOptions]="[5, 10, 20]" 
+      responsiveLayout="scroll"
+      [styleClass]="'w-full text-sm text-gray-800'">
   
-        <!-- Encabezados -->
-        <ng-template pTemplate="header">
-          <tr class="bg-gray-100 text-xs md:text-sm text-gray-700 font-semibold">
-            <th class="py-2 px-3">ID</th>
-            <th class="py-2 px-3">Usuario</th>
-            <th class="py-2 px-3">Título</th>
-            <th class="py-2 px-3">Fecha</th>
-            <th class="py-2 px-3">Formato</th>
-            <th class="py-2 px-3 text-center">Acción</th>
-          </tr>
-        </ng-template>
+      <!-- Encabezado -->
+      <ng-template pTemplate="header">
+        <tr class="bg-gray-100 text-xs md:text-sm text-gray-700 font-semibold">
+          <th class="py-2 px-3">ID</th>
+          <th class="py-2 px-3">Usuario</th>
+          <th class="py-2 px-3">Título</th>
+          <th class="py-2 px-3">Fecha</th>
+          <th class="py-2 px-3">Formato</th>
+          <th class="py-2 px-3 text-center">Acción</th>
+        </tr>
+      </ng-template>
   
-        <!-- Cuerpo de tabla -->
-        <ng-template pTemplate="body" let-reporte>
-          <tr class="hover:bg-gray-50 transition-all duration-200">
-            <td class="py-2 px-3">{{ reporte.id }}</td>
-            <td class="py-2 px-3">{{ getNombreUsuario(reporte.user) }}</td>
-            <td class="py-2 px-3">{{ reporte.name }}</td>
-            <td class="py-2 px-3">{{ reporte.created_at | date: 'short' }}</td>
-            <td class="py-2 px-3 capitalize">{{ reporte.format || '-' }}</td>
-            <td class="py-2 px-3 text-center">
-              <a 
-                *ngIf="reporte.file_path"
-                [href]="reporte.file_path" 
-                target="_blank"
-                pButton 
-                icon="pi pi-eye" 
-                label="Ver" 
-                class="p-button-sm p-button-info">
-              </a>
-            </td>
-          </tr>
-        </ng-template>
-  
-      </p-table>
-    </div>
+      <!-- Cuerpo -->
+      <ng-template pTemplate="body" let-reporte>
+        <tr class="hover:bg-gray-50 transition-all duration-200">
+          <td class="py-2 px-3">{{ reporte.id }}</td>
+          <td class="py-2 px-3">{{ getNombreUsuario(reporte.user) }}</td>
+          <td class="py-2 px-3">{{ reporte.name }}</td>
+          <td class="py-2 px-3">{{ reporte.created_at | date: 'short' }}</td>
+          <td class="py-2 px-3 capitalize">{{ reporte.format || '-' }}</td>
+          <td class="py-2 px-3 text-center">
+            <a *ngIf="reporte.file_path"
+               [href]="reporte.file_path"
+               target="_blank"
+               pButton 
+               icon="pi pi-eye"
+               class="p-button-sm p-button-info"
+               label="Ver">
+            </a>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
 </div>
 
-<!-- Modal para crear reporte -->
+<!-- Modal: Crear reporte -->
 <p-dialog 
-[(visible)]="modalCrearVisible" 
-header="Crear nuevo reporte"
-[modal]="true" 
-[closable]="true"
-[dismissableMask]="true"
-[style]="{ width: '30rem' }"
-(onHide)="cerrarModalCrear()"
->
-<div class="flex flex-col gap-4">
-  <div>
-    <label class="block mb-1 font-semibold">Título del reporte</label>
-    <input pInputText class="w-full" [(ngModel)]="nuevoReporte.name" />
-  </div>
+  [(visible)]="modalCrearVisible" 
+  header="Crear nuevo reporte"
+  [modal]="true" 
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{ width: '30rem' }"
+  (onHide)="cerrarModalCrear()">
 
-  <div>
-    <label class="block mb-1 font-semibold">Tipo de reporte</label>
-    <p-dropdown 
-      class="w-full"
-      [options]="tiposReporte"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Selecciona un tipo"
-      [(ngModel)]="nuevoReporte.report_type">
-    </p-dropdown>
-  </div>
+  <div class="flex flex-col gap-4">
+    <!-- Nombre -->
+    <div>
+      <label class="block mb-1 font-semibold">Título del reporte</label>
+      <input pInputText class="w-full" [(ngModel)]="nuevoReporte.name" />
+    </div>
 
-  <div>
-    <label class="block mb-1 font-semibold">Idioma</label>
-    <p-dropdown 
-      class="w-full"
-      [options]="idiomas"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Selecciona idioma"
-      [(ngModel)]="nuevoReporte.language">
-    </p-dropdown>
-  </div>
+    <!-- Tipo de reporte -->
+    <div>
+      <label class="block mb-1 font-semibold">Tipo de reporte</label>
+      <p-dropdown 
+        class="w-full"
+        [options]="tiposReporte"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona un tipo"
+        [(ngModel)]="nuevoReporte.report_type"
+        (onChange)="onReportTypeChange()">
+      </p-dropdown>
+    </div>
 
-  <div>
-    <label class="block mb-1 font-semibold">Formato</label>
-    <p-dropdown 
-      class="w-full"
-      [options]="formatos"
-      optionLabel="label"
-      optionValue="value"
-      placeholder="Selecciona formato"
-      [(ngModel)]="nuevoReporte.format">
-    </p-dropdown>
-  </div>
+    <!-- Idioma -->
+    <div>
+      <label class="block mb-1 font-semibold">Idioma</label>
+      <p-dropdown 
+        class="w-full"
+        [options]="idiomas"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona idioma"
+        [(ngModel)]="nuevoReporte.language">
+      </p-dropdown>
+    </div>
 
-  <div class="flex justify-end gap-2 pt-2">
-    <button 
-      pButton 
-      label="Cancelar" 
-      class="p-button-secondary" 
-      (click)="cerrarModalCrear()">
-    </button>
+    <!-- Formato -->
+    <div>
+      <label class="block mb-1 font-semibold">Formato</label>
+      <p-dropdown 
+        class="w-full"
+        [options]="formatos"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona formato"
+        [(ngModel)]="nuevoReporte.format">
+      </p-dropdown>
+    </div>
 
-    <button 
-      pButton 
-      label="Crear reporte" 
-      class="p-button-success" 
-      (click)="crearNuevoReporte()">
-    </button>
+    <!-- Fechas (solo para reportes con rango) -->
+    <div *ngIf="['sales_by_period', 'best_sellers'].includes(nuevoReporte.report_type)" class="flex flex-col md:flex-row gap-3">
+      <div class="flex-1">
+        <label class="block mb-1 font-semibold">Fecha inicio</label>
+        <p-calendar 
+          [(ngModel)]="nuevoReporte.start_date"
+          [showIcon]="true"
+          dateFormat="yy-mm-dd"
+          placeholder="Selecciona fecha"
+          [maxDate]="nuevoReporte.end_date || undefined"
+          [readonlyInput]="true"
+          class="w-full"
+          (onSelect)="verificarFechas()">
+        </p-calendar>
+      </div>
+
+      <div class="flex-1">
+        <label class="block mb-1 font-semibold">Fecha fin</label>
+        <p-calendar 
+          [(ngModel)]="nuevoReporte.end_date"
+          [showIcon]="true"
+          dateFormat="yy-mm-dd"
+          placeholder="Selecciona fecha"
+          [minDate]="nuevoReporte.start_date || undefined"
+          [readonlyInput]="true"
+          class="w-full"
+          (onSelect)="verificarFechas()">
+        </p-calendar>
+      </div>
+    </div>
+
+    <!-- Alerta de fechas -->
+    <div *ngIf="mostrarAlertaFechas" class="mt-2 text-sm text-orange-600 bg-orange-50 p-2 rounded-md">
+      <i class="pi pi-exclamation-triangle mr-1"></i>
+      Las fechas son necesarias para este tipo de reporte
+    </div>
+
+    <!-- Botones -->
+    <div class="flex justify-end gap-2 pt-4">
+      <button 
+        pButton 
+        label="Cancelar" 
+        class="p-button-secondary" 
+        (click)="cerrarModalCrear()">
+      </button>
+      <button 
+        pButton 
+        label="Crear reporte" 
+        class="p-button-success" 
+        [disabled]="!esFormularioValido()"
+        (click)="crearNuevoReporte()">
+      </button>
+    </div>
   </div>
-</div>
 </p-dialog>
-
-
