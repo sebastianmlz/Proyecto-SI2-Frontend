@@ -76,12 +76,12 @@
           <td class="py-2 px-3">{{ venta.created_at | date: 'short' }}</td>
           <td class="py-2 px-3">{{ venta.payment.updated_at| date: 'short' }}</td>
           <td class="py-2 px-3 w-28 sm:w-auto text-center">
-            <div class="flex flex-col sm:flex-row justify-center items-center gap-2">
+            <div class="flex flex-col sm:flex-row justify-start items-center gap-2">
               <button pButton type="button" label="Ver más" class="p-button-sm p-button-info w-full sm:w-auto"
                 (click)="abrirModalVerMas(venta)"></button>
               <button pButton icon="pi pi-comment" class="p-button-rounded p-button-info p-button-sm w-full sm:w-auto"
                 pTooltip="Dejar feedback" tooltipPosition="top" (click)="abrirModalFeedback(venta)"
-                *ngIf="!venta.feedback"></button>
+                *ngIf="venta.estado_pedido === 'Entregado'"></button>
             </div>
           </td>
         </tr>
@@ -380,3 +380,4 @@
     </div>
   </ng-template>
 </p-dialog>
+
