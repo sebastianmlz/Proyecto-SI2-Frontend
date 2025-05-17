@@ -10,10 +10,12 @@ import { RatingModule } from 'primeng/rating';
 import { FormsModule } from '@angular/forms';
 import { reportsService } from '../../../services/reports.service';
 import { DropdownModule } from 'primeng/dropdown';
+import { CalendarModule } from 'primeng/calendar';
+
 
 @Component({
   selector: 'app-historial-pedidos',
-  imports: [CommonModule, TableModule, ButtonModule, DialogModule, RatingModule, FormsModule, DropdownModule],
+  imports: [CommonModule, TableModule, ButtonModule, DialogModule, RatingModule, FormsModule, DropdownModule, CalendarModule],
   templateUrl: './historial-pedidos.component.html',
   styleUrl: './historial-pedidos.component.css'
 })
@@ -28,7 +30,9 @@ export class HistorialPedidosComponent implements OnInit {
     name: '',
     report_type: '',
     format: '',
-    language: ''
+    language: '',
+    start_date: null as Date | null, // Añadir
+    end_date: null as Date | null    // Añadir
   };
 
   Recibo={
@@ -51,7 +55,7 @@ export class HistorialPedidosComponent implements OnInit {
   formatos = [
     { label: 'PDF', value: 'pdf' },
     { label: 'Excel', value: 'excel' },
-    { label: 'CSV', value: 'csv' }
+    { label: 'Html', value: 'html' }
   ];
 
   modalCrearReporteVisible: boolean = false; // Para el modal de creación
@@ -279,14 +283,18 @@ export class HistorialPedidosComponent implements OnInit {
   }
 
   crearNuevoReporte(): void {
-    // Si el tipo de reporte es un recibo y no se seleccionó una orden
     if (this.nuevoReporte.report_type === 'order_receipt' && !this.ordenSeleccionada) {
       this.notificacionService.warn('Selecciona una orden', 'Debes seleccionar una orden para generar el recibo');
       return;
     }
 
-    // Preparamos el payload según el tipo de reporte
-    let payload;
+    // Validar fechas para 'my_orders'
+    if (this.nuevoReporte.report_type === 'my_orders' && (!this.nuevoReporte.start_date || !this.nuevoReporte.end_date)) {
+      this.notificacionService.warn('Fechas requeridas', 'Debes seleccionar fecha de inicio y fin para este reporte.');
+      return;
+    }
+
+    let payload: any;
     
     if (this.nuevoReporte.report_type === 'order_receipt') {
       payload = {
@@ -294,10 +302,22 @@ export class HistorialPedidosComponent implements OnInit {
         report_type: 'order_receipt',
         format: this.nuevoReporte.format,
         language: this.nuevoReporte.language,
-        order_id: this.ordenSeleccionada // Incluimos el ID de la orden seleccionada
+        order_id: this.ordenSeleccionada
+      };
+    } else if (this.nuevoReporte.report_type === 'my_orders') {
+      payload = {
+        name: this.nuevoReporte.name,
+        report_type: 'my_orders',
+        format: this.nuevoReporte.format,
+        language: this.nuevoReporte.language,
+        start_date: this.nuevoReporte.start_date, // Incluir fechas
+        end_date: this.nuevoReporte.end_date     // Incluir fechas
       };
     } else {
-      payload = this.nuevoReporte;
+      // Para otros tipos de reportes que no sean recibo ni mis_ordenes (si los hubiera)
+      payload = { ...this.nuevoReporte };
+      delete payload.start_date; // Eliminar si no son necesarios
+      delete payload.end_date;
     }
 
     this.reportesService.crearReporte(payload).subscribe({
@@ -320,11 +340,17 @@ export class HistorialPedidosComponent implements OnInit {
 
   abrirModalCrear(): void {
     // Reset the form values
+    const hoy = new Date();
+    const unMesAtras = new Date();
+    unMesAtras.setMonth(hoy.getMonth() - 1);
+
     this.nuevoReporte = {
       name: '',
       report_type: '',
       language: '',
-      format: ''
+      format: '',
+      start_date: unMesAtras, // Fecha por defecto
+      end_date: hoy         // Fecha por defecto
     };
     
     // Cargar órdenes disponibles para el selector de recibos
@@ -352,9 +378,18 @@ export class HistorialPedidosComponent implements OnInit {
 
   // Agregamos un método para manejar el cambio de tipo de reporte
   onReportTypeChange(): void {
-    // Si es recibo, asignamos un nombre predeterminado
     if (this.nuevoReporte.report_type === 'order_receipt') {
       this.nuevoReporte.name = 'Recibo de mi pedido';
+    } else if (this.nuevoReporte.report_type === 'my_orders') {
+      this.nuevoReporte.name = 'Mis Compras'; // O un nombre por defecto
+      // Asegurar que las fechas por defecto se establezcan si no están ya
+      if (!this.nuevoReporte.start_date || !this.nuevoReporte.end_date) {
+        const hoy = new Date();
+        const unMesAtras = new Date();
+        unMesAtras.setMonth(hoy.getMonth() - 1);
+        this.nuevoReporte.start_date = unMesAtras;
+        this.nuevoReporte.end_date = hoy;
+      }
     } else {
       this.nuevoReporte.name = '';
     }

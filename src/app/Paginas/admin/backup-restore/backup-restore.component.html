@@ -1,0 +1,80 @@
+<div class="p-4 md:p-6">
+  <div class="bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 text-white mb-6 shadow-lg justify-center">
+    <h2 class="text-xl md:text-2xl font-bold flex items-center gap-2 justify-center">
+      <i class="pi pi-database"></i>
+      Gestión de Backup y Restauración de Base de Datos
+    </h2>
+  </div>
+
+  <!-- Sección Crear Backup -->
+  <div class="mb-8 p-6 bg-white rounded-xl shadow-md">
+    <h3 class="text-lg font-semibold text-gray-700 mb-3">Crear Nuevo Backup</h3>
+    <hr class="mb-4 mt-0">
+    <p class="text-sm text-gray-600 mb-4">
+      Genera un nuevo archivo de respaldo (.sql) del estado actual de la base de datos. Este archivo se almacenará en S3.
+    </p>
+    <button pButton label="Crear Backup Ahora" icon="pi pi-plus-circle" class="p-button-success" (click)="onCreateBackup()" [loading]="creatingBackup"></button>
+  </div>
+
+  <!-- Sección Listar y Descargar Backups -->
+  <div class="mb-8 p-6 bg-white rounded-xl shadow-md">
+    <h3 class="text-lg font-semibold text-gray-700 mb-3">Backups Disponibles</h3>
+    <hr class="mb-4 mt-0">
+    <p-table [value]="availableBackups" [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5, 10, 15]" responsiveLayout="scroll" *ngIf="!loadingBackups && availableBackups.length > 0"
+              sortMode="multiple" [styleClass]="'w-full text-sm'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="filename">Nombre <p-sortIcon field="filename"></p-sortIcon></th>
+          <th pSortableColumn="created_at" class="text-center">Fecha Creación <p-sortIcon field="created_at"></p-sortIcon></th>
+          <th pSortableColumn="size_mb" class="text-center">Tamaño (MB) <p-sortIcon field="size_mb"></p-sortIcon></th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-backup> <!-- Cambiado de backupFile a backup -->
+        <tr>
+          <td>{{ backup.filename }}</td>
+          <td class="text-center">{{ backup.created_at | date:'yyyy-MM-dd HH:mm:ss' }}</td> <!-- Usar DatePipe -->
+          <td class="text-center">{{ backup.size_mb }} MB</td>
+          <td class="text-center">
+            <button pButton label="Descargar" icon="pi pi-download" class="p-button-info p-button-sm" (click)="onDownloadBackup(backup)"></button> <!-- Pasar el objeto backup completo -->
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="4" class="text-center p-4">No hay backups disponibles.</td> <!-- Ajustar colspan -->
+        </tr>
+      </ng-template>
+    </p-table>
+    <div *ngIf="loadingBackups" class="text-center p-4">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p>Cargando backups...</p>
+    </div>
+     <div *ngIf="!loadingBackups && availableBackups.length === 0" class="text-center p-4 text-gray-500">
+        No se encontraron backups disponibles. Intenta crear uno.
+    </div>
+  </div>
+
+  <!-- Sección Restaurar Backup -->
+  <div class="p-6 bg-white rounded-xl shadow-md">
+    <h3 class="text-lg font-semibold text-gray-700 mb-3">Restaurar Base de Datos desde Backup</h3>
+    <hr class="mb-4 mt-0">
+    <p class="text-sm text-gray-600 mb-4">
+      Selecciona un archivo de respaldo (.sql) previamente descargado para restaurar la base de datos a ese estado.
+      <strong>Advertencia:</strong> Esta acción sobrescribirá los datos actuales.
+    </p>
+    <div class="flex items-center gap-4">
+      <input type="file" #fileInput (change)="onFileSelected($event)" accept=".sql" class="block w-full text-sm text-slate-500
+        file:mr-4 file:py-2 file:px-4
+        file:rounded-full file:border-0
+        file:text-sm file:font-semibold
+        file:bg-green-50 file:text-green-700
+        hover:file:bg-green-100
+      "/>
+      <button pButton label="Restaurar desde Archivo" icon="pi pi-upload" class="p-button-warning" (click)="onRestoreBackup()" [disabled]="!selectedFile || restoringBackup" [loading]="restoringBackup"></button>
+    </div>
+    <div *ngIf="selectedFile" class="mt-2 text-sm text-gray-600">
+      Archivo seleccionado: <strong>{{ selectedFile.name }}</strong>
+    </div>
+  </div>
+</div>

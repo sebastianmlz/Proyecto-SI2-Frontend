@@ -66,6 +66,11 @@ export const routes: Routes = [
     loadComponent: () => import('./Paginas/admin/messages/messages.component').then((m) => m.MessagesComponent),
     canActivate: [adminGuard],
   },
+  {
+    path: 'admin/backup-restore',
+    loadComponent: () => import('./Paginas/admin/backup-restore/backup-restore.component').then((m) => m.BackupRestoreComponent),
+    canActivate: [adminGuard],
+  },
 
   // Customer
   {

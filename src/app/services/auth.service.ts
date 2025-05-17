@@ -69,7 +69,7 @@ export class AuthService {
       Authorization: `Bearer ${token}`
     };
 
-    const url = `${this.baseUrlP}/users/${userId}?path_params={}`;
+    const url = `${this.baseUrlP}/users/${userId}/`;
     return this.http.get(url, { headers });
   }
 

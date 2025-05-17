@@ -69,13 +69,14 @@ export class ReportesComponent implements OnInit {
   
   formatos = [
     { label: 'PDF', value: 'pdf' },
-    { label: 'Excel', value: 'excel' }
+    { label: 'Excel', value: 'excel' },
+    { label: 'Html', value: 'html' }
   ];
 
   mostrarAlertaFechas: boolean = false;
 
   // Lista de tipos de reportes que requieren fechas
-  tiposConFechas: string[] = ['sales_by_period', 'product_performance'];
+  tiposConFechas: string[] = ['sales_by_period', 'product_performance', 'best_sellers']; // <--- AÑADE 'best_sellers' AQUÍ
 
   constructor(
     private reportsService: reportsService,
@@ -150,7 +151,6 @@ export class ReportesComponent implements OnInit {
     this.modalCrearVisible = false;
   }
 
-  // Método añadido para responder al cambio en el tipo de reporte
   onReportTypeChange(): void {
     // Verificar si el tipo seleccionado requiere fechas
     const requiereFechas = this.tiposConFechas.includes(this.nuevoReporte.report_type);
