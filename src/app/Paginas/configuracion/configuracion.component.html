@@ -1,84 +1,147 @@
 <div class="flex justify-center items-start min-h-[80vh] pt-8 bg-gradient-to-tr from-blue-950 via-green-950 to-black px-4 text-white">
   <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 gap-6">
 
-    <!-- Cuadro izquierdo: Datos del perfil -->
-    <div class="bg-white/10 backdrop-blur p-6 rounded-2xl shadow-2xl border border-white/20 text-white">
-      <h2 class="text-xl font-bold mb-4 text-center">Datos del perfil</h2>
-      <div class="space-y-4">
-        <!-- Nombre -->
-        <div>
-          <label class="font-semibold">Nombre</label>
-          <input
-            *ngIf="modoEdicion"
-            [(ngModel)]="usuario.first_name"
-            type="text"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
+    <!-- Cuadro izquierdo: Datos del perfil y Lealtad -->
+    <div class="space-y-6">
+      <!-- Bloque de lealtad -->
+      <div class="bg-white/10 backdrop-blur p-6 rounded-2xl shadow-2xl border border-white/20 text-white">
+        <h2 class="text-xl font-bold mb-4 text-center">Tu nivel de lealtad</h2>
+        
+        <!-- Eliminamos cualquier div de carga y mostramos directamente el contenido -->
+        <div class="space-y-3">
+          <!-- Nivel actual -->
+          <div class="flex justify-between items-center">
+            <h3 class="text-lg font-medium">Nivel actual:</h3>
+            <span 
+              class="text-lg font-bold px-3 py-1 rounded-lg" 
+              [ngClass]="{
+                'bg-gray-200 text-gray-800': getCurrentLevelName() === 'Standard',
+                'bg-gray-300 text-gray-800': getCurrentLevelName() === 'Silver',
+                'bg-yellow-200 text-yellow-800': getCurrentLevelName() === 'Gold',
+                'bg-cyan-200 text-cyan-800': getCurrentLevelName() === 'Platinum'
+              }">
+              {{ getCurrentLevelName() }}
+            </span>
+          </div>
+          
+          <!-- Descuento actual -->
+          <div>
+            <p class="text-base font-medium">Descuento actual: 
+              <!-- Para mostrar siempre con signo de porcentaje -->
+              <span class="text-xl font-bold text-green-400">
+                {{ typeof loyaltyInfo.discount_percentage === 'string' && loyaltyInfo.discount_percentage.includes('%') 
+                   ? loyaltyInfo.discount_percentage 
+                   : loyaltyInfo.discount_percentage + '%' }}
+              </span>
+            </p>
+            <p *ngIf="isMaxLevel()" class="text-sm text-green-300 italic">
+              ¡Has alcanzado el nivel más alto!
+            </p>
+          </div>
+          
+          <!-- Barra de progreso -->
+          <div class="w-full bg-gray-700 rounded-full h-4 mt-2">
+            <div class="bg-gradient-to-r from-green-500 to-green-300 h-4 rounded-full transition-all duration-500"
+                 [style.width]="getLoyaltyProgress() + '%'"></div>
+          </div>
+          
+          <!-- Detalle de compras -->
+          <div class="mt-2 text-sm">
+            <p>Has realizado <span class="font-bold">{{ loyaltyInfo.total_orders }}</span> pedidos en total.</p>
+            <p *ngIf="loyaltyInfo.last_order_date">
+              Último pedido: {{ loyaltyInfo.last_order_date | date:'dd/MM/yyyy' }}
+            </p>
+          </div>
+          
+          <!-- Mensaje de nivel -->
+          <div class="mt-2">
+            <p class="text-center font-medium" [ngClass]="getLevelTextColorClass()">
+              Nivel {{ getCurrentLevelName() }} {{ isMaxLevel() ? 'desbloqueado' : 'activo' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Datos de perfil (original, ahora debajo de lealtad) -->
+      <div class="bg-white/10 backdrop-blur p-6 rounded-2xl shadow-2xl border border-white/20 text-white">
+        <!-- Mismo contenido que tenías -->
+        <h2 class="text-xl font-bold mb-4 text-center">Datos del perfil</h2>
+        <div class="space-y-4">
+          <!-- Nombre -->
+          <div>
+            <label class="font-semibold">Nombre</label>
+            <input
+              *ngIf="modoEdicion"
+              [(ngModel)]="usuario.first_name"
+              type="text"
+              class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
+              />
+            <p *ngIf="!modoEdicion">{{ usuario?.first_name }}</p>
+          </div>
+
+          <!-- Apellido -->
+          <div>
+            <label class="font-semibold">Apellido</label>
+            <input
+              *ngIf="modoEdicion"
+              [(ngModel)]="usuario.last_name"
+              type="text"
+              class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
             />
-          <p *ngIf="!modoEdicion">{{ usuario?.first_name }}</p>
-        </div>
+            <p *ngIf="!modoEdicion">{{ usuario?.last_name }}</p>
+          </div>
 
-        <!-- Apellido -->
-        <div>
-          <label class="font-semibold">Apellido</label>
-          <input
-            *ngIf="modoEdicion"
-            [(ngModel)]="usuario.last_name"
-            type="text"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
-          />
-          <p *ngIf="!modoEdicion">{{ usuario?.last_name }}</p>
-        </div>
+          <!-- Correo -->
+          <div>
+            <label class="font-semibold">Correo</label>
+            <input
+              *ngIf="modoEdicion"
+              [(ngModel)]="usuario.email"
+              type="email"
+              class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
+            />
+            <p *ngIf="!modoEdicion">{{ usuario?.email }}</p>
+          </div>
 
-        <!-- Correo -->
-        <div>
-          <label class="font-semibold">Correo</label>
-          <input
-            *ngIf="modoEdicion"
-            [(ngModel)]="usuario.email"
-            type="email"
-            class="p-inputtext p-component p-2 w-full bg-white/10 text-white placeholder-white/60 border border-green-500 focus:ring-2 focus:ring-green-300 transition rounded-lg"
-          />
-          <p *ngIf="!modoEdicion">{{ usuario?.email }}</p>
-        </div>
+          <!-- Rol -->
+          <div>
+            <label class="font-semibold">Rol</label>
+            <p class="font-medium">{{ usuario?.role }}</p>
+          </div>
 
-        <!-- Rol -->
-        <div>
-          <label class="font-semibold">Rol</label>
-          <p class="font-medium">{{ usuario?.role }}</p>
-        </div>
-
-        <!-- Botones edición -->
-        <div class="flex gap-2">
-          <button
-            *ngIf="!modoEdicion"
-            pButton
-            label="Editar"
-            icon="pi pi-pencil"
-            class="p-button-sm bg-green-600 text-white hover:bg-green-700 transition-all"
-            (click)="modoEdicion = true"
-          ></button>
-
-          <ng-container *ngIf="modoEdicion">
+          <!-- Botones edición -->
+          <div class="flex gap-2">
             <button
+              *ngIf="!modoEdicion"
               pButton
-              label="Aplicar cambios"
-              icon="pi pi-check"
-              class="p-button-sm p-button-success"
-              (click)="guardarDatos()"
+              label="Editar"
+              icon="pi pi-pencil"
+              class="p-button-sm bg-green-600 text-white hover:bg-green-700 transition-all"
+              (click)="modoEdicion = true"
             ></button>
-            <button
-              pButton
-              label="Cancelar"
-              icon="pi pi-times"
-              class="p-button-sm p-button-danger"
-              (click)="cancelarEdicion()"
-            ></button>
-          </ng-container>
+
+            <ng-container *ngIf="modoEdicion">
+              <button
+                pButton
+                label="Aplicar cambios"
+                icon="pi pi-check"
+                class="p-button-sm p-button-success"
+                (click)="guardarDatos()"
+              ></button>
+              <button
+                pButton
+                label="Cancelar"
+                icon="pi pi-times"
+                class="p-button-sm p-button-danger"
+                (click)="cancelarEdicion()"
+              ></button>
+            </ng-container>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Cuadro derecho: Cambiar contraseña -->
+    <!-- Cuadro derecho: Seguridad (sin cambios) -->
     <div class="bg-white/10 backdrop-blur p-6 rounded-2xl shadow-2xl border border-white/20 text-white">
       <h2 class="text-xl font-bold mb-4 text-center">Seguridad</h2>
       <div class="space-y-4">
@@ -132,8 +195,6 @@
               </div>
             </div>
           </form>
-          
-          
         </div>
       </div>
     </div>

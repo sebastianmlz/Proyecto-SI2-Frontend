@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, IterableDiffers } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { NotificacionService } from '../../../services/notificacion.service';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
+import { CustomerLoyaltyService } from '../../../services/customer-loyalty.service';
 
 @Component({
   selector: 'app-table-users',
@@ -43,9 +44,11 @@ import { AuthService } from '../../../services/auth.service';
 export class TableUsersComponent {
   //variable de usuarios
   usuarios: User[] = [];
+  loyaltyData: any[] = [];
+  loyaltyMap: Map<number, any> = new Map();
 
   // variables de registro
-  nuevoUsuarioModalVisible:boolean = false;
+  nuevoUsuarioModalVisible: boolean = false;
   usuario = {
     email: '',
     first_name: '',
@@ -63,8 +66,16 @@ export class TableUsersComponent {
   roles = [
     { label: 'Customer', value: 'customer' },
     { label: 'Admin', value: 'admin' },
-    
+
   ];
+
+  opcionesDescuento=[
+    { label: 'Sin descuento (0%)', value: '0%' },
+    { label: 'Nivel Silver (5%)', value: '5%' },
+    { label: 'Nivel Gold (10%)', value: '10%' },
+    { label: 'Nivel Platinum (15%)', value: '15%' }
+  ]
+
 
   // Propiedades para paginación
   currentPage: number = 1;
@@ -78,7 +89,9 @@ export class TableUsersComponent {
   constructor(private usuarioService: UserService,
     private authService: AuthService,
     private noti: NotificacionService,
-    private route:Router
+    private route: Router,
+    private customerLoyaltyService: CustomerLoyaltyService
+
   ) { }
 
   ngOnInit() {
@@ -96,8 +109,8 @@ export class TableUsersComponent {
         this.totalPages = res.pages;
         this.hasNextPage = res.has_next;
         this.hasPrevPage = res.has_prev;
-        this.loading = false;
-        
+
+        this.cargarDatosLealtad();
         console.log("Productos con stock:", this.usuarios);
         console.log("respuesta del backend:", res);
       },
@@ -108,6 +121,41 @@ export class TableUsersComponent {
     });
   }
 
+  cargarDatosLealtad(): void {
+    this.customerLoyaltyService.getCustomerLoyalty(this.currentPage, this.pageSize).subscribe({
+      next: (res)=>{
+        if (res && res.items){
+          this.loyaltyData = res.items;
+
+          this.loyaltyMap.clear();
+          this.loyaltyData.forEach(item => {
+            if (item.user){
+              this.loyaltyMap.set(item.user, item);
+            }
+          });
+          this.usuarios = this.usuarios.map(user => {
+            const loyaltyInfo = this.loyaltyMap.get(user.id);
+            return {
+              ...user,
+              loyalty: loyaltyInfo || {
+                discount_percentage: '0%',
+                total_orders: 0,
+                tier: 'Standard',
+                last_order_date: null
+              }
+            }
+          })
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error("Error al cargar datos de lealtad", err);
+        this.loading = false;
+      }
+    });
+  }
+
+
   // Nuevo método para manejar el cambio de página
   onPageChange(event: any): void {
     // Si usas p-paginator de PrimeNG
@@ -115,20 +163,20 @@ export class TableUsersComponent {
       // PrimeNG paginator usa base 0 (primera página = 0)
       this.currentPage = event.page + 1;
       this.pageSize = event.rows;
-    } 
+    }
     // Si usas p-table con paginación integrada
     else if (event.first !== undefined) {
       // Calcular página basado en first y rows
       this.currentPage = Math.floor(event.first / event.rows) + 1;
       this.pageSize = event.rows;
     }
-    
+
     console.log(`Cambiando a página ${this.currentPage}, tamaño: ${this.pageSize}`);
     this.cargarUsers(this.currentPage, this.pageSize);
   }
-  
-  
-  
+
+
+
 
   // agregarUsuario(newUsuario: User): void {
   //   this.usuarioService.agregarUsers(newUsuario).subscribe({
@@ -139,11 +187,11 @@ export class TableUsersComponent {
 
   eliminarUsuario(id: number): void {
     this.usuarioService.eliminarUsuario(id).subscribe({
-      next: () =>{
+      next: () => {
         this.noti.success('Eliminación exitosa', 'El usuario fue eliminado correctamente.');
         this.cargarUsers();
       },
-      error: (err) =>{
+      error: (err) => {
         if (err.status === 403) {
           this.noti.error('Error', 'No tienes permiso para eliminar este usuario.');
         } else if (err.status === 404) {
@@ -152,7 +200,7 @@ export class TableUsersComponent {
           this.noti.error('Error', 'No se pudo eliminar el usuario.');
         }
         console.error('Error al eliminar el usuario', err);
-      } 
+      }
     });
   }
 
@@ -164,7 +212,7 @@ export class TableUsersComponent {
       active: usuario.active ?? true
     };
     this.editarModalVisible = true;
-    console.log("usuario a editar:",this.usuarioEditando);
+    console.log("usuario a editar:", this.usuarioEditando);
   }
 
   actualizarUsuario(): void {
@@ -177,7 +225,7 @@ export class TableUsersComponent {
       this.noti.warn('Campos incompletos', 'Por favor, completa todos los campos requeridos.');
       return;
     }
-  
+
     const usuarioAEnviar: any = {
       email: this.usuarioEditando.email,
       first_name: this.usuarioEditando.first_name,
@@ -185,12 +233,12 @@ export class TableUsersComponent {
       role: this.usuarioEditando.role,
       active: !!this.usuarioEditando.active  // 🔒 asegura que sea true/false, no undefined
     };
-    
+
     if (this.usuarioEditando.password?.trim()) {
       usuarioAEnviar.password = this.usuarioEditando.password;
     }
-    
-  
+
+
     this.usuarioService.actualizarUser(this.usuarioEditando.id, usuarioAEnviar).subscribe({
       next: () => {
         this.cargarUsers();
@@ -218,7 +266,7 @@ export class TableUsersComponent {
 
 
   registrarUsuario() {
-    console.log("usuario a registrar: ",this.usuario);
+    console.log("usuario a registrar: ", this.usuario);
     this.authService.agregarUsers(this.usuario).subscribe({
       next: () => {
         this.cargarUsers();
@@ -231,8 +279,9 @@ export class TableUsersComponent {
       }
     });
   }
-  
-  
+
+
+
   cerrarModal(): void {
     this.editarModalVisible = false;
   }
