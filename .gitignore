@@ -37,7 +37,7 @@ Thumbs.db
 
 # 🧪 Environment files (Angular)
 src/environments/environment.ts
-src/environments/environment.prod.ts
+#src/environments/environment.prod.ts
 
 # 🕘 VS Code history plugin (si lo usás)
 .history/
