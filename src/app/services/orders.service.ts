@@ -134,6 +134,17 @@ export class OrdersService {
         return this.http.patch(`${this.baseUrl}/deliveries/${orderId}/`, data, { headers });
     }
 
+    //Asignar un delivery despues de la compra
+    assignDeliveryToOrder(orderId: number): Observable<any> {
+        const token = localStorage.getItem('access');
+        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+        // Combina el orderId y los datos de la entrega en un solo objeto
+        const payload = {
+            order_id: orderId
+        };
+        return this.http.post(`${this.baseUrl}/finance/${orderId}/assign-delivery/`, {}, { headers });
+    }
+
 }
 
 

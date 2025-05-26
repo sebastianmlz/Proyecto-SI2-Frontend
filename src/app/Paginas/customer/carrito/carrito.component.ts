@@ -68,16 +68,35 @@ export class CarritoComponent {
 
   ngOnInit(): void {
     this.cargarPaises();
-    this.cargarDirecciones(); // Añadir esta línea
+    this.cargarDirecciones();
     
     const pagoExitoso = this.route.snapshot.queryParamMap.get('payment') === 'success';
     const ordenPendiente = localStorage.getItem('pendingOrder');
 
     if (pagoExitoso && ordenPendiente) {
-      localStorage.removeItem('pendingOrder');
-      this.carrito = [];
-      this.totalPagar = 0;
-      this.noti.success('Pago exitoso', 'Tu compra fue procesada correctamente');
+      // Convertir el ID de la orden a número
+      const ordenId = Number(ordenPendiente);
+      
+      // ✨ AQUÍ: Llama al endpoint para asignar delivery después de confirmar el pago
+      this.ordersService.assignDeliveryToOrder(ordenId).subscribe({
+        next: (res) => {
+          console.log('Delivery asignado correctamente:', res);
+          this.noti.success('Delivery asignado', 'Un repartidor ha sido asignado a tu pedido');
+        },
+        error: (err) => {
+          console.error('Error al asignar delivery:', err);
+          // No mostramos notificación de error al usuario para no afectar la experiencia
+          // Solo registramos el error para depuración
+        },
+        complete: () => {
+          // Limpiar datos independientemente del resultado de la asignación
+          localStorage.removeItem('pendingOrder');
+          this.carrito = [];
+          this.totalPagar = 0;
+          this.noti.success('Pago exitoso', 'Tu compra fue procesada correctamente');
+        }
+      });
+      
       return;
     }
 
@@ -369,6 +388,9 @@ export class CarritoComponent {
       }
     });
   }
+
+  //----asignar el pedido automaticamente 
+
 
 
 }
