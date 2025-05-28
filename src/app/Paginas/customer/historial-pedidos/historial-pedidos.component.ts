@@ -147,56 +147,71 @@ export class HistorialPedidosComponent implements OnInit {
     // Datos del repartidor
     let nombreRepartidor = 'Sin asignar';
     if (delivery.assignment) {
-      // Verificar todos los posibles campos de nombre en orden de prioridad
-      if (typeof delivery.assignment.delivery_person === 'string') {
+      // Manejo específico cuando delivery_person es un objeto
+      if (delivery.assignment.delivery_person && typeof delivery.assignment.delivery_person === 'object') {
+        const person = delivery.assignment.delivery_person;
+        
+        // Verificamos si tiene la propiedad name
+        if (person.name) {
+          nombreRepartidor = person.name;
+        } 
+        // Si no tiene name pero tiene first_name y last_name
+        else if (person.first_name && person.last_name) {
+          nombreRepartidor = `${person.first_name} ${person.last_name}`;
+        }
+        // Si solo tiene first_name
+        else if (person.first_name) {
+          nombreRepartidor = person.first_name;
+        }
+        // Si no hay ninguno de estos datos
+        else {
+          nombreRepartidor = `Repartidor #${person.id || delivery.assignment.id}`;
+        }
+      } 
+      // Cuando es una cadena de texto
+      else if (typeof delivery.assignment.delivery_person === 'string') {
         nombreRepartidor = delivery.assignment.delivery_person;
-      } else if (typeof delivery.assignment.name === 'string') {
+      } 
+      // Verificamos otras propiedades posibles
+      else if (delivery.assignment.name) {
         nombreRepartidor = delivery.assignment.name;
-      } else if (delivery.assignment.first_name && delivery.assignment.last_name) {
-        nombreRepartidor = `${delivery.assignment.first_name} ${delivery.assignment.last_name}`;
-      } else if (delivery.assignment.first_name) {
-        nombreRepartidor = delivery.assignment.first_name;
       } else {
         nombreRepartidor = `Repartidor #${delivery.assignment.id}`;
       }
     }
 
-    // Estado del repartidor
-    let estadoRepartidor = 'Pendiente';
-    if (delivery.status_display) {
-      estadoRepartidor = delivery.status_display;
-    } else if (delivery.status) {
-      estadoRepartidor = delivery.status;
-    } else if (delivery.assignment && delivery.assignment.status_display) {
-      estadoRepartidor = delivery.assignment.status_display;
-    } else if (delivery.assignment && delivery.assignment.status) {
-      estadoRepartidor = delivery.assignment.status;
-    }
-
     // Email del repartidor
     let emailRepartidor = 'No disponible';
-    if (delivery.assignment && typeof delivery.assignment.delivery_person_email === 'string') {
-      emailRepartidor = delivery.assignment.delivery_person_email;
-    } else if (delivery.assignment && delivery.assignment.email) {
-      emailRepartidor = delivery.assignment.email;
-    }
-
-    // Fecha de asignación
-    let fechaAsignacion = 'Sin fecha asignada';
-    if (delivery.assignment && delivery.assignment.assignment_date) {
-      fechaAsignacion = delivery.assignment.assignment_date;
+    if (delivery.assignment && delivery.assignment.delivery_person) {
+      // Si delivery_person es un objeto con propiedad email
+      if (typeof delivery.assignment.delivery_person === 'object' && delivery.assignment.delivery_person.email) {
+        emailRepartidor = delivery.assignment.delivery_person.email;
+      } 
+      // Si hay una propiedad directa delivery_person_email
+      else if (delivery.assignment.delivery_person_email) {
+        emailRepartidor = delivery.assignment.delivery_person_email;
+      }
     }
 
     // Tipo de vehículo
     let tipoVehiculo = 'No especificado';
-    if (delivery.assignment && typeof delivery.assignment.vehicle_type === 'string') {
+    // Revisar si existe un perfil con tipo de vehículo
+    if (delivery.assignment && 
+        delivery.assignment.delivery_person && 
+        typeof delivery.assignment.delivery_person === 'object' &&
+        delivery.assignment.delivery_person.profile &&
+        delivery.assignment.delivery_person.profile.vehicle_type) {
+      tipoVehiculo = delivery.assignment.delivery_person.profile.vehicle_type;
+    } 
+    // Caso alternativo donde el vehicle_type está directamente en el assignment
+    else if (delivery.assignment && delivery.assignment.vehicle_type) {
       tipoVehiculo = delivery.assignment.vehicle_type;
     }
     
     return {
       nombre: nombreRepartidor,
-      estado: estadoRepartidor,
-      fecha: fechaAsignacion,
+      estado: delivery.status_display || delivery.status || 'Pendiente',
+      fecha: delivery.assignment?.assignment_date || 'Sin fecha asignada',
       email: emailRepartidor,
       vehiculo: tipoVehiculo
     };
