@@ -35,11 +35,11 @@ export class HistorialPedidosComponent implements OnInit {
     end_date: null as Date | null    // Añadir
   };
 
-  Recibo={
-    name:'',
-    report_type:'order_receipt',
-    format:'',
-    language:''
+  Recibo = {
+    name: '',
+    report_type: 'order_receipt',
+    format: '',
+    language: ''
   }
 
   tiposReporte = [
@@ -71,7 +71,7 @@ export class HistorialPedidosComponent implements OnInit {
   deliveryFeedbackSent: boolean = false;
 
   // Agregar estas variables nuevas
-  ordenSeleccionada: number |null=null;
+  ordenSeleccionada: number | null = null;
   ordenesDisponibles: any[] = [];
 
   constructor(
@@ -91,7 +91,7 @@ export class HistorialPedidosComponent implements OnInit {
         this.ventas = res.items.filter(
           (venta: any) => venta.payment?.payment_status === 'completed'
         );
-
+        console.log('Ventas obtenidas:', this.ventas);
         this.ventas.forEach((venta: any) => {
           const userId = venta.user;
           if (!this.usuarios[userId]) {
@@ -129,6 +129,77 @@ export class HistorialPedidosComponent implements OnInit {
   abrirModalVerMas(venta: any): void {
     this.ventaSeleccionada = venta;
     this.modalVerMasVisible = true;
+  }
+
+  getDatosDelivery(orderId: number): any {
+    if (!this.ventaSeleccionada || !this.ventaSeleccionada.delivery) {
+      return {
+        nombre: 'Sin información',
+        estado: 'Sin información',
+        fecha: 'Sin información',
+        email: 'No disponible',
+        vehiculo: 'No especificado'
+      };
+    }
+    
+    const delivery = this.ventaSeleccionada.delivery;
+    
+    // Datos del repartidor
+    let nombreRepartidor = 'Sin asignar';
+    if (delivery.assignment) {
+      // Verificar todos los posibles campos de nombre en orden de prioridad
+      if (typeof delivery.assignment.delivery_person === 'string') {
+        nombreRepartidor = delivery.assignment.delivery_person;
+      } else if (typeof delivery.assignment.name === 'string') {
+        nombreRepartidor = delivery.assignment.name;
+      } else if (delivery.assignment.first_name && delivery.assignment.last_name) {
+        nombreRepartidor = `${delivery.assignment.first_name} ${delivery.assignment.last_name}`;
+      } else if (delivery.assignment.first_name) {
+        nombreRepartidor = delivery.assignment.first_name;
+      } else {
+        nombreRepartidor = `Repartidor #${delivery.assignment.id}`;
+      }
+    }
+
+    // Estado del repartidor
+    let estadoRepartidor = 'Pendiente';
+    if (delivery.status_display) {
+      estadoRepartidor = delivery.status_display;
+    } else if (delivery.status) {
+      estadoRepartidor = delivery.status;
+    } else if (delivery.assignment && delivery.assignment.status_display) {
+      estadoRepartidor = delivery.assignment.status_display;
+    } else if (delivery.assignment && delivery.assignment.status) {
+      estadoRepartidor = delivery.assignment.status;
+    }
+
+    // Email del repartidor
+    let emailRepartidor = 'No disponible';
+    if (delivery.assignment && typeof delivery.assignment.delivery_person_email === 'string') {
+      emailRepartidor = delivery.assignment.delivery_person_email;
+    } else if (delivery.assignment && delivery.assignment.email) {
+      emailRepartidor = delivery.assignment.email;
+    }
+
+    // Fecha de asignación
+    let fechaAsignacion = 'Sin fecha asignada';
+    if (delivery.assignment && delivery.assignment.assignment_date) {
+      fechaAsignacion = delivery.assignment.assignment_date;
+    }
+
+    // Tipo de vehículo
+    let tipoVehiculo = 'No especificado';
+    if (delivery.assignment && typeof delivery.assignment.vehicle_type === 'string') {
+      tipoVehiculo = delivery.assignment.vehicle_type;
+    }
+    
+    return {
+      nombre: nombreRepartidor,
+      estado: estadoRepartidor,
+      fecha: fechaAsignacion,
+      email: emailRepartidor,
+      vehiculo: tipoVehiculo
+    };
   }
 
   cerrarModalVerMas(): void {
@@ -295,7 +366,7 @@ export class HistorialPedidosComponent implements OnInit {
     }
 
     let payload: any;
-    
+
     if (this.nuevoReporte.report_type === 'order_receipt') {
       payload = {
         name: this.nuevoReporte.name,
@@ -322,10 +393,10 @@ export class HistorialPedidosComponent implements OnInit {
 
     this.reportesService.crearReporte(payload).subscribe({
       next: (res: any) => {
-        const mensaje = this.nuevoReporte.report_type === 'order_receipt' 
-          ? 'Recibo generado con éxito' 
+        const mensaje = this.nuevoReporte.report_type === 'order_receipt'
+          ? 'Recibo generado con éxito'
           : 'Reporte creado con éxito';
-          
+
         this.notificacionService.success('¡Listo!', mensaje);
         this.cerrarModalCrear();
         // Mostrar los reportes generados después de crear uno nuevo
@@ -352,13 +423,13 @@ export class HistorialPedidosComponent implements OnInit {
       start_date: unMesAtras, // Fecha por defecto
       end_date: hoy         // Fecha por defecto
     };
-    
+
     // Cargar órdenes disponibles para el selector de recibos
     this.ordenesDisponibles = this.ventas.map(venta => ({
       label: `Pedido #${venta.id} - ${new Date(venta.created_at).toLocaleDateString()}`,
       value: venta.id
     }));
-    
+
     this.ordenSeleccionada = null;
     this.modalCrearReporteVisible = true;
   }
