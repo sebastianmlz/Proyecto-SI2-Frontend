@@ -6,6 +6,7 @@ import { RegistroComponent } from './Paginas/registers/registro.component';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { customerGuard } from './guards/customer.guard';
+import { deliveryGuard } from './guards/delivery.guard';
 import { redirectLoggedInGuard } from './guards/redirectLoggedInGuard';
 import { FeedbackComponent } from './Paginas/feedback/feedback.component';
 
@@ -97,6 +98,13 @@ export const routes: Routes = [
     path: 'customer/soporte',
     loadComponent: () => import('./Paginas/customer/soporte/soporte.component').then((m) => m.SoporteComponent),
     canActivate: [customerGuard],
+  },
+
+  //Delivery
+  {
+    path: 'delivery',
+    loadComponent: () => import('./Paginas/delivery/delivery.component').then((m) => m.DeliveryComponent),
+    canActivate: [deliveryGuard],
   },
 
   // Wildcard

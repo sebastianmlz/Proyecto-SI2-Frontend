@@ -120,7 +120,7 @@
             <p-avatar icon="pi pi-user" shape="circle" />
             <div>
               <p class="font-semibold">
-                {{ authService.isAdmin() ? 'Administrador' : 'Cliente' }}
+                {{ authService.isAdmin() ? 'Administrador' : authService.isCustomer()? 'Cliente' : 'Delivery' }}
               </p>
               <p class="text-sm text-gray-500">{{user?.first_name}} {{user?.last_name}}</p>
             </div>

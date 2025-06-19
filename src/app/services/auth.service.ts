@@ -59,6 +59,10 @@ export class AuthService {
     return localStorage.getItem('user_role') === 'customer';
   }
 
+  isDelivery(): boolean {
+    return localStorage.getItem('user_role') === 'delivery';
+  }
+
   getUserById(userId: number): Observable<any> {
     const token = localStorage.getItem('access');
     if (!token) {

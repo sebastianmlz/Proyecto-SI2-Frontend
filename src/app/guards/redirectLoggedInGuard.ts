@@ -8,7 +8,7 @@ export const redirectLoggedInGuard: CanActivateFn = () => {
 
   if (token && user?.role) {
     const role = user.role;
-    const path = role === 'admin' ? '/admin' : '/customer';
+    const path = role === 'admin' ? '/admin' : role === 'customer' ? '/customer' : '/delivery';
     router.navigate([path]);
     return false;
   }
