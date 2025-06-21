@@ -5,11 +5,15 @@ import { SidebarComponent } from './componentes/sidebar/sidebar.component'; // I
 import { AuthService } from './services/auth.service';
 import { CommonModule } from '@angular/common';
 import { ToastModule } from 'primeng/toast';
+import { ChatbotComponent } from './componentes/chatbot/chatbot.component';
+import { DividerModule } from 'primeng/divider';
+
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, CommonModule, SidebarComponent,ToastModule], // Solo RouterOutlet
+  imports: [RouterOutlet, HeaderComponent, CommonModule, SidebarComponent,ToastModule,ChatbotComponent,DividerModule], // Solo RouterOutlet
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })

@@ -1,0 +1,123 @@
+<!-- Chatbot bubble button -->
+<div class="chat-bubble" [class.active]="isOpen" >
+    <p-button 
+            type="button"
+            icon="pi pi-comments"
+            styleClass="p-button-text p-button-rounded p-button-sm text-white"
+            (onClick)="toggleChat()"
+        ></p-button>
+</div>
+
+<!-- Chatbot container -->
+<div class="chat-container-wrapper" [class.active]="isOpen">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-text">FICCT E-commerce Chatbot</div>
+        <div class="header-actions">
+            <!-- Botón para mostrar historial -->
+            <p-button 
+                type="button"
+                icon="pi pi-history"
+                styleClass="p-button-text p-button-rounded p-button-sm text-white mr-2"
+                (onClick)="toggleHistory()"
+                pTooltip="Historial de conversaciones"
+            ></p-button>
+            
+            <!-- Botón para cerrar -->
+            <p-button 
+                type="button"
+                icon="pi pi-times"
+                styleClass="p-button-text p-button-rounded p-button-sm text-white"
+                (onClick)="toggleChat()"
+            ></p-button>
+        </div>
+    </div>
+
+    <!-- Container with chat panel -->
+    <div class="container">
+        <!-- Panel de historial (Sidebar) -->
+        <p-sidebar 
+            [(visible)]="isHistoryShown" 
+            position="left" 
+            styleClass="history-sidebar"
+            [showCloseIcon]="false"
+            [modal]="false"
+            [baseZIndex]="1000">
+            <h3 class="history-title">Historial de conversaciones</h3>
+            
+            <div class="history-actions">
+                <p-button 
+                    label="Nueva conversación" 
+                    icon="pi pi-plus" 
+                    styleClass="p-button-sm p-button-success"
+                    (onClick)="startNewConversation()"></p-button>
+            </div>
+
+            <!-- Lista de conversaciones -->
+            <div class="chat-history-list">
+                <div *ngIf="loadingHistory" class="loading-history">
+                    <i class="pi pi-spin pi-spinner"></i> Cargando...
+                </div>
+                
+                <div *ngIf="!loadingHistory && chatSessions.length === 0" class="no-history">
+                    No hay conversaciones guardadas.
+                </div>
+
+                <div *ngFor="let session of chatSessions" 
+                     class="chat-history-item"
+                     [class.active]="currentSessionId === session.id.toString()"
+                     (click)="loadChatSession(session.id.toString())">
+                    <div class="session-info">
+                        <span class="session-date">{{formatDate(session.created_at)}}</span>
+                        <span class="session-id">#{{session.id}}</span>
+                    </div>
+                </div>
+                
+                <!-- Paginación para historial -->
+                <div *ngIf="totalSessions > 10" class="history-pagination">
+                    <p-button 
+                        [disabled]="isPrevPageDisabled()" 
+                        icon="pi pi-chevron-left"
+                        styleClass="p-button-text p-button-sm"
+                        (onClick)="loadChatSessions(currentPage - 1)"></p-button>
+                    <span>{{currentPage}}/{{getPageCount()}}</span>
+                    <p-button 
+                        [disabled]="isNextPageDisabled()" 
+                        icon="pi pi-chevron-right"
+                        styleClass="p-button-text p-button-sm"
+                        (onClick)="loadChatSessions(currentPage + 1)"></p-button>
+                </div>
+            </div>
+        </p-sidebar>
+
+        <!-- Panel de chat -->
+        <div class="chat-panel">
+            <div class="chat-conversation active">
+                <!-- Messages container -->
+                <div id="messagesContainer" class="messages-container">
+                    <!-- Los mensajes se agregarán dinámicamente -->
+                </div>
+
+                <!-- Footer con input -->
+                <div class="chat-footer">
+                    <div class="message-input-container">
+                        <input 
+                            type="text" 
+                            class="message-input"
+                            placeholder="Escribe tu mensaje aquí..." 
+                            [(ngModel)]="messageInput"
+                            (keyup.enter)="sendMessage()"
+                        >
+                        <p-button 
+                            icon="pi pi-send"
+                            styleClass="p-button-rounded p-button-success"
+                            [disabled]="!messageInput.trim() || !isLoggedIn || isTyping"
+                            (onClick)="sendMessage()"
+                        ></p-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
