@@ -60,18 +60,11 @@ export class IngresoComponent {
             console.log("Usuario obtenido:", userData);
 
             // Redirigir dependiendo del rol
-            if (userData.role === 'admin') {
+            if (userData.role === 'admin' || userData.role === 'customer') {
               this.router.navigate(['/productos']);
-            } else if (userData.role === 'customer') {
-              this.router.navigate(['/productos']);
-            } else {
-              this.router.navigate(['/']);
-            }
-
-            if (userData.role === 'delivery') {
+            } else if (userData.role === 'delivery') {
               this.router.navigate(['/delivery']);
-            }
-            else {
+            } else {
               this.router.navigate(['/']);
             }
 
