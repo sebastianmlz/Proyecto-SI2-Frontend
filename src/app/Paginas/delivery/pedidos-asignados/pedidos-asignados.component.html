@@ -47,17 +47,13 @@
               *ngIf="pedido.status === 'in_progress'"
             >En Progreso</span>
             <span 
+              class="text-orange-800 bg-orange-100 px-2 py-1 text-xs font-semibold rounded-full"
+              *ngIf="pedido.status === 'started'"
+            >Iniciado</span>
+            <span 
               class="text-green-800 bg-green-100 px-2 py-1 text-xs font-semibold rounded-full"
               *ngIf="pedido.status === 'completed'"
             >Completado</span>
-            <button 
-              pButton
-              icon="pi pi-pencil"
-              class="p-button-rounded p-button-sm p-button-text ml-1"
-              pTooltip="Editar estado del pedido"
-              tooltipPosition="top"
-              (click)="abrirModalEditarEstado(pedido)"
-              ></button>
           </td>
           <td class="py-2 px-3 text-sm">{{ pedido.delivery_data?.estimated_arrival | date: 'short' }}</td>
           <td class="py-2 px-3 text-sm">{{ pedido.assignment_date | date: 'short' }}</td>
@@ -72,24 +68,14 @@
                 pTooltip="Ver detalles"
               ></button>
               
-              <!-- Botón para cambiar a En Progreso (solo visible si está asignado) -->
+              <!-- Botón para Iniciar Pedido (solo visible si está asignado) -->
               <button 
                 *ngIf="pedido.status === 'assigned'"
-                pButton 
-                icon="pi pi-sync" 
-                class="p-button-sm p-button-warning"
-                (click)="abrirModalEditarEstado(pedido)"
-                pTooltip="Cambiar a En Progreso"
-              ></button>
-              
-              <!-- Botón para Iniciar Pedido (solo visible si está en progreso) -->
-              <button 
-                *ngIf="pedido.status === 'in_progress'"
                 pButton 
                 icon="pi pi-play" 
                 class="p-button-sm p-button-success"
                 (click)="iniciarPedido(pedido)"
-                pTooltip="Iniciar pedido"
+                pTooltip="Iniciar entrega"
               ></button>
               
               <!-- Botón para Completar Pedido (solo visible si está en progreso) -->
@@ -99,7 +85,7 @@
                 icon="pi pi-check-circle" 
                 class="p-button-sm p-button-success"
                 (click)="completarPedido(pedido)"
-                pTooltip="Completar pedido"
+                pTooltip="Completar entrega"
               ></button>
             </div>
           </td>
