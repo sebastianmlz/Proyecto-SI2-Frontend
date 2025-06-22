@@ -69,6 +69,7 @@ export class TableProductsComponent {
     description: '',
     active: true,
     image_url: {} as File,
+    model_3d_url: {} as File,
     technical_specifications: '',
     price_usd: 0,
     created_at: '',
@@ -222,6 +223,7 @@ export class TableProductsComponent {
       description: '',
       active: true,
       image_url: {} as File,
+      model_3d_url: {} as File,
       technical_specifications: '',
       price_usd: 0,
       created_at: new Date().toISOString(),
@@ -238,6 +240,23 @@ export class TableProductsComponent {
     console.log("Archivo seleccionado:", file); // 👈 asegúrate que esto no sea undefined
     if (file) {
       this.nuevoProducto.image_url = file;
+    }
+  }
+
+  onFileSelected3D(event: any): void{
+    const file = event.target.files[0];
+    if (file){
+      const validExtensions = ['glb', 'gltf', 'obj', 'fbx'
+        , 'stl', 'dae', 'ply', '3ds', 'blend', 'abc', 'usd', 'usda', 'usdc', 'usdz'
+      ];
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      if (validExtensions.includes(fileExtension)){
+        this.nuevoProducto.model_3d_url = file;
+        this.noti.success('Archivo 3D seleccionado', 'El archivo 3D ha sido seleccionado correctamente.');
+      }else {
+        this.noti.error('Archivo inválido', 'Por favor, selecciona un archivo 3D válido.');
+        event.target.value = ''; // Limpiar el input si el archivo no es válido
+      }
     }
   }
   
@@ -258,7 +277,11 @@ export class TableProductsComponent {
     if (this.nuevoProducto.image_url) {
       formData.append('image_url', this.nuevoProducto.image_url);
     }
-  
+
+    if (this.nuevoProducto.model_3d_url) {
+      formData.append('model_3d_url', this.nuevoProducto.model_3d_url);
+    }
+
     // Verifica en consola lo que se está enviando
     for (const pair of formData.entries()) {
       console.log(pair[0] + ':', pair[1]);
@@ -314,6 +337,7 @@ export class TableProductsComponent {
       price_usd: producto.price_usd,
       stock: producto.inventory?.stock || 0,
       image_url: producto.image_url,
+      model_3d_url: producto.model_3d_url
     };
     
     // Al abrir el modal de edición, cargar las garantías filtradas por la marca actual
@@ -334,6 +358,23 @@ export class TableProductsComponent {
       this.noti.error('Archivo inválido', 'Debes seleccionar una imagen válida (JPG, PNG, etc).');
     }
   }
+
+  onEditFileSelected3D(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const validExtensions = ['glb', 'gltf', 'obj', 'fbx', 'stl', 'dae', 
+        'ply', '3ds', 'blend', 'abc', 'usd', 'usda', 'usdc', 'usdz'];
+      const fileExtension = file.name.split('.').pop()?.toLowerCase();
+      if (validExtensions.includes(fileExtension)) {
+        this.productoEditable.model_3d_url = file;
+        this.noti.success('Archivo 3D seleccionado', 'El archivo 3D ha sido seleccionado correctamente.');
+      } else {
+        console.error('Extensión de archivo no válida:', fileExtension);
+        this.noti.error('Archivo inválido', 'Por favor, selecciona un archivo 3D válido.');
+        event.target.value = ''; // Limpiar el input si el archivo no es válido
+      }
+    }
+  }
   
   editarProducto(): void {
     const formData = new FormData();
@@ -348,6 +389,10 @@ export class TableProductsComponent {
     formData.append('active', this.productoEditable.active ? 'true' : 'false');
     if (this.productoEditable.image_url instanceof File) {
       formData.append('image_url', this.productoEditable.image_url);
+    }
+
+    if (this.productoEditable.model_3d_url instanceof File) {
+      formData.append('model_3d_url', this.productoEditable.model_3d_url);
     }
 
     this.productos.editarProducto(this.productoEditable.id, formData).subscribe({

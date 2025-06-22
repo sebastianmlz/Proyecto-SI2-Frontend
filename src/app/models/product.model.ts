@@ -8,6 +8,7 @@ export interface Product {
     name: string;
     active: boolean;
     image_url: string;
+    model_3d_url: string;
     category: Category;
     brand: Brand;
     warranty: Warranty; // Nuevo
