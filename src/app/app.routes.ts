@@ -16,7 +16,7 @@ export const routes: Routes = [
   { path: 'ingreso', component: IngresoComponent, canActivate: [redirectLoggedInGuard] },
   { path: 'registro', component: RegistroComponent, canActivate: [redirectLoggedInGuard] },
   { path: 'Home', component: HomeComponent },
-  { path: 'Feedback', component: FeedbackComponent},
+  { path: 'Feedback', component: FeedbackComponent },
 
   // Rutas comunes protegidas
   { path: 'productos', component: ProductsComponent, canActivate: [authGuard] },
@@ -104,6 +104,12 @@ export const routes: Routes = [
   {
     path: 'delivery',
     loadComponent: () => import('./Paginas/delivery/delivery.component').then((m) => m.DeliveryComponent),
+    canActivate: [deliveryGuard],
+  },
+  {
+    path: 'delivery/pedidos-asignados',
+    loadComponent: () => import('./Paginas/delivery/pedidos-asignados/pedidos-asignados.component')
+    .then((m) => m.PedidosAsignadosComponent),
     canActivate: [deliveryGuard],
   },
 

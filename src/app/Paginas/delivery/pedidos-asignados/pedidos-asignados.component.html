@@ -1,0 +1,203 @@
+<!-- Encabezado -->
+<div class="p-4 space-y-4">
+  <div class="flex items-center justify-center bg-gradient-to-r from-green-600 to-green-800 rounded-xl px-6 py-3 text-white">
+    <h2 class="text-lg md:text-xl font-bold flex items-center gap-2">
+      <i class="pi pi-truck text-xl"></i> Mis Pedidos Asignados
+    </h2>
+  </div>
+  
+  <!-- Tabla -->
+  <div class="bg-white rounded-xl overflow-visible shadow-md mt-3">
+    <p-table 
+    [value]="MyAssignments" 
+    [rows]="pageSize" 
+    [paginator]="true" 
+    [lazy]="true"
+    [totalRecords]="totalRecords" 
+    (onPage)="onPageChange($event)"
+    [loading]="loading"
+    [rowsPerPageOptions]="[5, 10, 20, 50]"
+    [first]="(page-1) * pageSize"
+    responsiveLayout="scroll"
+    >
+      <!-- Cabecera -->
+      <ng-template pTemplate="header">
+        <tr class="bg-gray-100 text-gray-800 text-sm font-semibold">
+          <th class="py-2 px-3">ID</th>
+          <th class="py-2 px-3">Destinatario</th>
+          <th class="py-2 px-3">Estado</th>
+          <th class="py-2 px-3">Fecha Entrega Est.</th>
+          <th class="py-2 px-3">Fecha Asignación</th>
+          <th class="py-2 px-3 text-center">Acción</th>
+        </tr>
+      </ng-template>
+
+      <!-- Cuerpo -->
+      <ng-template pTemplate="body" let-pedido>
+        <tr class="hover:bg-gray-50 transition-all duration-200">
+          <td class="py-2 px-3 text-sm">{{ pedido.id }}</td>
+          <td class="py-2 px-3 text-sm">{{ pedido.delivery_data?.recipient_name }}</td>
+          <td class="py-2 px-3 text-sm">
+            <span 
+              class="text-blue-800 bg-blue-100 px-2 py-1 text-xs font-semibold rounded-full"
+              *ngIf="pedido.status === 'assigned'"
+            >Asignado</span>
+            <span 
+              class="text-yellow-800 bg-yellow-100 px-2 py-1 text-xs font-semibold rounded-full"
+              *ngIf="pedido.status === 'in_progress'"
+            >En Progreso</span>
+            <span 
+              class="text-green-800 bg-green-100 px-2 py-1 text-xs font-semibold rounded-full"
+              *ngIf="pedido.status === 'completed'"
+            >Completado</span>
+            <button 
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-sm p-button-text ml-1"
+              pTooltip="Editar estado del pedido"
+              tooltipPosition="top"
+              (click)="abrirModalEditarEstado(pedido)"
+              ></button>
+          </td>
+          <td class="py-2 px-3 text-sm">{{ pedido.delivery_data?.estimated_arrival | date: 'short' }}</td>
+          <td class="py-2 px-3 text-sm">{{ pedido.assignment_date | date: 'short' }}</td>
+          <td class="py-2 px-3 text-center">
+            <div class="flex gap-2 justify-center">
+              <!-- Botón de Ver Detalles (siempre visible) -->
+              <button 
+                pButton 
+                icon="pi pi-eye" 
+                class="p-button-sm p-button-info"
+                (click)="abrirModalDetalle(pedido)"
+                pTooltip="Ver detalles"
+              ></button>
+              
+              <!-- Botón para cambiar a En Progreso (solo visible si está asignado) -->
+              <button 
+                *ngIf="pedido.status === 'assigned'"
+                pButton 
+                icon="pi pi-sync" 
+                class="p-button-sm p-button-warning"
+                (click)="abrirModalEditarEstado(pedido)"
+                pTooltip="Cambiar a En Progreso"
+              ></button>
+              
+              <!-- Botón para Iniciar Pedido (solo visible si está en progreso) -->
+              <button 
+                *ngIf="pedido.status === 'in_progress'"
+                pButton 
+                icon="pi pi-play" 
+                class="p-button-sm p-button-success"
+                (click)="iniciarPedido(pedido)"
+                pTooltip="Iniciar pedido"
+              ></button>
+              
+              <!-- Botón para Completar Pedido (solo visible si está en progreso) -->
+              <button 
+                *ngIf="pedido.status === 'in_progress'"
+                pButton 
+                icon="pi pi-check-circle" 
+                class="p-button-sm p-button-success"
+                (click)="completarPedido(pedido)"
+                pTooltip="Completar pedido"
+              ></button>
+            </div>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+</div>
+
+
+<!-- MODAL PARA CAMBIAR ESTADO PEDIDO-->
+ <p-dialog
+  [(visible)]="modalEditarEstadoVisible"
+  [modal]="true"
+  [closable]="true"
+  [dismissableMask]="true"
+  [style]="{width: '98vw', maxWidth: '400px', minHeight: '400px'}"
+  header="Editar estado del pedido"
+>
+  <div *ngIf="ordenEditandoEstado" class="p-4 space-y-4">
+    <div class="mb-4">
+      <label class="block mb-2 font-semibold">Selecciona el nuevo estado:</label>
+      <p-dropdown
+        [options]="estadosPedido"
+        [(ngModel)]="nuevoEstadoPedido"
+        optionLabel="label"
+        optionValue="value"
+        placeholder="Selecciona estado"
+        class="w-full"
+        [panelStyle]="{ 'max-height': '300px' }"
+      ></p-dropdown>
+    </div>
+    <div class="flex justify-end gap-2">
+      <button pButton label="Cancelar" class="p-button-text" (click)="cerrarModalEditarEstado()"></button>
+      <button pButton label="Cambiar" icon="pi pi-check" class="p-button-success"
+        [disabled]="!nuevoEstadoPedido || nuevoEstadoPedido === ordenEditandoEstado.status"
+        (click)="confirmarCambioEstado()"></button>
+    </div>
+  </div>
+</p-dialog>
+
+<!-- MODAL DETALLE -->
+<p-dialog 
+  [(visible)]="modalVisible"
+  [modal]="true"
+  [closable]="false"
+  [dismissableMask]="true"
+  [styleClass]="'w-[90vw] md:w-[50vw] lg:w-[40vw]'"
+  class="rounded-xl custom-dialog p-0 overflow-hidden"
+>
+  <!-- Header personalizado -->
+  <ng-template pTemplate="header">
+    <div class="w-full text-center text-white text-lg font-bold bg-green-700 py-2 rounded-t-xl">
+      <h2 class="text-center text-white text-lg font-bold m-0">
+        Detalle del Pedido
+      </h2>
+    </div>
+  </ng-template>
+
+  <div *ngIf="pedidoSeleccionado" class="p-5 text-sm text-gray-800 space-y-2">
+    <div class="grid grid-cols-2 gap-y-2">
+      <div><strong>ID:</strong> {{ pedidoSeleccionado.id }}</div>
+      <div><strong>Estado:</strong> {{ pedidoSeleccionado.status_display }}</div>
+      
+      <hr class="col-span-2 border-blue-500 my-2" />
+      <div class="col-span-2"><strong>Cliente:</strong> {{ pedidoSeleccionado.delivery_data?.recipient_name }}</div>
+      <div class="col-span-2"><strong>Teléfono:</strong> {{ pedidoSeleccionado.delivery_data?.recipient_phone }}</div>
+      <div class="col-span-2"><strong>Dirección:</strong> {{ pedidoSeleccionado.delivery_data?.full_address }}</div>
+      
+      <hr class="col-span-2 border-blue-500 my-2" />
+      <div><strong>Ciudad:</strong> {{ pedidoSeleccionado.delivery_data?.city_data?.name }}</div>
+      <div><strong>Estado/Provincia:</strong> {{ pedidoSeleccionado.delivery_data?.state_data?.name }}</div>
+      <div><strong>País:</strong> {{ pedidoSeleccionado.delivery_data?.country_data?.name }}</div>
+      <div><strong>Código Postal:</strong> {{ pedidoSeleccionado.delivery_data?.postal_code }}</div>
+      
+      <hr class="col-span-2 border-blue-500 my-2" />
+      <div><strong>Fecha Asignación:</strong> {{ pedidoSeleccionado.assignment_date | date: 'short' }}</div>
+      <div><strong>Fecha Inicio:</strong> {{ pedidoSeleccionado.start_date | date: 'short' }}</div>
+      <div><strong>Fecha Entrega Est.:</strong> {{ pedidoSeleccionado.delivery_data?.estimated_arrival | date: 'short' }}</div>
+      <div><strong>Fecha Completado:</strong> {{ pedidoSeleccionado.completion_date | date: 'short' }}</div>
+
+      <hr class="col-span-2 border-blue-500 my-2" />
+      <div class="col-span-2"><strong>Notas del envío:</strong> {{ pedidoSeleccionado.delivery_data?.delivery_notes || 'Sin notas' }}</div>
+      <div class="col-span-2"><strong>Notas adicionales:</strong> {{ pedidoSeleccionado.notes || 'Sin notas' }}</div>
+    </div>
+  </div>
+
+  <!-- Botón de cerrar -->
+  <ng-template pTemplate="footer">
+    <div class="w-full flex justify-end px-5 pb-4">
+      <button
+        pButton
+        type="button"
+        icon="pi pi-times"
+        label="Cerrar"
+        class="p-button-sm bg-red-600 text-white border-none hover:bg-red-700"
+        (click)="cerrarModal()"
+      ></button>
+    </div>
+  </ng-template>
+</p-dialog>
