@@ -59,8 +59,11 @@
                     <i class="pi pi-spin pi-spinner"></i> Cargando...
                 </div>
                 
+                <!-- Mejorar el mensaje cuando no hay conversaciones -->
                 <div *ngIf="!loadingHistory && chatSessions.length === 0" class="no-history">
-                    No hay conversaciones guardadas.
+                    <i class="pi pi-inbox" style="font-size: 1.5rem; color: #aaa;"></i>
+                    <p>No hay conversaciones guardadas.</p>
+                    <p class="mt-2">Inicia una nueva conversación para comenzar a chatear.</p>
                 </div>
 
                 <div *ngFor="let session of chatSessions" 
@@ -79,13 +82,13 @@
                         [disabled]="isPrevPageDisabled()" 
                         icon="pi pi-chevron-left"
                         styleClass="p-button-text p-button-sm"
-                        (onClick)="loadChatSessions(currentPage - 1)"></p-button>
+                        (onClick)="changePage(currentPage - 1)"></p-button>
                     <span>{{currentPage}}/{{getPageCount()}}</span>
                     <p-button 
                         [disabled]="isNextPageDisabled()" 
                         icon="pi pi-chevron-right"
                         styleClass="p-button-text p-button-sm"
-                        (onClick)="loadChatSessions(currentPage + 1)"></p-button>
+                        (onClick)="changePage(currentPage + 1)"></p-button>
                 </div>
             </div>
         </p-sidebar>

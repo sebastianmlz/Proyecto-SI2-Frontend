@@ -455,4 +455,18 @@ export class ChatbotComponent implements OnInit {
   isPrevPageDisabled(): boolean {
     return this.currentPage <= 1;
   }
+
+  // Agregar este método a la clase ChatbotComponent
+  changePage(newPage: number): void {
+    // Aseguramos que el sidebar permanezca abierto
+    const currentHistoryState = this.isHistoryShown;
+    
+    // Cargar la nueva página
+    this.loadChatSessions(newPage);
+    
+    // Forzar que el sidebar se mantenga abierto
+    setTimeout(() => {
+      this.isHistoryShown = currentHistoryState;
+    }, 0);
+  }
 }

@@ -65,9 +65,9 @@
           </td>
           <td class="py-2 px-3 w-36 sm:w-auto text-center">
             <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap" [ngClass]="{
-              'bg-green-100 text-green-700': venta.estado_pedido === 'Entregado',
-              'bg-blue-100 text-blue-700': venta.estado_pedido === 'En reparto',
-              'bg-yellow-100 text-yellow-700': venta.estado_pedido === 'Pendiente',
+              'bg-green-100 text-green-700': venta.estado_pedido === 'completed',
+              'bg-blue-100 text-blue-700': venta.estado_pedido === 'in_progress',
+              'bg-yellow-100 text-yellow-700': venta.estado_pedido === 'assigned',
               'bg-red-100 text-red-700': venta.estado_pedido === 'Fallido'
             }">
               {{ venta.estado_pedido || 'Cargando...' }}
@@ -81,7 +81,7 @@
                 (click)="abrirModalVerMas(venta)"></button>
               <button pButton icon="pi pi-comment" class="p-button-rounded p-button-info p-button-sm w-full sm:w-auto"
                 pTooltip="Dejar feedback" tooltipPosition="top" (click)="abrirModalFeedback(venta)"
-                *ngIf="venta.estado_pedido === 'Entregado'"></button>
+                *ngIf="venta.estado_pedido === 'completed'"></button>
             </div>
           </td>
         </tr>

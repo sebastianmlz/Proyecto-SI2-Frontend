@@ -1,1 +1,385 @@
-<p>delivery works!</p>
+<div class="p-4">
+  <!-- Encabezado con estadísticas -->
+  <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-3">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Panel de entregas</h1>
+        <p class="text-gray-600">Gestiona tus pedidos asignados</p>
+      </div>
+      <div class="flex gap-3 mt-3 md:mt-0">
+        <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+          <div class="text-sm text-gray-600">Completados</div>
+          <div class="text-xl font-bold text-green-600">{{ completedCount }}</div>
+        </div>
+        <div class="bg-yellow-50 p-3 rounded-lg border border-yellow-100">
+          <div class="text-sm text-gray-600">Pendientes</div>
+          <div class="text-xl font-bold text-yellow-600">{{ pendingCount }}</div>
+        </div>
+        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+          <div class="text-sm text-gray-600">Total</div>
+          <div class="text-xl font-bold text-blue-600">{{ totalItems }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filtros -->
+  <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+    <div class="flex flex-wrap gap-2">
+      <button 
+        pButton 
+        [class.p-button-outlined]="activeFilter !== 'all'" 
+        [class.p-button-primary]="activeFilter === 'all'" 
+        label="Todos" 
+        (click)="applyFilter('all')"></button>
+      <button 
+        pButton 
+        [class.p-button-outlined]="activeFilter !== 'pending'" 
+        [class.p-button-warning]="activeFilter === 'pending'" 
+        label="Pendientes" 
+        (click)="applyFilter('pending')"></button>
+      <button 
+        pButton 
+        [class.p-button-outlined]="activeFilter !== 'completed'" 
+        [class.p-button-success]="activeFilter === 'completed'" 
+        label="Completados" 
+        (click)="applyFilter('completed')"></button>
+    </div>
+  </div>
+
+  <!-- Tarjetas de asignaciones -->
+  <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let i of [1, 2, 3, 4, 5, 6]" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <p-skeleton height="15rem" width="100%"></p-skeleton>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && filteredAssignments.length === 0" class="bg-white rounded-lg shadow-md p-8 flex flex-col items-center justify-center">
+    <i class="pi pi-inbox text-5xl text-gray-400 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-700">No hay entregas disponibles</h3>
+    <p class="text-gray-500 text-center mt-2">No tienes entregas asignadas en esta categoría</p>
+  </div>
+
+  <div *ngIf="!loading && filteredAssignments.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div *ngFor="let assignment of filteredAssignments" class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <!-- Encabezado con estado -->
+      <div class="relative">
+        <div class="h-2 bg-gray-200 w-full">
+          <div class="h-2" [ngClass]="getStatusClass(assignment.status)" [style.width.%]="calculateProgress(assignment)"></div>
+        </div>
+        <div class="absolute top-0 right-0 m-2">
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border" [ngClass]="getStatusClass(assignment.status)">
+            <i [class]="getStatusIcon(assignment.status)" class="mr-1"></i>
+            {{ getStatusText(assignment.status) }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Contenido principal -->
+      <div class="p-4">
+        <div class="flex items-center mb-3">
+          <span class="bg-blue-100 text-blue-800 rounded-full px-2 py-1 text-xs font-semibold mr-2">Orden #{{ assignment.delivery_data.order_id }}</span>
+          <span class="text-gray-500 text-sm">{{ formatDate(assignment.assignment_date) }}</span>
+        </div>
+
+        <h3 class="font-bold text-lg mb-2 text-gray-800">{{ assignment.delivery_data.recipient_name }}</h3>
+        
+        <div class="mb-3">
+          <div class="flex items-start mb-1">
+            <i class="pi pi-map-marker text-gray-500 mr-2 mt-1"></i>
+            <p class="text-gray-700 line-clamp-2">{{ assignment.delivery_data.full_address }}</p>
+          </div>
+          <div class="flex items-center">
+            <i class="pi pi-phone text-gray-500 mr-2"></i>
+            <p class="text-gray-700">{{ assignment.delivery_data.recipient_phone }}</p>
+          </div>
+        </div>
+
+        <!-- Fechas relevantes -->
+        <div class="text-sm text-gray-600 mt-3">
+          <div *ngIf="assignment.start_date" class="flex items-center mb-1">
+            <i class="pi pi-calendar text-blue-500 mr-2"></i>
+            <span>Iniciado: {{ formatDate(assignment.start_date) }}</span>
+          </div>
+          <div *ngIf="assignment.completion_date" class="flex items-center mb-1">
+            <i class="pi pi-check-circle text-green-500 mr-2"></i>
+            <span>Completado: {{ formatDate(assignment.completion_date) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="bg-gray-50 p-3 flex justify-between items-center">
+        <button 
+          pButton 
+          pRipple 
+          type="button" 
+          label="Ver detalles" 
+          class="p-button-text p-button-sm"
+          (click)="openDetailsModal(assignment)"></button>
+        
+        <div class="flex gap-2">
+          <button 
+            *ngIf="assignment.status === 'assigned'"
+            pButton 
+            pRipple 
+            type="button" 
+            label="Iniciar" 
+            icon="pi pi-play"
+            class="p-button-sm p-button-warning"
+            (click)="startDelivery(assignment)"></button>
+          
+          <button 
+            *ngIf="assignment.status === 'in_progress'"
+            pButton 
+            pRipple 
+            type="button" 
+            label="Completar" 
+            icon="pi pi-check"
+            class="p-button-sm p-button-success"
+            (click)="completeDelivery(assignment)"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Paginación -->
+  <div *ngIf="totalPages > 1" class="flex justify-center mt-6">
+    <div class="flex gap-1">
+      <button 
+        pButton 
+        pRipple 
+        type="button" 
+        icon="pi pi-chevron-left" 
+        class="p-button-rounded p-button-text"
+        [disabled]="currentPage === 1"
+        (click)="changePage(currentPage - 1)"></button>
+      
+      <span class="p-2 text-gray-700">Página {{ currentPage }} de {{ totalPages }}</span>
+      
+      <button 
+        pButton 
+        pRipple 
+        type="button" 
+        icon="pi pi-chevron-right" 
+        class="p-button-rounded p-button-text"
+        [disabled]="currentPage === totalPages"
+        (click)="changePage(currentPage + 1)"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalles -->
+<p-dialog 
+  [(visible)]="detailsModalVisible" 
+  [modal]="true" 
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="max-w-3xl"
+  header="Detalles de la entrega">
+
+  <ng-container *ngIf="selectedAssignment">
+    <div class="p-4">
+      <div class="bg-gray-50 p-4 rounded-lg mb-5">
+        <div class="flex justify-between items-center mb-3">
+          <span class="text-lg font-bold text-gray-700">Orden #{{ selectedAssignment.delivery_data.order_id }}</span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border" [ngClass]="getStatusClass(selectedAssignment.status)">
+            <i [class]="getStatusIcon(selectedAssignment.status)" class="mr-2"></i>
+            {{ getStatusText(selectedAssignment.status) }}
+          </span>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Información del cliente -->
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+              <i class="pi pi-user mr-2 text-blue-500"></i>
+              Información del destinatario
+            </h3>
+            <div class="pl-6 space-y-2">
+              <div class="flex items-center">
+                <span class="text-gray-600 w-28">Nombre:</span>
+                <span class="font-medium">{{ selectedAssignment.delivery_data.recipient_name }}</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-gray-600 w-28">Teléfono:</span>
+                <span class="font-medium">{{ selectedAssignment.delivery_data.recipient_phone }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fechas -->
+          <div>
+            <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+              <i class="pi pi-calendar mr-2 text-blue-500"></i>
+              Información de fechas
+            </h3>
+            <div class="pl-6 space-y-2">
+              <div class="flex items-center">
+                <span class="text-gray-600 w-28">Asignación:</span>
+                <span class="font-medium">{{ formatDate(selectedAssignment.assignment_date) }}</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-gray-600 w-28">Inicio:</span>
+                <span class="font-medium">{{ selectedAssignment.start_date ? formatDate(selectedAssignment.start_date) : 'No iniciado' }}</span>
+              </div>
+              <div class="flex items-center">
+                <span class="text-gray-600 w-28">Completado:</span>
+                <span class="font-medium">{{ selectedAssignment.completion_date ? formatDate(selectedAssignment.completion_date) : 'Pendiente' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dirección -->
+      <div class="mb-5">
+        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+          <i class="pi pi-map-marker mr-2 text-blue-500"></i>
+          Dirección de entrega
+        </h3>
+        <div class="pl-6 bg-gray-50 p-4 rounded-lg space-y-2">
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">Línea 1:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.address_line1 }}</span>
+          </div>
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">Línea 2:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.address_line2 || 'No especificado' }}</span>
+          </div>
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">Ciudad:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.city_data.name }}</span>
+          </div>
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">Departamento:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.state_data.name }}</span>
+          </div>
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">País:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.country_data.name }}</span>
+          </div>
+          <div class="flex items-start">
+            <span class="text-gray-600 w-28">Código postal:</span>
+            <span class="font-medium">{{ selectedAssignment.delivery_data.postal_code }}</span>
+          </div>
+          <p-divider></p-divider>
+          <div class="font-medium text-gray-700">
+            <i class="pi pi-map text-blue-500 mr-2"></i>
+            Dirección completa: {{ selectedAssignment.delivery_data.full_address }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div *ngIf="selectedAssignment.delivery_data.delivery_notes || selectedAssignment.notes">
+        <h3 class="font-semibold text-gray-800 mb-3 flex items-center">
+          <i class="pi pi-info-circle mr-2 text-blue-500"></i>
+          Notas adicionales
+        </h3>
+        <div class="pl-6 bg-gray-50 p-4 rounded-lg">
+          <div *ngIf="selectedAssignment.delivery_data.delivery_notes" class="mb-3">
+            <h4 class="font-medium text-gray-700 mb-1">Notas de entrega:</h4>
+            <p class="text-gray-600">{{ selectedAssignment.delivery_data.delivery_notes }}</p>
+          </div>
+          <div *ngIf="selectedAssignment.notes">
+            <h4 class="font-medium text-gray-700 mb-1">Notas del repartidor:</h4>
+            <p class="text-gray-600">{{ selectedAssignment.notes }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button 
+        pButton 
+        pRipple 
+        type="button" 
+        label="Cerrar" 
+        class="p-button-outlined"
+        (click)="detailsModalVisible = false"></button>
+      
+      <button 
+        *ngIf="selectedAssignment.status === 'assigned'"
+        pButton 
+        pRipple 
+        type="button" 
+        label="Iniciar entrega" 
+        icon="pi pi-play"
+        class="p-button-warning ml-2"
+        (click)="startDelivery(selectedAssignment); detailsModalVisible = false;"></button>
+      
+      <button 
+        *ngIf="selectedAssignment.status === 'in_progress'"
+        pButton 
+        pRipple 
+        type="button" 
+        label="Completar entrega" 
+        icon="pi pi-check"
+        class="p-button-success ml-2"
+        (click)="completeDelivery(selectedAssignment); detailsModalVisible = false;"></button>
+    </ng-template>
+  </ng-container>
+</p-dialog>
+
+<!-- Modal de confirmación para iniciar entrega -->
+<p-dialog 
+  [(visible)]="startDeliveryConfirmModalVisible" 
+  [modal]="true" 
+  header="Iniciar entrega" 
+  [style]="{width: '400px'}">
+  
+  <div *ngIf="selectedAssignment" class="p-3">
+    <p>¿Estás seguro que deseas iniciar la entrega para:</p>
+    <p class="font-semibold mt-2">Orden #{{ selectedAssignment.delivery_data.order_id }} - {{ selectedAssignment.delivery_data.recipient_name }}?</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button 
+      pButton 
+      pRipple 
+      type="button" 
+      label="Cancelar" 
+      class="p-button-text"
+      (click)="startDeliveryConfirmModalVisible = false"></button>
+    
+    <button 
+      pButton 
+      pRipple 
+      type="button" 
+      label="Confirmar" 
+      class="p-button-warning"
+      (click)="confirmStartDelivery()"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de confirmación para completar entrega -->
+<p-dialog 
+  [(visible)]="completeDeliveryConfirmModalVisible" 
+  [modal]="true" 
+  header="Completar entrega" 
+  [style]="{width: '400px'}">
+  
+  <div *ngIf="selectedAssignment" class="p-3">
+    <p>¿Estás seguro que deseas marcar como completada la entrega para:</p>
+    <p class="font-semibold mt-2">Orden #{{ selectedAssignment.delivery_data.order_id }} - {{ selectedAssignment.delivery_data.recipient_name }}?</p>
+  </div>
+  
+  <ng-template pTemplate="footer">
+    <button 
+      pButton 
+      pRipple 
+      type="button" 
+      label="Cancelar" 
+      class="p-button-text"
+      (click)="completeDeliveryConfirmModalVisible = false"></button>
+    
+    <button 
+      pButton 
+      pRipple 
+      type="button" 
+      label="Confirmar" 
+      class="p-button-success"
+      (click)="confirmCompleteDelivery()"></button>
+  </ng-template>
+</p-dialog>

@@ -459,6 +459,19 @@
   text-align: center;
   color: #666;
   font-style: italic;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+
+.no-history p {
+  margin: 5px 0;
+}
+
+.no-history .pi {
+  margin-bottom: 10px;
 }
 
 .history-pagination {

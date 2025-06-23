@@ -49,7 +49,7 @@ export class PedidosAsignadosComponent implements OnInit {
     this.deliveryService.getMyAssignments(this.page, this.pageSize).subscribe({
       next: (response) => {
         this.MyAssignments = response.items || [];
-        this.totalRecords = response.count;
+        // this.totalRecords = response.count;
         console.log('Pedidos asignados cargados:', this.MyAssignments);
         this.loading = false;
       },
